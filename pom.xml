@@ -3,58 +3,126 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-
-    <groupId>com.ruyuan.eshop</groupId>
-    <artifactId>ruyuan-order-system</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <groupId>moe.ahao</groupId>
+    <artifactId>ahao-commerce</artifactId>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
 
-    <properties>
-        <java.version>1.8</java.version>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-        <mapstruct.version>1.3.1.Final</mapstruct.version>
-        <lombok.version>1.18.12</lombok.version>
-    </properties>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.3.12.RELEASE</version>
+    </parent>
 
     <modules>
-        <module>ruyuan-eshop-common</module>
-        <module>ruyuan-eshop-customer-api</module>
-        <module>ruyuan-eshop-customer-service</module>
-        <module>ruyuan-eshop-product-api</module>
-        <module>ruyuan-eshop-product-service</module>
-        <module>ruyuan-eshop-inventory-api</module>
-        <module>ruyuan-eshop-inventory-service</module>
-        <module>ruyuan-eshop-market-api</module>
-        <module>ruyuan-eshop-market-service</module>
-        <module>ruyuan-eshop-order-api</module>
-        <module>ruyuan-eshop-order-service</module>
-        <module>ruyuan-eshop-pay-api</module>
-        <module>ruyuan-eshop-pay-service</module>
-        <module>ruyuan-eshop-fulfill-api</module>
-        <module>ruyuan-eshop-fulfill-service</module>
-        <module>ruyuan-eshop-risk-api</module>
-        <module>ruyuan-eshop-risk-service</module>
-        <module>ruyuan-eshop-tms-api</module>
-        <module>ruyuan-eshop-tms-service</module>
-        <module>ruyuan-eshop-wms-api</module>
-        <module>ruyuan-eshop-wms-service</module>
-        <module>ruyuan-eshop-address-service</module>
-        <module>ruyuan-eshop-address-api</module>
-        <module>ruyuan-eshop-generator</module>
-        <module>ruyuan-eshop-gateway</module>
+<!--        <module>ahao-base-gateway</module>-->
+        <module>ahao-commerce-common-old</module>
+        <module>ahao-commerce-customer-api-old</module>
+        <module>ahao-commerce-customer-service-old</module>
+        <module>ahao-commerce-product-api-old</module>
+        <module>ahao-commerce-product-service-old</module>
+        <module>ahao-commerce-inventory-api-old</module>
+        <module>ahao-commerce-inventory-service-old</module>
+        <module>ahao-commerce-market-api-old</module>
+        <module>ahao-commerce-market-service-old</module>
+        <module>ahao-commerce-order-api-old</module>
+        <module>ahao-commerce-order-service-old</module>
+        <module>ahao-commerce-pay-api-old</module>
+        <module>ahao-commerce-pay-service-old</module>
+        <module>ahao-commerce-fulfill-api-old</module>
+        <module>ahao-commerce-fulfill-service-old</module>
+        <module>ahao-commerce-risk-api-old</module>
+        <module>ahao-commerce-risk-service-old</module>
+        <module>ahao-commerce-tms-api-old</module>
+        <module>ahao-commerce-tms-service-old</module>
+        <module>ahao-commerce-wms-api-old</module>
+        <module>ahao-commerce-wms-service-old</module>
+        <module>ahao-commerce-address-service-old</module>
+        <module>ahao-commerce-address-api-old</module>
+        <module>ahao-commerce-generator</module>
     </modules>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <java.version>1.8</java.version>
+        <java.persistence.version>2.2</java.persistence.version>
+        <mapstruct.version>1.4.2.Final</mapstruct.version>
+        <lombok.mapstruct.version>0.2.0</lombok.mapstruct.version>
+
+        <ahao.version>1.0.0</ahao.version>
+
+        <spring.boot.version>2.3.12.RELEASE</spring.boot.version>
+        <spring.boot.admin.version>2.2.1</spring.boot.admin.version>
+        <spring.cloud.version>Hoxton.SR12</spring.cloud.version>
+        <spring.cloud.alibaba.version>2.2.7.RELEASE</spring.cloud.alibaba.version>
+        <spring.swagger.version>3.0.0</spring.swagger.version>
+        <spring.swagger.bootstrap.version>1.9.6</spring.swagger.bootstrap.version>
+        <spring.dubbo.version>2.7.8</spring.dubbo.version>
+
+        <apache.commons.beanutils.version>1.9.4</apache.commons.beanutils.version>
+        <apache.commons.collections4.version>4.4</apache.commons.collections4.version>
+        <apache.commons.io.version>2.6</apache.commons.io.version>
+        <apache.commons.poi.version>3.17</apache.commons.poi.version>
+        <apache.commons.text.version>1.8</apache.commons.text.version>
+
+        <alibaba.druid.version>1.1.21</alibaba.druid.version>
+        <alibaba.easyexcel.version>3.0.5</alibaba.easyexcel.version><!-- TODO easyexcel 依赖 poi 3.17-->
+        <alibaba.fastjson.version>1.2.62</alibaba.fastjson.version> <!-- TODO fastjson 太多 bug 了 -->
+        <alibaba.transmittable-thread-local.version>2.11.4</alibaba.transmittable-thread-local.version>
+        <google.guava.version>29.0-jre</google.guava.version>
+        <google.protobuf.version>2.5.0</google.protobuf.version>
+
+        <mybatis.version>3.5.2</mybatis.version>
+        <mybatis.generator.version>1.4.0</mybatis.generator.version>
+        <mybatis.spring.boot.version>2.1.1</mybatis.spring.boot.version>
+        <mybatis.plus.version>3.4.1</mybatis.plus.version>
+
+        <redission.version>3.15.5</redission.version>
+        <embedded.redis.version>0.6</embedded.redis.version>
+    </properties>
+
+    <repositories>
+        <repository>
+            <id>aliyun-repo</id>
+            <name>阿里云 Maven</name>
+            <url>https://maven.aliyun.com/nexus/content/repositories/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>center-repo</id>
+            <name>中央 Maven</name>
+            <url>https://repo.maven.apache.org/maven2/</url>
+        </repository>
+    </repositories>
+
     <dependencyManagement>
-
         <dependencies>
+            <!--======================================================= 自定义模块 =======================================================-->
+            <dependency>
+                <groupId>moe.ahao</groupId>
+                <artifactId>ahao-common-utils</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+            <dependency>
+                <groupId>moe.ahao</groupId>
+                <artifactId>ahao-common-utils</artifactId>
+                <version>1.0.0</version>
+                <type>test-jar</type>
+                <scope>test</scope>
+            </dependency>
+            <!--======================================================= 自定义模块 =======================================================-->
 
+            <!--======================================================= Spring =======================================================-->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
-                <version>2.3.2.RELEASE</version>
+                <version>${spring.boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -63,18 +131,18 @@
             <dependency>
                 <groupId>org.springframework.cloud</groupId>
                 <artifactId>spring-cloud-dependencies</artifactId>
-                <version>Hoxton.SR9</version>
+                <version>${spring.cloud.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
-
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-alibaba-dependencies</artifactId>
-                <version>2.2.6.RELEASE</version>
+                <version>${spring.cloud.alibaba.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!--======================================================= Spring Boot =======================================================-->
 
             <dependency>
                 <groupId>com.alibaba.csp</groupId>
@@ -280,31 +348,6 @@
 
     </dependencyManagement>
 
-    <repositories>
-        <repository>
-            <id>aliyun</id>
-            <name>aliyun</name>
-            <url>https://maven.aliyun.com/repository/public</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-
-        <repository>
-            <id>spring-milestones</id>
-            <name>Spring Milestones</name>
-            <url>https://maven.aliyun.com/repository/spring</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-    </repositories>
 
     <pluginRepositories>
         <pluginRepository>
@@ -320,4 +363,16 @@
         </pluginRepository>
     </pluginRepositories>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 </project>
