@@ -28,6 +28,6 @@ public interface AfterSaleQueryApi {
      * @param afterSaleId
      * @return
      */
-    JsonResult<AfterSaleOrderDetailDTO> afterSaleDetail(Long afterSaleId);
+    JsonResult<AfterSaleOrderDetailDTO> afterSaleDetail(String afterSaleId);
 
 }

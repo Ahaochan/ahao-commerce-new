@@ -190,7 +190,7 @@ public class OrderLackServiceImpl implements OrderLackService {
                 String body = new String(msg.getBody(), StandardCharsets.UTF_8);
                 ActualRefundMessage refundMessage = JSON.parseObject(body, ActualRefundMessage.class);
 
-                Long afterSaleId = refundMessage.getAfterSaleId();
+                String afterSaleId = refundMessage.getAfterSaleId();
                 AfterSaleInfoDO afterSaleInfoDO = afterSaleInfoDAO.getOneByAfterSaleId(afterSaleId);
                 if (afterSaleInfoDO != null) {
                     return LocalTransactionState.COMMIT_MESSAGE;
@@ -209,7 +209,7 @@ public class OrderLackServiceImpl implements OrderLackService {
      * @param producer
      * @throws Exception
      */
-    private void sendLackItemMessage(String orderId, Long afterSaleId
+    private void sendLackItemMessage(String orderId, String afterSaleId
             , OrderLackInfo orderLackInfo, TransactionMQProducer producer) throws Exception {
         ActualRefundMessage actualRefundMessage = new ActualRefundMessage();
         actualRefundMessage.setOrderId(orderId);
@@ -253,7 +253,7 @@ public class OrderLackServiceImpl implements OrderLackService {
         String userId = order.getUserId();
         AfterSaleInfoDO afterSaleInfoDO = new AfterSaleInfoDO();
         String afterSaleId = orderNoManager.genOrderId(OrderNoTypeEnum.AFTER_SALE.getCode(), userId);
-        afterSaleInfoDO.setAfterSaleId(Long.valueOf(afterSaleId));
+        afterSaleInfoDO.setAfterSaleId(afterSaleId);
         afterSaleInfoDO.setOrderId(order.getOrderId());
         afterSaleInfoDO.setOrderSourceChannel(BusinessIdentifierEnum.SELF_MALL.getCode());
         afterSaleInfoDO.setUserId(userId);

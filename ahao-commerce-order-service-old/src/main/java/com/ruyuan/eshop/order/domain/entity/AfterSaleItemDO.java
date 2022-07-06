@@ -39,7 +39,7 @@ public class AfterSaleItemDO implements Serializable {
     /**
      * 售后id
      */
-    private Long afterSaleId;
+    private String afterSaleId;
 
     /**
      * 订单id

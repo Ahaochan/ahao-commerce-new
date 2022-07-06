@@ -257,7 +257,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
      */
     public void updatePaymentRefundCallbackAfterSale(RefundCallbackRequest payRefundCallbackRequest,
                                                      Integer afterSaleStatus, Integer refundStatus, String refundStatusMsg) {
-        Long afterSaleId = Long.valueOf(payRefundCallbackRequest.getAfterSaleId());
+        String afterSaleId = payRefundCallbackRequest.getAfterSaleId();
         //  更新 订单售后表
         afterSaleInfoDAO.updateStatus(afterSaleId, AfterSaleStatusEnum.REFUNDING.getCode(), afterSaleStatus);
 
@@ -314,7 +314,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
                                                      Integer cancelOrderAfterSaleStatus, AfterSaleInfoDO afterSaleInfoDO,
                                                      String afterSaleId) {
 
-        afterSaleInfoDO.setAfterSaleId(Long.valueOf(afterSaleId));
+        afterSaleInfoDO.setAfterSaleId(afterSaleId);
         afterSaleInfoDO.setBusinessIdentifier(BusinessIdentifierEnum.SELF_MALL.getCode());
         afterSaleInfoDO.setOrderId(orderId);
         afterSaleInfoDO.setOrderSourceChannel(BusinessIdentifierEnum.SELF_MALL.getCode());
@@ -405,7 +405,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
      *
      * @return
      */
-    private JsonResult<BigDecimal> lackRefund(String orderId, Long lackAfterSaleId) {
+    private JsonResult<BigDecimal> lackRefund(String orderId, String lackAfterSaleId) {
         AfterSaleInfoDO lackAfterSaleInfo = afterSaleInfoDAO.getOneByAfterSaleId(lackAfterSaleId);
         return JsonResult.buildSuccess(lackAfterSaleInfo.getRealRefundAmount());
     }
@@ -454,7 +454,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
             ActualRefundMessage actualRefundMessage = new ActualRefundMessage();
             actualRefundMessage.setOrderId(cancelOrderAssembleRequest.getOrderId());
             actualRefundMessage.setLastReturnGoods(cancelOrderAssembleRequest.isLastReturnGoods());
-            actualRefundMessage.setAfterSaleId(Long.valueOf(afterSaleId));
+            actualRefundMessage.setAfterSaleId(afterSaleId);
             Message message = new MQMessage(RocketMqConstant.ACTUAL_REFUND_TOPIC,
                     JSONObject.toJSONString(actualRefundMessage).getBytes(StandardCharsets.UTF_8));
 
@@ -512,7 +512,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
 
     @Override
     public JsonResult<Boolean> refundMoney(ActualRefundMessage actualRefundMessage) {
-        Long afterSaleId = actualRefundMessage.getAfterSaleId();
+        String afterSaleId = actualRefundMessage.getAfterSaleId();
         String key = RedisLockKeyConstants.REFUND_KEY + afterSaleId;
         try {
             boolean lock = redisLock.tryLock(key);
@@ -547,7 +547,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
         }
     }
 
-    private void sendReleaseCoupon(AfterSaleInfoDO afterSaleInfoDO, Long afterSaleId, ActualRefundMessage actualRefundMessage) {
+    private void sendReleaseCoupon(AfterSaleInfoDO afterSaleInfoDO, String afterSaleId, ActualRefundMessage actualRefundMessage) {
         try {
             ReleaseUserCouponCommand releaseUserCouponRequest = buildLastOrderReleasesCouponMessage(afterSaleId, actualRefundMessage);
 
@@ -601,7 +601,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
     }
 
 
-    private ReleaseUserCouponCommand buildLastOrderReleasesCouponMessage(Long afterSaleId, ActualRefundMessage actualRefundMessage) {
+    private ReleaseUserCouponCommand buildLastOrderReleasesCouponMessage(String afterSaleId, ActualRefundMessage actualRefundMessage) {
 
         //  组装释放优惠券权益消息数据
         String orderId = actualRefundMessage.getOrderId();
@@ -642,7 +642,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
             List<AfterSaleItemDO> orderIdAndSkuCodeList = afterSaleItemDAO.getOrderIdAndSkuCode(orderId, skuCode);
             if (!orderIdAndSkuCodeList.isEmpty()) {
                 //  查询订单条目所属的售后单状态
-                Long afterSaleId = orderIdAndSkuCodeList.get(0).getAfterSaleId();
+                String afterSaleId = orderIdAndSkuCodeList.get(0).getAfterSaleId();
                 AfterSaleInfoDO afterSaleInfoDO = afterSaleInfoDAO.getOneByAfterSaleId(afterSaleId);
                 if (!AfterSaleStatusEnum.REVOKE.getCode().equals(afterSaleInfoDO.getAfterSaleStatus())) {
                     //  非"撤销成功"状态的售后单不能重复发起售后
@@ -716,7 +716,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
                         new String(messageExt.getBody(), StandardCharsets.UTF_8), CustomerReceiveAfterSaleRequest.class);
                 String afterSaleId = customerReceiveAfterSaleRequest.getAfterSaleId();
                 //  查询售后数据是否插入成功
-                AfterSaleInfoDO afterSaleInfoDO = afterSaleInfoDAO.getOneByAfterSaleId(Long.valueOf(afterSaleId));
+                AfterSaleInfoDO afterSaleInfoDO = afterSaleInfoDAO.getOneByAfterSaleId(afterSaleId);
                 if (afterSaleInfoDO != null) {
                     return LocalTransactionState.COMMIT_MESSAGE;
                 }
@@ -961,7 +961,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
         List<AfterSaleItemDO> afterSaleItemDOList = Lists.newArrayList();
         for (OrderItemDTO orderItem : orderItemDTOList) {
             AfterSaleItemDO afterSaleItemDO = new AfterSaleItemDO();
-            afterSaleItemDO.setAfterSaleId(Long.valueOf(afterSaleId));
+            afterSaleItemDO.setAfterSaleId(afterSaleId);
             afterSaleItemDO.setOrderId(orderId);
             afterSaleItemDO.setSkuCode(orderItem.getSkuCode());
             afterSaleItemDO.setProductName(orderItem.getProductName());
@@ -1003,7 +1003,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
     public void revokeAfterSale(RevokeAfterSaleRequest request) {
 
         //1、查询售后单
-        Long afterSaleId = request.getAfterSaleId();
+        String afterSaleId = request.getAfterSaleId();
         AfterSaleInfoDO afterSaleInfo = afterSaleInfoDAO.getOneByAfterSaleId(afterSaleId);
         ParamCheckUtil.checkObjectNonNull(afterSaleInfo, OrderErrorCodeEnum.AFTER_SALE_ID_IS_NULL);
 
@@ -1059,7 +1059,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
     }
 
     @Override
-    public Integer findCustomerAuditAfterSaleStatus(Long afterSaleId) {
+    public Integer findCustomerAuditAfterSaleStatus(String afterSaleId) {
         AfterSaleInfoDO afterSaleInfoDO = afterSaleInfoDAO.getOneByAfterSaleId(afterSaleId);
         return afterSaleInfoDO.getAfterSaleStatus();
     }

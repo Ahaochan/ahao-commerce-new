@@ -45,7 +45,7 @@ public class AfterSaleQueryApiImpl implements AfterSaleQueryApi {
     }
 
     @Override
-    public JsonResult<AfterSaleOrderDetailDTO> afterSaleDetail(Long afterSaleId) {
+    public JsonResult<AfterSaleOrderDetailDTO> afterSaleDetail(String afterSaleId) {
         try {
             //1、参数校验
             ParamCheckUtil.checkObjectNonNull(afterSaleId, OrderErrorCodeEnum.AFTER_SALE_ID_IS_NULL);

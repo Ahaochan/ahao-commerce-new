@@ -90,7 +90,7 @@ public class AfterSaleQueryServiceTest {
 
     @Test
     public void afterSaleDetail() throws Exception {
-        Long afterSaleId = 2021112837103888002L;
+        String afterSaleId = "2021112837103888002";
         AfterSaleOrderDetailDTO afterSaleOrderDetailDTO = afterSaleQueryService.afterSaleDetail(afterSaleId);
 
         System.out.println(JSONObject.toJSONString(afterSaleOrderDetailDTO));

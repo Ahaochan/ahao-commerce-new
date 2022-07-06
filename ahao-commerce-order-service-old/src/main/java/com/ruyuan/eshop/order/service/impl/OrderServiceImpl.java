@@ -42,10 +42,10 @@ import com.ruyuan.eshop.pay.domain.dto.PayOrderDTO;
 import com.ruyuan.eshop.pay.domain.request.PayOrderRequest;
 import com.ruyuan.eshop.pay.domain.request.PayRefundRequest;
 import com.ruyuan.eshop.product.domain.dto.ProductSkuDTO;
-import com.ruyuan.eshop.risk.domain.request.CheckOrderRiskRequest;
 import lombok.extern.slf4j.Slf4j;
 import moe.ahao.commerce.market.api.dto.CalculateOrderAmountDTO;
 import moe.ahao.commerce.market.api.query.CalculateOrderAmountQuery;
+import moe.ahao.commerce.risk.api.command.CheckOrderRiskCommand;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -335,7 +335,7 @@ public class OrderServiceImpl implements OrderService {
      */
     private void checkRisk(CreateOrderRequest createOrderRequest) {
         // 调用风控服务进行风控检查
-        CheckOrderRiskRequest checkOrderRiskRequest = orderConverter.convertRiskRequest(createOrderRequest);
+        CheckOrderRiskCommand checkOrderRiskRequest = orderConverter.convertRiskRequest(createOrderRequest);
         riskRemote.checkOrderRisk(checkOrderRiskRequest);
     }
 

@@ -37,7 +37,7 @@ public interface AfterSaleQueryService {
      * @param afterSaleId
      * @return
      */
-    AfterSaleOrderDetailDTO afterSaleDetail(Long afterSaleId);
+    AfterSaleOrderDetailDTO afterSaleDetail(String afterSaleId);
 
     /**
      * 查询缺品信息

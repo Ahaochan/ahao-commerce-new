@@ -103,7 +103,7 @@ public class AfterSaleController {
      * 查询售后单详情
      */
     @GetMapping("/afterSaleDetail")
-    public JsonResult<AfterSaleOrderDetailDTO> afterSaleDetail(Long afterSaleId) {
+    public JsonResult<AfterSaleOrderDetailDTO> afterSaleDetail(String afterSaleId) {
         JsonResult<AfterSaleOrderDetailDTO> result = afterSaleQueryApi.afterSaleDetail(afterSaleId);
         return result;
     }

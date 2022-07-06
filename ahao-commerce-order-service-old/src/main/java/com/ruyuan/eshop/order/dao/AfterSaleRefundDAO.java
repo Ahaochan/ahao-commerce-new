@@ -25,7 +25,7 @@ public class AfterSaleRefundDAO extends BaseDAO<AfterSaleRefundMapper, AfterSale
      * @param afterSaleId
      * @return
      */
-    public List<AfterSaleRefundDO> listByAfterSaleId(Long afterSaleId) {
+    public List<AfterSaleRefundDO> listByAfterSaleId(String afterSaleId) {
         LambdaQueryWrapper<AfterSaleRefundDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AfterSaleRefundDO::getAfterSaleId, afterSaleId);
         return list(queryWrapper);

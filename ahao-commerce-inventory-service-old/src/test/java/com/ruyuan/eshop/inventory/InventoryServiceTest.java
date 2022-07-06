@@ -3,7 +3,6 @@ package com.ruyuan.eshop.inventory;
 import com.alibaba.fastjson.JSONObject;
 import com.ruyuan.eshop.common.redis.RedisCache;
 import com.ruyuan.eshop.inventory.cache.CacheSupport;
-import com.ruyuan.eshop.inventory.dao.ProductStockDAO;
 import com.ruyuan.eshop.inventory.dao.ProductStockLogDAO;
 import com.ruyuan.eshop.inventory.domain.entity.ProductStockLogDO;
 import com.ruyuan.eshop.inventory.domain.request.*;
@@ -14,10 +13,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @SpringBootTest(classes = InventoryApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -135,11 +138,11 @@ public class InventoryServiceTest {
     public void releaseProductStock() throws Exception {
 
         String skuCode1 = "test001";
-        Integer saleQuantity1 = 10;
+        BigDecimal saleQuantity1 = new BigDecimal("10");
         String productStockKey1 = CacheSupport.buildProductStockKey(skuCode1);
 
         String skuCode2 = "test002";
-        Integer saleQuantity2 = 1;
+        BigDecimal saleQuantity2 = new BigDecimal("1");
         String productStockKey2 = CacheSupport.buildProductStockKey(skuCode2);
 
         Map<String, String> productStockValue1 = redisCache.hGetAll(productStockKey1);

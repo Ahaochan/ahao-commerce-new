@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.text.MessageFormat;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -198,7 +198,7 @@ public class InventoryServiceImpl implements InventoryService {
                     addProductStockProcessor.addStockToRedis(productStockDO);
                 }
 
-                Integer saleQuantity = orderItemRequest.getSaleQuantity();
+                BigDecimal saleQuantity = orderItemRequest.getSaleQuantity();
 
                 //4、校验是否释放过库存
                 ProductStockLogDO productStockLog = productStockLogDAO.getLog(orderId, skuCode);

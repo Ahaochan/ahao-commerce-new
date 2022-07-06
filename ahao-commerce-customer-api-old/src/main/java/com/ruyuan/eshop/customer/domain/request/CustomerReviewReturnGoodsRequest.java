@@ -17,7 +17,7 @@ public class CustomerReviewReturnGoodsRequest implements Serializable {
     /**
      * 售后id
      */
-    private Long afterSaleId;
+    private String afterSaleId;
     /**
      * 客服id
      */

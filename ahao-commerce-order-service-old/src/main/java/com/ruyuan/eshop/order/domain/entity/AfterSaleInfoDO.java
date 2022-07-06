@@ -40,7 +40,7 @@ public class AfterSaleInfoDO implements Serializable {
     /**
      * 售后id
      */
-    private Long afterSaleId;
+    private String afterSaleId;
 
     /**
      * 接入方业务标识

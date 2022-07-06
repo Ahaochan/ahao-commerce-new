@@ -146,7 +146,7 @@ public class AfterSaleApiImpl implements AfterSaleApi {
         //  3、客服审核通过
         if (CustomerAuditResult.ACCEPT.getCode().equals(customerAuditAssembleResult.getReviewReasonCode())) {
             String orderId = customerAuditAssembleResult.getOrderId();
-            Long afterSaleId = customerAuditAssembleResult.getAfterSaleId();
+            String afterSaleId = customerAuditAssembleResult.getAfterSaleId();
             AfterSaleItemDO afterSaleItemDO = afterSaleItemDAO.getOrderIdAndAfterSaleId(orderId, afterSaleId);
             if (afterSaleItemDO == null) {
                 throw new OrderBizException(OrderErrorCodeEnum.AFTER_SALE_ITEM_CANNOT_NULL);
@@ -246,7 +246,7 @@ public class AfterSaleApiImpl implements AfterSaleApi {
             那么 当前这笔审核通过的条目就是整笔订单的最后一条
          */
         //  判断是否是要退的最后一条
-        Long afterSaleId = customerAuditAssembleResult.getAfterSaleId();
+        String afterSaleId = customerAuditAssembleResult.getAfterSaleId();
         List<OrderItemDO> orderItemDOList = orderItemDAO.listByOrderId(orderId);
         //  查询售后订单条目表中不包含当前条目的数量
         List<AfterSaleItemDO> afterSaleItemDOList = afterSaleItemDAO.listNotContainCurrentAfterSaleId(orderId, afterSaleId);
@@ -266,7 +266,7 @@ public class AfterSaleApiImpl implements AfterSaleApi {
     private CustomerAuditAssembleRequest buildCustomerAuditAssembleData(CustomerReviewReturnGoodsRequest customerReviewReturnGoodsRequest) {
         CustomerAuditAssembleRequest customerAuditAssembleRequest = new CustomerAuditAssembleRequest();
 
-        Long afterSaleId = customerReviewReturnGoodsRequest.getAfterSaleId();
+        String afterSaleId = customerReviewReturnGoodsRequest.getAfterSaleId();
         String orderId = customerReviewReturnGoodsRequest.getOrderId();
         Integer auditResult = customerReviewReturnGoodsRequest.getAuditResult();
 
@@ -286,7 +286,7 @@ public class AfterSaleApiImpl implements AfterSaleApi {
         //1、参数校验
         ParamCheckUtil.checkObjectNonNull(request.getAfterSaleId(), OrderErrorCodeEnum.AFTER_SALE_ID_IS_NULL);
 
-        Long afterSaleId = request.getAfterSaleId();
+        String afterSaleId = request.getAfterSaleId();
         String lockKey = RedisLockKeyConstants.REFUND_KEY + afterSaleId;
         //2、加锁，锁整个售后单，两个作用
         // 2.1 防并发

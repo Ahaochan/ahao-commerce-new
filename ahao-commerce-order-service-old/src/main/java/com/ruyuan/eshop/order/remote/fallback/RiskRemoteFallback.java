@@ -1,8 +1,8 @@
 package com.ruyuan.eshop.order.remote.fallback;
 
-import com.ruyuan.eshop.risk.domain.dto.CheckOrderRiskDTO;
-import com.ruyuan.eshop.risk.domain.request.CheckOrderRiskRequest;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.risk.api.command.CheckOrderRiskCommand;
+import moe.ahao.commerce.risk.api.dto.CheckOrderRiskDTO;
 import org.springframework.stereotype.Component;
 
 /**
@@ -20,7 +20,7 @@ public class RiskRemoteFallback {
      * @param e
      * @return
      */
-    public CheckOrderRiskDTO checkOrderRiskFallback(CheckOrderRiskRequest checkOrderRiskRequest, Throwable e) {
+    public CheckOrderRiskDTO checkOrderRiskFallback(CheckOrderRiskCommand checkOrderRiskRequest, Throwable e) {
         log.error("订单风控检查触发降级了", e);
         CheckOrderRiskDTO checkOrderRiskDTO = new CheckOrderRiskDTO();
         checkOrderRiskDTO.setResult(true);

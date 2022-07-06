@@ -14,15 +14,14 @@ import com.ruyuan.eshop.order.domain.dto.OrderItemDTO;
 import com.ruyuan.eshop.order.domain.entity.*;
 import com.ruyuan.eshop.order.domain.request.CancelOrderAssembleRequest;
 import com.ruyuan.eshop.order.enums.*;
-import com.ruyuan.eshop.order.remote.FulfillRemote;
 import com.ruyuan.eshop.order.manager.AfterSaleManager;
+import com.ruyuan.eshop.order.remote.FulfillRemote;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -153,7 +152,7 @@ public class AfterSaleManagerImpl implements AfterSaleManager {
 
     private void insertCancelOrderAfterSaleInfoTable(OrderInfoDO orderInfoDO, Integer cancelOrderAfterSaleStatus,
                                                      AfterSaleInfoDO afterSaleInfoDO, String afterSaleId) {
-        afterSaleInfoDO.setAfterSaleId(Long.valueOf(afterSaleId));
+        afterSaleInfoDO.setAfterSaleId(afterSaleId);
         afterSaleInfoDO.setBusinessIdentifier(BusinessIdentifierEnum.SELF_MALL.getCode());
         afterSaleInfoDO.setOrderId(orderInfoDO.getOrderId());
         afterSaleInfoDO.setOrderSourceChannel(BusinessIdentifierEnum.SELF_MALL.getCode());
@@ -191,7 +190,7 @@ public class AfterSaleManagerImpl implements AfterSaleManager {
         List<AfterSaleItemDO> itemDOList = Lists.newArrayList();
         for (OrderItemDTO orderItem : orderItemDTOList) {
             AfterSaleItemDO afterSaleItemDO = new AfterSaleItemDO();
-            afterSaleItemDO.setAfterSaleId(Long.valueOf(afterSaleId));
+            afterSaleItemDO.setAfterSaleId(afterSaleId);
             afterSaleItemDO.setOrderId(orderId);
             afterSaleItemDO.setSkuCode(orderItem.getSkuCode());
             afterSaleItemDO.setProductName(orderItem.getProductName());

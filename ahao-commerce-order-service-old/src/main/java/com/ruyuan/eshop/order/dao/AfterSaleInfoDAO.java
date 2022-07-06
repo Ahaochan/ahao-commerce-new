@@ -51,7 +51,7 @@ public class AfterSaleInfoDAO extends BaseDAO<AfterSaleInfoMapper, AfterSaleInfo
      * @param afterSaleId
      * @return
      */
-    public AfterSaleInfoDO getOneByAfterSaleId(Long afterSaleId) {
+    public AfterSaleInfoDO getOneByAfterSaleId(String afterSaleId) {
         LambdaQueryWrapper<AfterSaleInfoDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AfterSaleInfoDO::getAfterSaleId, afterSaleId);
         return baseMapper.selectOne(queryWrapper);
@@ -80,7 +80,7 @@ public class AfterSaleInfoDAO extends BaseDAO<AfterSaleInfoMapper, AfterSaleInfo
     }
 
     public boolean updateCustomerAuditAfterSaleResult(Integer afterSaleStatus, CustomerAuditAssembleRequest customerAuditAssembleRequest) {
-        Long afterSaleId = customerAuditAssembleRequest.getAfterSaleId();
+        String afterSaleId = customerAuditAssembleRequest.getAfterSaleId();
         String reviewReason = customerAuditAssembleRequest.getReviewReason();
         Integer reviewReasonCode = customerAuditAssembleRequest.getReviewReasonCode();
         Integer reviewSource = customerAuditAssembleRequest.getReviewSource();
@@ -105,7 +105,7 @@ public class AfterSaleInfoDAO extends BaseDAO<AfterSaleInfoMapper, AfterSaleInfo
      * @param toStatus
      * @return
      */
-    public boolean updateStatus(Long afterSaleId, Integer fromStatus, Integer toStatus) {
+    public boolean updateStatus(String afterSaleId, Integer fromStatus, Integer toStatus) {
         LambdaUpdateWrapper<AfterSaleInfoDO> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.set(AfterSaleInfoDO::getAfterSaleStatus, toStatus)
                 .eq(AfterSaleInfoDO::getAfterSaleId, afterSaleId)

@@ -11,10 +11,10 @@ import com.ruyuan.eshop.order.domain.query.OrderQuery;
 import com.ruyuan.eshop.order.domain.request.*;
 import com.ruyuan.eshop.pay.domain.dto.PayOrderDTO;
 import com.ruyuan.eshop.pay.domain.request.PayOrderRequest;
-import com.ruyuan.eshop.risk.domain.request.CheckOrderRiskRequest;
 import moe.ahao.commerce.market.api.command.LockUserCouponCommand;
 import moe.ahao.commerce.market.api.dto.CalculateOrderAmountDTO;
 import moe.ahao.commerce.market.api.query.CalculateOrderAmountQuery;
+import moe.ahao.commerce.risk.api.command.CheckOrderRiskCommand;
 import org.mapstruct.Mapper;
 
 import java.util.List;
@@ -312,7 +312,7 @@ public interface OrderConverter {
      * @param createOrderRequest 对象
      * @return 对象
      */
-    CheckOrderRiskRequest convertRiskRequest(CreateOrderRequest createOrderRequest);
+    CheckOrderRiskCommand convertRiskRequest(CreateOrderRequest createOrderRequest);
 
     /**
      * 对象转换

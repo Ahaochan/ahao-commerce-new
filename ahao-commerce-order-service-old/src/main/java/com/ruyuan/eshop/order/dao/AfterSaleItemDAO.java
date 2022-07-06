@@ -24,7 +24,7 @@ public class AfterSaleItemDAO extends BaseDAO<AfterSaleItemMapper, AfterSaleItem
      * @param afterSaleId
      * @return
      */
-    public List<AfterSaleItemDO> listByAfterSaleId(Long afterSaleId) {
+    public List<AfterSaleItemDO> listByAfterSaleId(String afterSaleId) {
         LambdaQueryWrapper<AfterSaleItemDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AfterSaleItemDO::getAfterSaleId, afterSaleId);
         return list(queryWrapper);
@@ -56,7 +56,7 @@ public class AfterSaleItemDAO extends BaseDAO<AfterSaleItemMapper, AfterSaleItem
     /**
      * 根据orderId和afterSaleId查询售后单条目
      */
-    public AfterSaleItemDO getOrderIdAndAfterSaleId(String orderId, Long afterSaleId) {
+    public AfterSaleItemDO getOrderIdAndAfterSaleId(String orderId, String afterSaleId) {
         LambdaQueryWrapper<AfterSaleItemDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AfterSaleItemDO::getOrderId, orderId);
         queryWrapper.eq(AfterSaleItemDO::getAfterSaleId, afterSaleId);
@@ -66,7 +66,7 @@ public class AfterSaleItemDAO extends BaseDAO<AfterSaleItemMapper, AfterSaleItem
     /**
      * 查询出不包含当前afterSaleId的售后条目
      */
-    public List<AfterSaleItemDO> listNotContainCurrentAfterSaleId(String orderId, Long afterSaleId) {
+    public List<AfterSaleItemDO> listNotContainCurrentAfterSaleId(String orderId, String afterSaleId) {
         LambdaQueryWrapper<AfterSaleItemDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AfterSaleItemDO::getOrderId, orderId);
         queryWrapper.notIn(AfterSaleItemDO::getAfterSaleId, afterSaleId);

@@ -13,5 +13,5 @@ public class RevokeAfterSaleRequest {
     /**
      * 售后单
      */
-    private Long afterSaleId;
+    private String afterSaleId;
 }

@@ -17,5 +17,5 @@ public class LackDTO implements Serializable {
     /**
      * 售后id
      */
-    private Long afterSaleId;
+    private String afterSaleId;
 }

@@ -76,6 +76,6 @@ public interface OrderAfterSaleService {
     /**
      * 查询售后信息的客服审核状态
      */
-    Integer findCustomerAuditAfterSaleStatus(Long afterSaleId);
+    Integer findCustomerAuditAfterSaleStatus(String afterSaleId);
 
 }

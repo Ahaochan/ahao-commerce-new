@@ -15,6 +15,7 @@ import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 /**
@@ -40,7 +41,7 @@ public class ReleaseProductStockProcessor {
      * 执行释放商品库存逻辑
      */
     @Transactional(rollbackFor = Exception.class)
-    public void doRelease(String orderId, String skuCode, Integer saleQuantity, ProductStockLogDO productStockLog) {
+    public void doRelease(String orderId, String skuCode, BigDecimal saleQuantity, ProductStockLogDO productStockLog) {
 
         //1、执行mysql释放商品库存逻辑
         int nums = productStockDAO.releaseProductStock(skuCode, saleQuantity);

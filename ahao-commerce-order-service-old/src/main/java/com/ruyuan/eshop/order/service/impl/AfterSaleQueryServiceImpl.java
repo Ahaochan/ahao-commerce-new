@@ -94,7 +94,7 @@ public class AfterSaleQueryServiceImpl implements AfterSaleQueryService {
     }
 
     @Override
-    public AfterSaleOrderDetailDTO afterSaleDetail(Long afterSaleId) {
+    public AfterSaleOrderDetailDTO afterSaleDetail(String afterSaleId) {
         //1、查询售后单
         AfterSaleInfoDO afterSaleInfo = afterSaleInfoDAO.getOneByAfterSaleId(afterSaleId);
 

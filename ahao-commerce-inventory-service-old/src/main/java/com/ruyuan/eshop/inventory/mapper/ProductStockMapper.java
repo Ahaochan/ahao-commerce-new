@@ -5,6 +5,8 @@ import com.ruyuan.eshop.inventory.domain.entity.ProductStockDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.math.BigDecimal;
+
 /**
  * <p>
  * 库存中心的商品库存表 Mapper 接口
@@ -58,7 +60,7 @@ public interface ProductStockMapper extends BaseMapper<ProductStockDO> {
      * @param saleQuantity
      * @return
      */
-    int releaseProductStock(@Param("skuCode") String skuCode, @Param("saleQuantity") Integer saleQuantity);
+    int releaseProductStock(@Param("skuCode") String skuCode, @Param("saleQuantity") BigDecimal saleQuantity);
 
     /**
      * 调整商品库存

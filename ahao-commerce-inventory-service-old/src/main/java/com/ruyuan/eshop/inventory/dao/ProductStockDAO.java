@@ -8,6 +8,7 @@ import com.ruyuan.eshop.inventory.mapper.ProductStockMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -98,7 +99,7 @@ public class ProductStockDAO extends BaseDAO<ProductStockMapper, ProductStockDO>
      * @param saleQuantity
      * @return
      */
-    public int releaseProductStock(String skuCode, Integer saleQuantity) {
+    public int releaseProductStock(String skuCode, BigDecimal saleQuantity) {
         return productStockMapper.releaseProductStock(skuCode, saleQuantity);
     }
 
