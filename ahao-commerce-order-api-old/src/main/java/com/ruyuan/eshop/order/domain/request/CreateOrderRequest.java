@@ -175,7 +175,7 @@ public class CreateOrderRequest implements Serializable {
         /**
          * 销售数量
          */
-        private Integer saleQuantity;
+        private BigDecimal saleQuantity;
 
         /**
          * sku编号
@@ -199,7 +199,7 @@ public class CreateOrderRequest implements Serializable {
         /**
          * 费用金额
          */
-        private Integer amount;
+        private BigDecimal amount;
     }
 
     /**

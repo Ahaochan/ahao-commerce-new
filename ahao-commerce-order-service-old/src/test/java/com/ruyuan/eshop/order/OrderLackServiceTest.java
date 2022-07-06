@@ -12,6 +12,7 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -29,7 +30,7 @@ public class OrderLackServiceTest {
         lackRequest.setUserId("user_id_001");
 
         Set<LackItemRequest> itemRequests = new HashSet<>();
-        itemRequests.add(new LackItemRequest("10101010", 1));
+        itemRequests.add(new LackItemRequest("10101010", new BigDecimal("1")));
         lackRequest.setLackItems(itemRequests);
 
         JsonResult<LackDTO> jsonResult = api.lackItem(lackRequest);

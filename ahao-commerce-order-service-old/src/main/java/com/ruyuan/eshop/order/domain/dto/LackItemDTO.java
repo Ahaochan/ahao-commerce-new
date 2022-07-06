@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,7 +21,7 @@ public class LackItemDTO {
     /**
      * 缺品数量
      */
-    private Integer lackNum;
+    private BigDecimal lackNum;
 
     /**
      * 缺品商品sku

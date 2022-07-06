@@ -3,6 +3,7 @@ package com.ruyuan.eshop.order.domain.dto;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -41,7 +42,7 @@ public class OrderDetailDTO {
     /**
      * 费用类型
      */
-    private Map<Integer, Integer> orderAmounts;
+    private Map<Integer, BigDecimal> orderAmounts;
 
     /**
      * 订单操作日志

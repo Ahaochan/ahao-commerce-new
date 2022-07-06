@@ -143,12 +143,12 @@ public class OrderBatchInsertTest {
         orderItemDO.setProductImg("test.img");
         orderItemDO.setProductName("压测数据");
         orderItemDO.setSkuCode("10101010");
-        orderItemDO.setSaleQuantity(10);
-        orderItemDO.setSalePrice(1000);
-        orderItemDO.setOriginAmount(10000);
-        orderItemDO.setPayAmount(9505);
+        orderItemDO.setSaleQuantity(new BigDecimal(10));
+        orderItemDO.setSalePrice(new BigDecimal("10"));
+        orderItemDO.setOriginAmount(new BigDecimal("100"));
+        orderItemDO.setPayAmount(new BigDecimal("95.05"));
         orderItemDO.setProductUnit("个");
-        orderItemDO.setPurchasePrice(500);
+        orderItemDO.setPurchasePrice(new BigDecimal("0.05"));
         orderItemDO.setSellerId(userId + "000");
 
         return orderItemDO;
@@ -174,8 +174,8 @@ public class OrderBatchInsertTest {
         orderInfoDO.setCancelTime(null);
         orderInfoDO.setSellerId(userId + "000");
         orderInfoDO.setUserId(userId);
-        orderInfoDO.setTotalAmount(10000);
-        orderInfoDO.setPayAmount(9600);
+        orderInfoDO.setTotalAmount(new BigDecimal("100"));
+        orderInfoDO.setPayAmount(new BigDecimal("96"));
         /*
            支付类型  10:微信支付, 20:支付宝支付
          */

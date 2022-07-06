@@ -1,11 +1,9 @@
 package com.ruyuan.eshop.order.manager;
 
-import com.ruyuan.eshop.market.domain.dto.CalculateOrderAmountDTO;
 import com.ruyuan.eshop.order.domain.entity.OrderInfoDO;
-import com.ruyuan.eshop.order.domain.entity.OrderPaymentDetailDO;
 import com.ruyuan.eshop.order.domain.request.CreateOrderRequest;
-import com.ruyuan.eshop.order.domain.request.PayCallbackRequest;
 import com.ruyuan.eshop.product.domain.dto.ProductSkuDTO;
+import moe.ahao.commerce.market.api.dto.CalculateOrderAmountDTO;
 
 import java.util.List;
 

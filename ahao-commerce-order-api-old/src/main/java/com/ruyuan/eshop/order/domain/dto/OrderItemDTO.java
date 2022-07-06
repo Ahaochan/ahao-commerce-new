@@ -3,6 +3,7 @@ package com.ruyuan.eshop.order.domain.dto;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -52,22 +53,22 @@ public class OrderItemDTO implements Serializable {
     /**
      * 销售数量
      */
-    private Integer saleQuantity;
+    private BigDecimal saleQuantity;
 
     /**
      * 销售单价
      */
-    private Integer salePrice;
+    private BigDecimal salePrice;
 
     /**
      * 当前商品支付原总价
      */
-    private Integer originAmount;
+    private BigDecimal originAmount;
 
     /**
      * 交易支付金额
      */
-    private Integer payAmount;
+    private BigDecimal payAmount;
 
     /**
      * 商品单位

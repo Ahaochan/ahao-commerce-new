@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -53,7 +54,7 @@ public class OrderLackInfoDTO {
         /**
          * 缺品数量
          */
-        private Integer lackNum;
+        private BigDecimal lackNum;
     }
 
     public void setLackItems(Set<LackItemRequest> requests) {

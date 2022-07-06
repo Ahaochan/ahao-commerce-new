@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="moe.ahao.commerce.market.infrastructure.repository.impl.mybatis.mapper.CouponMapper">
+    <select id="selectOneByUserIdAndCouponId" resultType="moe.ahao.commerce.market.infrastructure.repository.impl.mybatis.data.CouponDO">
+        select * from market_coupon where user_id = #{userId} and coupon_id = #{couponId}
+    </select>
+    <update id="updateUsedById">
+        update market_coupon set used = #{used}, used_time = #{usedTime} where id = #{id}
+    </update>
+</mapper>

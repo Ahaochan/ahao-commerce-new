@@ -6,13 +6,13 @@ import com.ruyuan.eshop.common.constants.RocketMqConstant;
 import com.ruyuan.eshop.common.enums.OrderStatusEnum;
 import com.ruyuan.eshop.common.mq.AbstractMessageListenerConcurrently;
 import com.ruyuan.eshop.inventory.domain.request.ReleaseProductStockRequest;
-import com.ruyuan.eshop.market.domain.request.ReleaseUserCouponRequest;
 import com.ruyuan.eshop.order.dao.OrderItemDAO;
 import com.ruyuan.eshop.order.domain.dto.OrderInfoDTO;
 import com.ruyuan.eshop.order.domain.entity.OrderItemDO;
 import com.ruyuan.eshop.order.domain.request.CancelOrderAssembleRequest;
 import com.ruyuan.eshop.order.mq.producer.DefaultProducer;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.market.api.command.ReleaseUserCouponCommand;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.common.message.MessageExt;
@@ -60,7 +60,7 @@ public class ReleaseAssetsListener extends AbstractMessageListenerConcurrently {
 
                 // 4、发送释放优惠券MQ
                 if (!Strings.isNullOrEmpty(orderInfoDTO.getCouponId())) {
-                    ReleaseUserCouponRequest releaseUserCouponRequest = buildReleaseUserCoupon(orderInfoDTO);
+                    ReleaseUserCouponCommand releaseUserCouponRequest = buildReleaseUserCoupon(orderInfoDTO);
                     defaultProducer.sendMessage(RocketMqConstant.CANCEL_RELEASE_PROPERTY_TOPIC,
                             JSONObject.toJSONString(releaseUserCouponRequest), "取消订单释放优惠券", null, orderInfoDTO.getOrderId());
                 }
@@ -77,8 +77,8 @@ public class ReleaseAssetsListener extends AbstractMessageListenerConcurrently {
      *
      * @return
      */
-    private ReleaseUserCouponRequest buildReleaseUserCoupon(OrderInfoDTO orderInfoDTO) {
-        ReleaseUserCouponRequest releaseUserCouponRequest = new ReleaseUserCouponRequest();
+    private ReleaseUserCouponCommand buildReleaseUserCoupon(OrderInfoDTO orderInfoDTO) {
+        ReleaseUserCouponCommand releaseUserCouponRequest = new ReleaseUserCouponCommand();
         releaseUserCouponRequest.setCouponId(orderInfoDTO.getCouponId());
         releaseUserCouponRequest.setUserId(orderInfoDTO.getUserId());
         releaseUserCouponRequest.setOrderId(orderInfoDTO.getOrderId());

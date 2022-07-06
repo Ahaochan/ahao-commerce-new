@@ -110,10 +110,10 @@ public class FulfillApiTest {
                 .receiverLat(new BigDecimal("1"))
                 .receiverLon(new BigDecimal("1"))
                 .payType(1)
-                .payAmount(111)
-                .totalAmount(111)
+                .payAmount(new BigDecimal("1.11"))
+                .totalAmount(new BigDecimal("1.11"))
                 .receiveOrderItems(buildReceiveOrderItemRequest(orderId))
-                .deliveryAmount(11)
+                .deliveryAmount(new BigDecimal("0.11"))
                 .build();
         return request;
     }
@@ -126,11 +126,11 @@ public class FulfillApiTest {
         ReceiveOrderItemRequest request = ReceiveOrderItemRequest.builder()
                 .skuCode("1")
                 .productName("1")
-                .salePrice(1)
-                .saleQuantity(1)
+                .salePrice(new BigDecimal("0.01"))
+                .saleQuantity(new BigDecimal("1"))
                 .productUnit("1")
-                .payAmount(111)
-                .originAmount(111)
+                .payAmount(new BigDecimal("1.11"))
+                .originAmount(new BigDecimal("1.11"))
                 .build();
         itemRequests.add(request);
 

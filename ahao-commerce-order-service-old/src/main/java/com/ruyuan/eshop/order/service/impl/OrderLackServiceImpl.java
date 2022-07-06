@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
@@ -128,8 +129,8 @@ public class OrderLackServiceImpl implements OrderLackService {
         });
 
         //3、计算订单缺品退款总金额
-        Integer lackApplyRefundAmount = afterSaleAmountService.calculateOrderLackApplyRefundAmount(afterSaleItems);
-        Integer lackRealRefundAmount = afterSaleAmountService.calculateOrderLackRealRefundAmount(afterSaleItems);
+        BigDecimal lackApplyRefundAmount = afterSaleAmountService.calculateOrderLackApplyRefundAmount(afterSaleItems);
+        BigDecimal lackRealRefundAmount = afterSaleAmountService.calculateOrderLackRealRefundAmount(afterSaleItems);
         lackAfterSaleOrder.setApplyRefundAmount(lackApplyRefundAmount);
         lackAfterSaleOrder.setRealRefundAmount(lackRealRefundAmount);
 
@@ -276,7 +277,7 @@ public class OrderLackServiceImpl implements OrderLackService {
      */
     private AfterSaleItemDO buildLackAfterSaleItem(OrderInfoDO order, AfterSaleInfoDO lackAfterSale
             , LackItemDTO lackItemDTO) {
-        Integer lackNum = lackItemDTO.getLackNum();
+        BigDecimal lackNum = lackItemDTO.getLackNum();
         ProductSkuDTO productSku = lackItemDTO.getProductSku();
         OrderItemDO orderItem = lackItemDTO.getOrderItem();
 
@@ -289,7 +290,7 @@ public class OrderLackServiceImpl implements OrderLackService {
         afterSaleItemDO.setProductImg(orderItem.getProductImg());
         afterSaleItemDO.setOriginAmount(orderItem.getOriginAmount());
         //计算sku缺品退款金额
-        afterSaleItemDO.setApplyRefundAmount(orderItem.getSalePrice() * lackNum);
+        afterSaleItemDO.setApplyRefundAmount(orderItem.getSalePrice().multiply(lackNum));
         afterSaleItemDO.setRealRefundAmount(afterSaleAmountService.calculateOrderItemLackRealRefundAmount(orderItem, lackNum));
         return afterSaleItemDO;
     }
@@ -322,11 +323,11 @@ public class OrderLackServiceImpl implements OrderLackService {
      */
     private LackItemDTO checkLackItem(OrderInfoDO order, List<OrderItemDO> orderItems, LackItemRequest request) {
         String skuCode = request.getSkuCode();
-        Integer lackNum = request.getLackNum();
+        BigDecimal lackNum = request.getLackNum();
 
         //1、参数校验
         ParamCheckUtil.checkStringNonEmpty(skuCode, OrderErrorCodeEnum.SKU_CODE_IS_NULL);
-        ParamCheckUtil.checkIntMin(lackNum, 1, OrderErrorCodeEnum.LACK_NUM_IS_LT_0);
+        // ParamCheckUtil.checkIntMin(lackNum, 1, OrderErrorCodeEnum.LACK_NUM_IS_LT_0);
 
         //2、查询商品sku
         String lockSkuCode = request.getSkuCode();
@@ -340,7 +341,7 @@ public class OrderLackServiceImpl implements OrderLackService {
         ParamCheckUtil.checkObjectNonNull(lackItemDO, OrderErrorCodeEnum.LACK_ITEM_NOT_IN_ORDER, lockSkuCode);
 
         //4、缺品商品数量不能>=下单商品数量
-        if (lackItemDO.getSaleQuantity() <= request.getLackNum()) {
+        if (lackItemDO.getSaleQuantity().compareTo(request.getLackNum()) <= 0) {
             throw new OrderBizException(OrderErrorCodeEnum.LACK_NUM_IS_GE_SKU_ORDER_ITEM_SIZE);
         }
 

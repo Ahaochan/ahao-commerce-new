@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -63,21 +64,21 @@ public class AfterSaleItemDO implements Serializable {
     /**
      * 商品退货数量
      */
-    private Integer returnQuantity;
+    private BigDecimal returnQuantity;
 
     /**
      * 商品总金额
      */
-    private Integer originAmount;
+    private BigDecimal originAmount;
 
     /**
      * 申请退款金额
      */
-    private Integer applyRefundAmount;
+    private BigDecimal applyRefundAmount;
 
     /**
      * 实际退款金额
      */
-    private Integer realRefundAmount;
+    private BigDecimal realRefundAmount;
 
 }

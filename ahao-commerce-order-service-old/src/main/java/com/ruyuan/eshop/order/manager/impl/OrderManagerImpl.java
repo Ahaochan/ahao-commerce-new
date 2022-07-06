@@ -6,10 +6,6 @@ import com.ruyuan.eshop.common.enums.OrderStatusEnum;
 import com.ruyuan.eshop.common.utils.JsonUtil;
 import com.ruyuan.eshop.common.utils.LoggerFormat;
 import com.ruyuan.eshop.inventory.domain.request.DeductProductStockRequest;
-import com.ruyuan.eshop.market.domain.dto.CalculateOrderAmountDTO;
-import com.ruyuan.eshop.market.domain.dto.UserCouponDTO;
-import com.ruyuan.eshop.market.domain.query.UserCouponQuery;
-import com.ruyuan.eshop.market.domain.request.LockUserCouponRequest;
 import com.ruyuan.eshop.order.builder.FullOrderData;
 import com.ruyuan.eshop.order.builder.NewOrderBuilder;
 import com.ruyuan.eshop.order.config.OrderProperties;
@@ -31,11 +27,16 @@ import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import moe.ahao.commerce.address.api.dto.AddressFullDTO;
 import moe.ahao.commerce.address.api.query.AddressQuery;
+import moe.ahao.commerce.market.api.command.LockUserCouponCommand;
+import moe.ahao.commerce.market.api.dto.CalculateOrderAmountDTO;
+import moe.ahao.commerce.market.api.dto.UserCouponDTO;
+import moe.ahao.commerce.market.api.query.GetUserCouponQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -138,7 +139,7 @@ public class OrderManagerImpl implements OrderManager {
         if (StringUtils.isEmpty(couponId)) {
             return;
         }
-        LockUserCouponRequest lockUserCouponRequest = orderConverter.convertLockUserCouponRequest(createOrderRequest);
+        LockUserCouponCommand lockUserCouponRequest = orderConverter.convertLockUserCouponRequest(createOrderRequest);
         // 调用营销服务锁定用户优惠券
         marketRemote.lockUserCoupon(lockUserCouponRequest);
     }
@@ -310,7 +311,7 @@ public class OrderManagerImpl implements OrderManager {
             if (orderSnapshotDO.getSnapshotType().equals(SnapshotTypeEnum.ORDER_COUPON.getCode())) {
                 String couponId = orderInfoDO.getCouponId();
                 String userId = orderInfoDO.getUserId();
-                UserCouponQuery userCouponQuery = new UserCouponQuery();
+                GetUserCouponQuery userCouponQuery = new GetUserCouponQuery();
                 userCouponQuery.setCouponId(couponId);
                 userCouponQuery.setUserId(userId);
                 UserCouponDTO userCouponDTO = marketRemote.getUserCoupon(userCouponQuery);
@@ -413,11 +414,11 @@ public class OrderManagerImpl implements OrderManager {
                 .collect(Collectors.toList());
 
         // 统计子单总金额
-        Integer subTotalAmount = 0;
-        Integer subRealPayAmount = 0;
+        BigDecimal subTotalAmount = BigDecimal.ZERO;
+        BigDecimal subRealPayAmount = BigDecimal.ZERO;
         for (OrderItemDO subOrderItemDO : subOrderItemDOList) {
-            subTotalAmount += subOrderItemDO.getOriginAmount();
-            subRealPayAmount += subOrderItemDO.getPayAmount();
+            subTotalAmount = subTotalAmount.add(subOrderItemDO.getOriginAmount());
+            subRealPayAmount = subRealPayAmount.add(subOrderItemDO.getPayAmount());
         }
 
         // 订单主信息
@@ -453,9 +454,9 @@ public class OrderManagerImpl implements OrderManager {
                 .collect(Collectors.toMap(OrderItemDO::getOrderItemId, Function.identity()));
 
         // 统计子订单费用信息
-        Integer subTotalOriginPayAmount = 0;
-        Integer subTotalCouponDiscountAmount = 0;
-        Integer subTotalRealPayAmount = 0;
+        BigDecimal subTotalOriginPayAmount = BigDecimal.ZERO;
+        BigDecimal subTotalCouponDiscountAmount = BigDecimal.ZERO;
+        BigDecimal subTotalRealPayAmount = BigDecimal.ZERO;
 
         // 订单费用明细
         List<OrderAmountDetailDO> subOrderAmountDetailList = new ArrayList<>();
@@ -472,15 +473,15 @@ public class OrderManagerImpl implements OrderManager {
             subOrderAmountDetailList.add(subOrderAmountDetail);
 
             Integer amountType = orderAmountDetailDO.getAmountType();
-            Integer amount = orderAmountDetailDO.getAmount();
+            BigDecimal amount = orderAmountDetailDO.getAmount();
             if (AmountTypeEnum.ORIGIN_PAY_AMOUNT.getCode().equals(amountType)) {
-                subTotalOriginPayAmount += amount;
+                subTotalOriginPayAmount = subTotalOriginPayAmount.add(amount);
             }
             if (AmountTypeEnum.COUPON_DISCOUNT_AMOUNT.getCode().equals(amountType)) {
-                subTotalCouponDiscountAmount += amount;
+                subTotalCouponDiscountAmount = subTotalCouponDiscountAmount.add(amount);
             }
             if (AmountTypeEnum.REAL_PAY_AMOUNT.getCode().equals(amountType)) {
-                subTotalRealPayAmount += amount;
+                subTotalRealPayAmount = subTotalRealPayAmount.add(amount);
             }
         }
         subFullOrderData.setOrderAmountDetailDOList(subOrderAmountDetailList);

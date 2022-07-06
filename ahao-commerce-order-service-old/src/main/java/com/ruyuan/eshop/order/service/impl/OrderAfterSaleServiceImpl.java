@@ -14,7 +14,6 @@ import com.ruyuan.eshop.common.redis.RedisLock;
 import com.ruyuan.eshop.common.utils.ParamCheckUtil;
 import com.ruyuan.eshop.common.utils.RandomUtil;
 import com.ruyuan.eshop.customer.domain.request.CustomerReceiveAfterSaleRequest;
-import com.ruyuan.eshop.market.domain.request.ReleaseUserCouponRequest;
 import com.ruyuan.eshop.order.converter.AfterSaleConverter;
 import com.ruyuan.eshop.order.converter.OrderConverter;
 import com.ruyuan.eshop.order.dao.*;
@@ -27,13 +26,17 @@ import com.ruyuan.eshop.order.domain.request.*;
 import com.ruyuan.eshop.order.enums.*;
 import com.ruyuan.eshop.order.exception.OrderBizException;
 import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
-import com.ruyuan.eshop.order.manager.OrderNoManager;
-import com.ruyuan.eshop.order.mq.producer.*;
-import com.ruyuan.eshop.order.remote.PayRemote;
 import com.ruyuan.eshop.order.manager.AfterSaleManager;
+import com.ruyuan.eshop.order.manager.OrderNoManager;
+import com.ruyuan.eshop.order.mq.producer.AfterSaleApplySendActualRefundProducer;
+import com.ruyuan.eshop.order.mq.producer.CancelOrderSendPreparationProducer;
+import com.ruyuan.eshop.order.mq.producer.CancelOrderSendReleaseAssetsProducer;
+import com.ruyuan.eshop.order.mq.producer.RefundOrderSendReleaseCouponProducer;
+import com.ruyuan.eshop.order.remote.PayRemote;
 import com.ruyuan.eshop.order.service.OrderAfterSaleService;
 import com.ruyuan.eshop.pay.domain.request.PayRefundRequest;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.market.api.command.ReleaseUserCouponCommand;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.LocalTransactionState;
 import org.apache.rocketmq.client.producer.TransactionListener;
@@ -404,7 +407,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
      */
     private JsonResult<BigDecimal> lackRefund(String orderId, Long lackAfterSaleId) {
         AfterSaleInfoDO lackAfterSaleInfo = afterSaleInfoDAO.getOneByAfterSaleId(lackAfterSaleId);
-        return JsonResult.buildSuccess(new BigDecimal(lackAfterSaleInfo.getRealRefundAmount()));
+        return JsonResult.buildSuccess(lackAfterSaleInfo.getRealRefundAmount());
     }
 
     @Override
@@ -546,7 +549,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
 
     private void sendReleaseCoupon(AfterSaleInfoDO afterSaleInfoDO, Long afterSaleId, ActualRefundMessage actualRefundMessage) {
         try {
-            ReleaseUserCouponRequest releaseUserCouponRequest = buildLastOrderReleasesCouponMessage(afterSaleId, actualRefundMessage);
+            ReleaseUserCouponCommand releaseUserCouponRequest = buildLastOrderReleasesCouponMessage(afterSaleId, actualRefundMessage);
 
             TransactionMQProducer transactionMQProducer = refundOrderSendReleaseCouponProducer.getProducer();
             setSendReleaseCouponListener(transactionMQProducer);
@@ -557,7 +560,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
     }
 
     private void sendReleaseCouponSuccessMessage(TransactionMQProducer transactionMQProducer,
-                                                 ReleaseUserCouponRequest releaseUserCouponRequest,
+                                                 ReleaseUserCouponCommand releaseUserCouponRequest,
                                                  AfterSaleInfoDO afterSaleInfoDO) throws MQClientException {
         Message message = new MQMessage(RocketMqConstant.CANCEL_RELEASE_PROPERTY_TOPIC,
                 JSONObject.toJSONString(releaseUserCouponRequest).getBytes(StandardCharsets.UTF_8));
@@ -585,8 +588,8 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
 
             @Override
             public LocalTransactionState checkLocalTransaction(MessageExt msg) {
-                ReleaseUserCouponRequest releaseUserCouponRequest = JSON.parseObject(
-                        new String(msg.getBody(), StandardCharsets.UTF_8), ReleaseUserCouponRequest.class);
+                ReleaseUserCouponCommand releaseUserCouponRequest = JSON.parseObject(
+                        new String(msg.getBody(), StandardCharsets.UTF_8), ReleaseUserCouponCommand.class);
                 //  查询售后单状态是"退款中"
                 AfterSaleInfoDO afterSaleInfoDO = afterSaleInfoDAO.getOneByAfterSaleId(releaseUserCouponRequest.getAfterSaleId());
                 if (AfterSaleStatusEnum.REFUNDING.getCode().equals(afterSaleInfoDO.getAfterSaleStatus())) {
@@ -598,12 +601,12 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
     }
 
 
-    private ReleaseUserCouponRequest buildLastOrderReleasesCouponMessage(Long afterSaleId, ActualRefundMessage actualRefundMessage) {
+    private ReleaseUserCouponCommand buildLastOrderReleasesCouponMessage(Long afterSaleId, ActualRefundMessage actualRefundMessage) {
 
         //  组装释放优惠券权益消息数据
         String orderId = actualRefundMessage.getOrderId();
         OrderInfoDO orderInfoDO = orderInfoDAO.getByOrderId(orderId);
-        ReleaseUserCouponRequest releaseUserCouponRequest = new ReleaseUserCouponRequest();
+        ReleaseUserCouponCommand releaseUserCouponRequest = new ReleaseUserCouponCommand();
         releaseUserCouponRequest.setCouponId(orderInfoDO.getCouponId());
         releaseUserCouponRequest.setUserId(orderInfoDO.getUserId());
         releaseUserCouponRequest.setAfterSaleId(afterSaleId);
@@ -747,9 +750,9 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
 
         //  售后退货过程中的 申请退款金额 和 实际退款金额 是计算出来的，金额有可能不同
         AfterSaleInfoDO afterSaleInfoDO = new AfterSaleInfoDO();
-        Integer applyRefundAmount = finalReturnGoodsAssembleRequest.getApplyRefundAmount();
+        BigDecimal applyRefundAmount = finalReturnGoodsAssembleRequest.getApplyRefundAmount();
         afterSaleInfoDO.setApplyRefundAmount(applyRefundAmount);
-        Integer returnGoodAmount = finalReturnGoodsAssembleRequest.getReturnGoodAmount();
+        BigDecimal returnGoodAmount = finalReturnGoodsAssembleRequest.getReturnGoodAmount();
         afterSaleInfoDO.setRealRefundAmount(returnGoodAmount);
 
         String orderId = finalReturnGoodsAssembleRequest.getOrderId();
@@ -926,14 +929,14 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
         return returnGoodsAssembleRequest;
     }
 
-    private ReturnGoodsAssembleRequest calculateWholeOrderFefundAmount(String orderId, Integer payAmount,
-                                                                       Integer originAmount,
+    private ReturnGoodsAssembleRequest calculateWholeOrderFefundAmount(String orderId, BigDecimal payAmount,
+                                                                       BigDecimal originAmount,
                                                                        ReturnGoodsAssembleRequest returnGoodsAssembleRequest) {
         //  模拟取运费
         OrderAmountDO deliveryAmount = orderAmountDAO.getOne(orderId, AmountTypeEnum.SHIPPING_AMOUNT.getCode());
-        Integer freightAmount = (deliveryAmount == null || deliveryAmount.getAmount() == null) ? 0 : deliveryAmount.getAmount();
+        BigDecimal freightAmount = (deliveryAmount == null || deliveryAmount.getAmount() == null) ? BigDecimal.ZERO : deliveryAmount.getAmount();
         //  最终退款金额 = 实际退款金额 + 运费
-        Integer returnGoodAmount = payAmount + freightAmount;
+        BigDecimal returnGoodAmount = payAmount.add(freightAmount);
         returnGoodsAssembleRequest.setReturnGoodAmount(returnGoodAmount);
         returnGoodsAssembleRequest.setApplyRefundAmount(originAmount);
         returnGoodsAssembleRequest.setAfterSaleType(AfterSaleTypeEnum.RETURN_MONEY.getCode());

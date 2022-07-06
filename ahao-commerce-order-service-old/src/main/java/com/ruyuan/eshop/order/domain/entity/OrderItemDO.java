@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -76,22 +77,22 @@ public class OrderItemDO implements Serializable {
     /**
      * 销售数量
      */
-    private Integer saleQuantity;
+    private BigDecimal saleQuantity;
 
     /**
      * 销售单价
      */
-    private Integer salePrice;
+    private BigDecimal salePrice;
 
     /**
      * 当前商品支付原总价
      */
-    private Integer originAmount;
+    private BigDecimal originAmount;
 
     /**
      * 交易支付金额
      */
-    private Integer payAmount;
+    private BigDecimal payAmount;
 
     /**
      * 商品单位
@@ -101,7 +102,7 @@ public class OrderItemDO implements Serializable {
     /**
      * 采购成本价
      */
-    private Integer purchasePrice;
+    private BigDecimal purchasePrice;
 
     /**
      * 卖家ID

@@ -1,0 +1,52 @@
+### 查询用户的优惠券
+POST http://127.0.0.1:8082/api/coupon/get
+Content-Type: application/json
+
+{
+    "userId": "100",
+    "couponId": "1001001"
+}
+
+### 锁定用户优惠券记录
+POST http://127.0.0.1:8082/api/coupon/lock
+Content-Type: application/json
+
+{
+    "businessIdentifier": "1",
+    "orderId": "订单号",
+    "userId": "100",
+    "sellerId": "买家编号",
+    "couponId": "1001001"
+}
+
+### 释放用户已使用的优惠券
+POST http://127.0.0.1:8082/api/coupon/release
+Content-Type: application/json
+
+{
+    "orderId": "订单号",
+    "afterSaleId": "售后单号",
+    "userId": "100",
+    "couponId": "1001001"
+}
+
+### 计算订单费用(不使用优惠券)
+POST http://127.0.0.1:8082/api/market/calculateOrderAmount
+Content-Type: application/json
+
+{
+    "orderId": "订单号",
+    "userId": "100",
+    "sellerId": "卖家编号",
+    "couponId": "1001001",
+    "regionId": "区域编号",
+    "orderAmountList": [
+        {"amountType": "10", "amount": "2300"},
+        {"amountType": "20", "amount": "500"},
+        {"amountType": "50", "amount": "1800"}
+    ],
+    "orderItemList": [
+        {"productId": "1001010", "productType": "1", "skuCode": "10101010", "salePrice": "1000", "saleQuantity": "2"},
+        {"productId": "1001011", "productType": "1", "skuCode": "10101011", "salePrice": "100", "saleQuantity": "3"}
+    ]
+}

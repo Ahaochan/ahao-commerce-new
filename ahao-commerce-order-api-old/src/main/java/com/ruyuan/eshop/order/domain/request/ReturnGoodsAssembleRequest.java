@@ -6,6 +6,7 @@ import com.ruyuan.eshop.order.domain.dto.OrderItemDTO;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -17,7 +18,7 @@ public class ReturnGoodsAssembleRequest implements Serializable {
     /**
      * 实际退款金额
      */
-    private Integer returnGoodAmount;
+    private BigDecimal returnGoodAmount;
     /**
      * sku编号
      */
@@ -29,7 +30,7 @@ public class ReturnGoodsAssembleRequest implements Serializable {
     /**
      * 申请退款金额
      */
-    private Integer applyRefundAmount;
+    private BigDecimal applyRefundAmount;
 
     /**
      * 订单售后条目列表

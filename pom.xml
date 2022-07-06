@@ -17,7 +17,8 @@
     <modules>
 <!--        <module>ahao-base-gateway</module>-->
         <module>ahao-commerce-address</module>
-<!--        <module>ahao-commerce-common</module>-->
+        <module>ahao-commerce-common</module>
+        <module>ahao-commerce-market</module>
 
         <module>ahao-commerce-common-old</module>
         <module>ahao-commerce-customer-api-old</module>
@@ -26,8 +27,6 @@
         <module>ahao-commerce-product-service-old</module>
         <module>ahao-commerce-inventory-api-old</module>
         <module>ahao-commerce-inventory-service-old</module>
-        <module>ahao-commerce-market-api-old</module>
-        <module>ahao-commerce-market-service-old</module>
         <module>ahao-commerce-order-api-old</module>
         <module>ahao-commerce-order-service-old</module>
         <module>ahao-commerce-pay-api-old</module>
@@ -116,6 +115,21 @@
                 <version>1.0.0</version>
                 <type>test-jar</type>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>moe.ahao</groupId>
+                <artifactId>ahao-commerce-address-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>moe.ahao</groupId>
+                <artifactId>ahao-commerce-common-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>moe.ahao</groupId>
+                <artifactId>ahao-commerce-market-api</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <!--======================================================= 自定义模块 =======================================================-->
 

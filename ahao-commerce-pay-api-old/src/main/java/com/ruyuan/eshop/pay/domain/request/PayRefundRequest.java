@@ -3,6 +3,7 @@ package com.ruyuan.eshop.pay.domain.request;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * 支付服务的退款入参
@@ -22,7 +23,7 @@ public class PayRefundRequest implements Serializable {
     /**
      * 实际退款金额
      */
-    public Integer refundAmount;
+    public BigDecimal refundAmount;
 
     /**
      * 售后单号

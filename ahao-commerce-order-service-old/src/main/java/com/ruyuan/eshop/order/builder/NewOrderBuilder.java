@@ -4,7 +4,6 @@ import com.ruyuan.eshop.common.enums.AmountTypeEnum;
 import com.ruyuan.eshop.common.enums.DeleteStatusEnum;
 import com.ruyuan.eshop.common.enums.OrderOperateTypeEnum;
 import com.ruyuan.eshop.common.enums.OrderStatusEnum;
-import com.ruyuan.eshop.market.domain.dto.CalculateOrderAmountDTO;
 import com.ruyuan.eshop.order.config.OrderProperties;
 import com.ruyuan.eshop.order.converter.OrderConverter;
 import com.ruyuan.eshop.order.domain.dto.OrderAmountDTO;
@@ -16,8 +15,10 @@ import com.ruyuan.eshop.order.enums.OrderTypeEnum;
 import com.ruyuan.eshop.order.enums.PayStatusEnum;
 import com.ruyuan.eshop.order.enums.SnapshotTypeEnum;
 import com.ruyuan.eshop.product.domain.dto.ProductSkuDTO;
+import moe.ahao.commerce.market.api.dto.CalculateOrderAmountDTO;
 import org.apache.commons.lang3.StringUtils;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -75,7 +76,7 @@ public class NewOrderBuilder {
         orderInfoDO.setSellerId(createOrderRequest.getSellerId());
         orderInfoDO.setUserId(createOrderRequest.getUserId());
         List<CreateOrderRequest.OrderAmountRequest> orderAmountRequestList = createOrderRequest.getOrderAmountRequestList();
-        Map<Integer, Integer> orderAmountMap = orderAmountRequestList.stream()
+        Map<Integer, BigDecimal> orderAmountMap = orderAmountRequestList.stream()
                 .collect(Collectors.toMap(CreateOrderRequest.OrderAmountRequest::getAmountType,
                         CreateOrderRequest.OrderAmountRequest::getAmount));
         orderInfoDO.setTotalAmount(orderAmountMap.get(AmountTypeEnum.ORIGIN_PAY_AMOUNT.getCode()));
@@ -125,11 +126,11 @@ public class NewOrderBuilder {
                 }
             }
             orderItemDO.setSalePrice(productSkuDTO.getSalePrice());
-            orderItemDO.setOriginAmount(orderItemDO.getSaleQuantity() * orderItemDO.getSalePrice());
+            orderItemDO.setOriginAmount(orderItemDO.getSaleQuantity().multiply(orderItemDO.getSalePrice()));
 
             // 商品项目实际支付金额，默认是originAmount，但是有优惠抵扣的时候需要分摊
-            int realPayAmount = 0;
-            List<OrderAmountDetailDTO> orderItemAmountList = orderConverter.convertOrderAmountDetail(calculateOrderAmountDTO.getOrderAmountDetail());
+            BigDecimal realPayAmount = BigDecimal.ZERO;
+            List<OrderAmountDetailDTO> orderItemAmountList = orderConverter.convertOrderAmountDetail(calculateOrderAmountDTO.getOrderItemAmountList());
 
             // 判断是否存在优惠抵扣费用
             orderItemAmountList = orderItemAmountList.stream().filter(item -> item.getSkuCode().equals(productSkuDTO.getSkuCode()))
@@ -138,11 +139,11 @@ public class NewOrderBuilder {
                 Map<Integer, OrderAmountDetailDTO> orderAmountDetailMap = orderItemAmountList.stream()
                         .collect(Collectors.toMap(OrderAmountDetailDTO::getAmountType, Function.identity()));
                 if (orderAmountDetailMap.get(AmountTypeEnum.COUPON_DISCOUNT_AMOUNT.getCode()) != null) {
-                    realPayAmount = orderItemDO.getOriginAmount() - orderAmountDetailMap.get(
-                            AmountTypeEnum.COUPON_DISCOUNT_AMOUNT.getCode()).getAmount();
+                    realPayAmount = orderItemDO.getOriginAmount().subtract(orderAmountDetailMap.get(
+                            AmountTypeEnum.COUPON_DISCOUNT_AMOUNT.getCode()).getAmount());
                 }
             }
-            if (realPayAmount > 0) {
+            if (realPayAmount.compareTo(BigDecimal.ZERO) > 0) {
                 orderItemDO.setPayAmount(realPayAmount);
             } else {
                 orderItemDO.setPayAmount(orderItemDO.getOriginAmount());
@@ -211,7 +212,7 @@ public class NewOrderBuilder {
             orderPaymentDetailDO.setPayType(paymentRequest.getPayType());
             orderPaymentDetailDO.setPayStatus(PayStatusEnum.UNPAID.getCode());
             List<CreateOrderRequest.OrderAmountRequest> orderAmountRequestList = createOrderRequest.getOrderAmountRequestList();
-            Map<Integer, Integer> orderAmountMap = orderAmountRequestList.stream()
+            Map<Integer, BigDecimal> orderAmountMap = orderAmountRequestList.stream()
                     .collect(Collectors.toMap(CreateOrderRequest.OrderAmountRequest::getAmountType,
                             CreateOrderRequest.OrderAmountRequest::getAmount));
             orderPaymentDetailDO.setPayAmount(orderAmountMap.get(AmountTypeEnum.REAL_PAY_AMOUNT.getCode()));
@@ -249,7 +250,7 @@ public class NewOrderBuilder {
      * @return
      */
     public NewOrderBuilder buildOrderAmountDetail() {
-        List<OrderAmountDetailDTO> orderItemAmountList = orderConverter.convertOrderAmountDetail(calculateOrderAmountDTO.getOrderAmountDetail());
+        List<OrderAmountDetailDTO> orderItemAmountList = orderConverter.convertOrderAmountDetail(calculateOrderAmountDTO.getOrderItemAmountList());
         List<OrderAmountDetailDO> orderAmountDetailDOList = new ArrayList<>();
         for (OrderAmountDetailDTO orderAmountDetailDTO : orderItemAmountList) {
             OrderAmountDetailDO orderAmountDetailDO = new OrderAmountDetailDO();

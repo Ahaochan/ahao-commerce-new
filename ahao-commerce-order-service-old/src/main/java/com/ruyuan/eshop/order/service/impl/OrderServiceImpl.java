@@ -17,8 +17,6 @@ import com.ruyuan.eshop.common.redis.RedisLock;
 import com.ruyuan.eshop.common.utils.JsonUtil;
 import com.ruyuan.eshop.common.utils.LoggerFormat;
 import com.ruyuan.eshop.common.utils.ParamCheckUtil;
-import com.ruyuan.eshop.market.domain.dto.CalculateOrderAmountDTO;
-import com.ruyuan.eshop.market.domain.request.CalculateOrderAmountRequest;
 import com.ruyuan.eshop.order.converter.OrderConverter;
 import com.ruyuan.eshop.order.dao.OrderDeliveryDetailDAO;
 import com.ruyuan.eshop.order.dao.OrderInfoDAO;
@@ -46,6 +44,8 @@ import com.ruyuan.eshop.pay.domain.request.PayRefundRequest;
 import com.ruyuan.eshop.product.domain.dto.ProductSkuDTO;
 import com.ruyuan.eshop.risk.domain.request.CheckOrderRiskRequest;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.market.api.dto.CalculateOrderAmountDTO;
+import moe.ahao.commerce.market.api.query.CalculateOrderAmountQuery;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -269,7 +269,7 @@ public class OrderServiceImpl implements OrderService {
 
         for (CreateOrderRequest.OrderItemRequest orderItemRequest : orderItemRequestList) {
             Integer productType = orderItemRequest.getProductType();
-            Integer saleQuantity = orderItemRequest.getSaleQuantity();
+            BigDecimal saleQuantity = orderItemRequest.getSaleQuantity();
             String skuCode = orderItemRequest.getSkuCode();
             ParamCheckUtil.checkObjectNonNull(productType, OrderErrorCodeEnum.ORDER_ITEM_PARAM_ERROR);
             ParamCheckUtil.checkObjectNonNull(saleQuantity, OrderErrorCodeEnum.ORDER_ITEM_PARAM_ERROR);
@@ -288,7 +288,7 @@ public class OrderServiceImpl implements OrderService {
                 throw new OrderBizException(OrderErrorCodeEnum.ORDER_AMOUNT_TYPE_PARAM_ERROR);
             }
         }
-        Map<Integer, Integer> orderAmountMap = orderAmountRequestList.stream()
+        Map<Integer, BigDecimal> orderAmountMap = orderAmountRequestList.stream()
                 .collect(Collectors.toMap(CreateOrderRequest.OrderAmountRequest::getAmountType,
                         CreateOrderRequest.OrderAmountRequest::getAmount));
 
@@ -367,11 +367,11 @@ public class OrderServiceImpl implements OrderService {
      */
     private CalculateOrderAmountDTO calculateOrderAmount(CreateOrderRequest createOrderRequest, List<ProductSkuDTO> productSkuList) {
 
-        CalculateOrderAmountRequest calculateOrderPriceRequest = orderConverter.convertCalculateOrderAmountRequest(createOrderRequest);
+        CalculateOrderAmountQuery calculateOrderPriceRequest = orderConverter.convertCalculateOrderAmountRequest(createOrderRequest);
 
         // 订单条目补充商品信息
         Map<String, ProductSkuDTO> productSkuDTOMap = productSkuList.stream().collect(Collectors.toMap(ProductSkuDTO::getSkuCode, Function.identity()));
-        calculateOrderPriceRequest.getOrderItemRequestList().forEach(item -> {
+        calculateOrderPriceRequest.getOrderItemList().forEach(item -> {
             String skuCode = item.getSkuCode();
             ProductSkuDTO productSkuDTO = productSkuDTOMap.get(skuCode);
             item.setProductId(productSkuDTO.getProductId());
@@ -390,7 +390,7 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // 订单条目费用明细
-        List<OrderAmountDetailDTO> orderItemAmountList = orderConverter.convertOrderAmountDetail(calculateOrderAmountDTO.getOrderAmountDetail());
+        List<OrderAmountDetailDTO> orderItemAmountList = orderConverter.convertOrderAmountDetail(calculateOrderAmountDTO.getOrderItemAmountList());
         if (orderItemAmountList == null || orderItemAmountList.isEmpty()) {
             throw new OrderBizException(OrderErrorCodeEnum.CALCULATE_ORDER_AMOUNT_ERROR);
         }
@@ -410,14 +410,14 @@ public class OrderServiceImpl implements OrderService {
                 originOrderAmountRequestList.stream().collect(Collectors.toMap(
                         CreateOrderRequest.OrderAmountRequest::getAmountType, Function.identity()));
         // 前端给的实付金额
-        Integer originRealPayAmount = originOrderAmountMap.get(AmountTypeEnum.REAL_PAY_AMOUNT.getCode()).getAmount();
+        BigDecimal originRealPayAmount = originOrderAmountMap.get(AmountTypeEnum.REAL_PAY_AMOUNT.getCode()).getAmount();
 
 
         List<CalculateOrderAmountDTO.OrderAmountDTO> orderAmountDTOList = calculateOrderAmountDTO.getOrderAmountList();
         Map<Integer, CalculateOrderAmountDTO.OrderAmountDTO> orderAmountMap =
                 orderAmountDTOList.stream().collect(Collectors.toMap(CalculateOrderAmountDTO.OrderAmountDTO::getAmountType, Function.identity()));
         // 营销计算出来的实付金额
-        Integer realPayAmount = orderAmountMap.get(AmountTypeEnum.REAL_PAY_AMOUNT.getCode()).getAmount();
+        BigDecimal realPayAmount = orderAmountMap.get(AmountTypeEnum.REAL_PAY_AMOUNT.getCode()).getAmount();
 
         if (!originRealPayAmount.equals(realPayAmount)) {
             // 订单验价失败

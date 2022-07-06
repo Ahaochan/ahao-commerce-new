@@ -4,9 +4,6 @@ import com.ruyuan.eshop.customer.domain.request.CustomerReceiveAfterSaleRequest;
 import com.ruyuan.eshop.fulfill.domain.request.CancelFulfillRequest;
 import com.ruyuan.eshop.inventory.domain.request.DeductProductStockRequest;
 import com.ruyuan.eshop.inventory.domain.request.ReleaseProductStockRequest;
-import com.ruyuan.eshop.market.domain.dto.CalculateOrderAmountDTO;
-import com.ruyuan.eshop.market.domain.request.CalculateOrderAmountRequest;
-import com.ruyuan.eshop.market.domain.request.LockUserCouponRequest;
 import com.ruyuan.eshop.order.domain.dto.*;
 import com.ruyuan.eshop.order.domain.entity.*;
 import com.ruyuan.eshop.order.domain.query.AcceptOrderQuery;
@@ -15,6 +12,9 @@ import com.ruyuan.eshop.order.domain.request.*;
 import com.ruyuan.eshop.pay.domain.dto.PayOrderDTO;
 import com.ruyuan.eshop.pay.domain.request.PayOrderRequest;
 import com.ruyuan.eshop.risk.domain.request.CheckOrderRiskRequest;
+import moe.ahao.commerce.market.api.command.LockUserCouponCommand;
+import moe.ahao.commerce.market.api.dto.CalculateOrderAmountDTO;
+import moe.ahao.commerce.market.api.query.CalculateOrderAmountQuery;
 import org.mapstruct.Mapper;
 
 import java.util.List;
@@ -136,7 +136,7 @@ public interface OrderConverter {
      * @param orderAmountDetail 对象
      * @return 对象
      */
-    OrderAmountDetailDTO convertOrderAmountDetail(CalculateOrderAmountDTO.OrderAmountDetailDTO orderAmountDetail);
+    OrderAmountDetailDTO convertOrderAmountDetail(CalculateOrderAmountDTO.OrderItemAmountDTO orderAmountDetail);
 
     /**
      * 对象转换
@@ -144,7 +144,7 @@ public interface OrderConverter {
      * @param orderAmountDetail 对象
      * @return 对象
      */
-    List<OrderAmountDetailDTO> convertOrderAmountDetail(List<CalculateOrderAmountDTO.OrderAmountDetailDTO> orderAmountDetail);
+    List<OrderAmountDetailDTO> convertOrderAmountDetail(List<CalculateOrderAmountDTO.OrderItemAmountDTO> orderAmountDetail);
 
     /**
      * 对象转换
@@ -184,7 +184,7 @@ public interface OrderConverter {
      * @param createOrderRequest 对象
      * @return 对象
      */
-    LockUserCouponRequest convertLockUserCouponRequest(CreateOrderRequest createOrderRequest);
+    LockUserCouponCommand convertLockUserCouponRequest(CreateOrderRequest createOrderRequest);
 
     /**
      * 对象转换
@@ -320,7 +320,7 @@ public interface OrderConverter {
      * @param createOrderRequest 对象
      * @return 对象
      */
-    CalculateOrderAmountRequest convertCalculateOrderAmountRequest(CreateOrderRequest createOrderRequest);
+    CalculateOrderAmountQuery convertCalculateOrderAmountRequest(CreateOrderRequest createOrderRequest);
 
     /**
      * 对象转换

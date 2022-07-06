@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Objects;
 
 /**
@@ -26,7 +27,7 @@ public class LackItemRequest implements Serializable {
     /**
      * 缺品数量
      */
-    private Integer lackNum;
+    private BigDecimal lackNum;
 
     @Override
     public boolean equals(Object o) {

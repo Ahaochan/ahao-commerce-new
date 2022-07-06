@@ -3,6 +3,7 @@ package com.ruyuan.eshop.inventory.domain.request;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -39,7 +40,7 @@ public class ReleaseProductStockRequest implements Serializable {
         /**
          * 销售数量
          */
-        private Integer saleQuantity;
+        private BigDecimal saleQuantity;
 
     }
 

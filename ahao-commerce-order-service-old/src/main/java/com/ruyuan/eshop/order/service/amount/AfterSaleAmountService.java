@@ -6,6 +6,8 @@ import com.ruyuan.eshop.order.domain.entity.OrderItemDO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 /**
@@ -28,10 +30,10 @@ public class AfterSaleAmountService {
      * @param lackNum
      * @return
      */
-    public Integer calculateOrderItemLackRealRefundAmount(OrderItemDO orderItem, Integer lackNum) {
-        double rate = lackNum / orderItem.getSaleQuantity().doubleValue();
+    public BigDecimal calculateOrderItemLackRealRefundAmount(OrderItemDO orderItem, BigDecimal lackNum) {
+        BigDecimal rate = lackNum.divide(orderItem.getSaleQuantity(), 2, RoundingMode.HALF_UP);
         //金额向上取整
-        Integer itemRefundAmount = Double.valueOf(Math.ceil(orderItem.getPayAmount() * rate)).intValue();
+        BigDecimal itemRefundAmount = orderItem.getPayAmount().multiply(rate).setScale(2, RoundingMode.DOWN);
         return itemRefundAmount;
     }
 
@@ -41,12 +43,12 @@ public class AfterSaleAmountService {
      * @param lackItems
      * @return
      */
-    public Integer calculateOrderLackApplyRefundAmount(List<AfterSaleItemDO> lackItems) {
+    public BigDecimal calculateOrderLackApplyRefundAmount(List<AfterSaleItemDO> lackItems) {
 
-        Integer applyRefundAmount = 0;
+        BigDecimal applyRefundAmount = BigDecimal.ZERO;
 
         for (AfterSaleItemDO item : lackItems) {
-            applyRefundAmount += item.getApplyRefundAmount();
+            applyRefundAmount = applyRefundAmount.add(item.getApplyRefundAmount());
         }
 
         return applyRefundAmount;
@@ -58,12 +60,12 @@ public class AfterSaleAmountService {
      * @param lackItems
      * @return
      */
-    public Integer calculateOrderLackRealRefundAmount(List<AfterSaleItemDO> lackItems) {
+    public BigDecimal calculateOrderLackRealRefundAmount(List<AfterSaleItemDO> lackItems) {
 
-        Integer realRefundAmount = 0;
+        BigDecimal realRefundAmount = BigDecimal.ZERO;
 
         for (AfterSaleItemDO item : lackItems) {
-            realRefundAmount += item.getRealRefundAmount();
+            realRefundAmount = realRefundAmount.add(item.getRealRefundAmount());
         }
 
         return realRefundAmount;
