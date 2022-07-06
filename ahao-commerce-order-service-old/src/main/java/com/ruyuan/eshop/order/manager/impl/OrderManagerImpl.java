@@ -1,7 +1,5 @@
 package com.ruyuan.eshop.order.manager.impl;
 
-import moe.ahao.commerce.address.api.dto.AddressDTO;
-import moe.ahao.commerce.address.api.query.AddressQuery;
 import com.ruyuan.eshop.common.enums.AmountTypeEnum;
 import com.ruyuan.eshop.common.enums.OrderOperateTypeEnum;
 import com.ruyuan.eshop.common.enums.OrderStatusEnum;
@@ -31,12 +29,17 @@ import com.ruyuan.eshop.order.service.impl.NewOrderDataHolder;
 import com.ruyuan.eshop.product.domain.dto.ProductSkuDTO;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.address.api.dto.AddressFullDTO;
+import moe.ahao.commerce.address.api.query.AddressQuery;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -343,7 +346,7 @@ public class OrderManagerImpl implements OrderManager {
         query.setCityCode(cityCode);
         query.setAreaCode(areaCode);
         query.setStreetCode(streetCode);
-        AddressDTO addressDTO = addressRemote.queryAddress(query);
+        AddressFullDTO addressDTO = addressRemote.queryAddress(query);
         if (addressDTO == null) {
             return orderDeliveryDetailDO.getDetailAddress();
         }

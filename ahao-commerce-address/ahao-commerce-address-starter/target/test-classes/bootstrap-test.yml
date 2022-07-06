@@ -1,0 +1,6 @@
+################################################## Nacos 配置 ##################################################
+spring.application.name: ahao-commerce-address
+spring.cloud.nacos.enabled: false
+spring.cloud.nacos.discovery.enabled: false
+spring.cloud.nacos.config.enabled: false
+################################################## Nacos 配置 ##################################################

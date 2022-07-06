@@ -16,6 +16,9 @@
 
     <modules>
 <!--        <module>ahao-base-gateway</module>-->
+        <module>ahao-commerce-address</module>
+<!--        <module>ahao-commerce-common</module>-->
+
         <module>ahao-commerce-common-old</module>
         <module>ahao-commerce-customer-api-old</module>
         <module>ahao-commerce-customer-service-old</module>
@@ -37,8 +40,6 @@
         <module>ahao-commerce-tms-service-old</module>
         <module>ahao-commerce-wms-api-old</module>
         <module>ahao-commerce-wms-service-old</module>
-        <module>ahao-commerce-address-service-old</module>
-        <module>ahao-commerce-address-api-old</module>
         <module>ahao-commerce-generator</module>
     </modules>
 
@@ -345,23 +346,40 @@
             </dependency>
 
         </dependencies>
-
     </dependencyManagement>
 
+    <dependencies>
+        <!--======================================================= Spring Boot =======================================================-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-configuration-processor</artifactId>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-autoconfigure</artifactId>
+        </dependency>
+        <!--======================================================= Spring Boot =======================================================-->
 
-    <pluginRepositories>
-        <pluginRepository>
-            <id>spring-plugin</id>
-            <name>spring-plugin</name>
-            <url>https://maven.aliyun.com/repository/spring-plugin</url>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </pluginRepository>
-    </pluginRepositories>
+        <!--======================================================= 单元测试 =======================================================-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!--======================================================= 单元测试 =======================================================-->
+    </dependencies>
 
     <build>
         <plugins>

@@ -1,0 +1,7 @@
+moe\ahao\commerce\address\infrastructure\repository\impl\mybatis\mapper\AddressMapper.class
+moe\ahao\commerce\address\application\AddressQueryService.class
+moe\ahao\commerce\address\AddressApplication.class
+moe\ahao\commerce\address\infrastructure\exception\AddressExceptionEnum.class
+moe\ahao\commerce\address\infrastructure\repository\impl\mybatis\data\AddressDO.class
+moe\ahao\commerce\address\adapter\AddressController.class
+moe\ahao\commerce\address\infrastructure\exception\AddressException.class

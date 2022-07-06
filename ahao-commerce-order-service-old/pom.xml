@@ -13,6 +13,14 @@
     <artifactId>ahao-commerce-order-service-old</artifactId>
 
     <dependencies>
+        <!--======================================================= 自定义模块 =======================================================-->
+        <dependency>
+            <groupId>moe.ahao</groupId>
+            <artifactId>ahao-common-utils</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <!--======================================================= 自定义模块 =======================================================-->
+
         <dependency>
             <groupId>moe.ahao</groupId>
             <artifactId>ahao-commerce-common-old</artifactId>
@@ -70,7 +78,7 @@
 
         <dependency>
             <groupId>moe.ahao</groupId>
-            <artifactId>ahao-commerce-address-api-old</artifactId>
+            <artifactId>ahao-commerce-address-api</artifactId>
             <version>1.0.0</version>
         </dependency>
 

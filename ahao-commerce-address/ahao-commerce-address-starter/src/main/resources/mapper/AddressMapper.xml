@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="moe.ahao.commerce.address.infrastructure.repository.impl.mybatis.mapper.AddressMapper">
+    <select id="selectListByParentCode" resultType="moe.ahao.commerce.address.infrastructure.repository.impl.mybatis.data.AddressDO">
+        select * from address where parent_code = #{parentCode}
+    </select>
+    <!-- Using sort_union(idx_code_level,idx_name_level); Using where -->
+    <select id="selectListByCodeOrName" resultType="moe.ahao.commerce.address.infrastructure.repository.impl.mybatis.data.AddressDO">
+        select * from address where (code = #{code} or name = #{name}) and level = #{level}
+    </select>
+    <!-- Using sort_union(idx_code_level,idx_name_level); Using where -->
+    <select id="selectListByCodesOrName" resultType="moe.ahao.commerce.address.infrastructure.repository.impl.mybatis.data.AddressDO">
+        select * from address
+        <where>
+            <if test="codes != null and codes.size() > 0">
+                code in <foreach collection="codes" item="item" open="(" close=")" separator=",">#{item}</foreach>
+            </if>
+            <if test="name != null and name.length() > 0">
+                or name = #{name}
+            </if>
+        </where>
+    </select>
+</mapper>

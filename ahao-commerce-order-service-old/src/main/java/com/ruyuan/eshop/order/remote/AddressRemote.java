@@ -1,9 +1,9 @@
 package com.ruyuan.eshop.order.remote;
 
-import moe.ahao.commerce.address.api.AddressApi;
-import moe.ahao.commerce.address.api.dto.AddressDTO;
+import moe.ahao.commerce.address.api.AddressDubboApi;
+import moe.ahao.commerce.address.api.dto.AddressFullDTO;
 import moe.ahao.commerce.address.api.query.AddressQuery;
-import com.ruyuan.eshop.common.core.JsonResult;
+import moe.ahao.domain.entity.Result;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Component;
 
@@ -19,17 +19,17 @@ public class AddressRemote {
      * 地址服务
      */
     @DubboReference(version = "1.0.0")
-    private AddressApi addressApi;
+    private AddressDubboApi addressApi;
 
     /**
      * 查询行政地址
      * @param query
      * @return
      */
-    public AddressDTO queryAddress(AddressQuery query) {
-        JsonResult<AddressDTO> jsonResult = addressApi.queryAddress(query);
-        if (jsonResult.getSuccess() && jsonResult.getData() != null) {
-            return jsonResult.getData();
+    public AddressFullDTO queryAddress(AddressQuery query) {
+        Result<AddressFullDTO> result = addressApi.queryFullAddress(query);
+        if (result.getCode() == Result.SUCCESS && result.getObj() != null) {
+            return result.getObj();
         }
         return null;
     }
