@@ -19,6 +19,7 @@
         <module>ahao-commerce-address</module>
         <module>ahao-commerce-common</module>
         <module>ahao-commerce-market</module>
+        <module>ahao-commerce-product</module>
         <module>ahao-commerce-risk</module>
         <module>ahao-commerce-tms</module>
         <module>ahao-commerce-wms</module>
@@ -26,8 +27,6 @@
         <module>ahao-commerce-common-old</module>
         <module>ahao-commerce-customer-api-old</module>
         <module>ahao-commerce-customer-service-old</module>
-        <module>ahao-commerce-product-api-old</module>
-        <module>ahao-commerce-product-service-old</module>
         <module>ahao-commerce-inventory-api-old</module>
         <module>ahao-commerce-inventory-service-old</module>
         <module>ahao-commerce-order-api-old</module>
@@ -126,6 +125,11 @@
             <dependency>
                 <groupId>moe.ahao</groupId>
                 <artifactId>ahao-commerce-market-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>moe.ahao</groupId>
+                <artifactId>ahao-commerce-product-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

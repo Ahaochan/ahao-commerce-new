@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="moe.ahao.commerce.product.infrastructure.repository.impl.mybatis.mapper.ProductSkuMapper">
+    <select id="selectOneBySkuCode" resultType="moe.ahao.commerce.product.infrastructure.repository.impl.mybatis.data.ProductSkuDO">
+        select * from product_sku where sku_code = #{skuCode}
+    </select>
+    <select id="selectListBySkuCodeList" resultType="moe.ahao.commerce.product.infrastructure.repository.impl.mybatis.data.ProductSkuDO">
+        select * from product_sku where sku_code in
+        <foreach collection="skuCodeList" item="item" open="(" close=")" separator=",">#{item}</foreach>
+    </select>
+</mapper>

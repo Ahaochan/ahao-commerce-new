@@ -14,8 +14,8 @@ import com.ruyuan.eshop.order.enums.CommentStatusEnum;
 import com.ruyuan.eshop.order.enums.OrderTypeEnum;
 import com.ruyuan.eshop.order.enums.PayStatusEnum;
 import com.ruyuan.eshop.order.enums.SnapshotTypeEnum;
-import com.ruyuan.eshop.product.domain.dto.ProductSkuDTO;
 import moe.ahao.commerce.market.api.dto.CalculateOrderAmountDTO;
+import moe.ahao.commerce.product.api.dto.ProductSkuDTO;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;

@@ -1,10 +1,10 @@
 package com.ruyuan.eshop.order.domain.dto;
 
 import com.ruyuan.eshop.order.domain.entity.OrderItemDO;
-import com.ruyuan.eshop.product.domain.dto.ProductSkuDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import moe.ahao.commerce.product.api.dto.ProductSkuDTO;
 
 import java.math.BigDecimal;
 

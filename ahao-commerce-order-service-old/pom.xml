@@ -40,7 +40,7 @@
         <!-- 其它服务api -->
         <dependency>
             <groupId>moe.ahao</groupId>
-            <artifactId>ahao-commerce-product-api-old</artifactId>
+            <artifactId>ahao-commerce-product-api</artifactId>
             <version>1.0.0</version>
         </dependency>
 

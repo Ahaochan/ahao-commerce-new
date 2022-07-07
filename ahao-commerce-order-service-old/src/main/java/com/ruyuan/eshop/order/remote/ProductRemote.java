@@ -1,12 +1,12 @@
 package com.ruyuan.eshop.order.remote;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.order.exception.OrderBizException;
-import com.ruyuan.eshop.product.api.ProductApi;
-import com.ruyuan.eshop.product.domain.dto.ProductSkuDTO;
-import com.ruyuan.eshop.product.domain.query.GetProductSkuQuery;
-import com.ruyuan.eshop.product.domain.query.ListProductSkuQuery;
+import moe.ahao.commerce.product.api.ProductDubboApi;
+import moe.ahao.commerce.product.api.dto.ProductSkuDTO;
+import moe.ahao.commerce.product.api.query.GetProductSkuQuery;
+import moe.ahao.commerce.product.api.query.ListProductSkuQuery;
+import moe.ahao.domain.entity.Result;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Component;
 
@@ -24,7 +24,7 @@ public class ProductRemote {
      * 商品服务
      */
     @DubboReference(version = "1.0.0")
-    private ProductApi productApi;
+    private ProductDubboApi productApi;
 
     /**
      * 查询商品信息
@@ -37,11 +37,11 @@ public class ProductRemote {
         GetProductSkuQuery productSkuQuery = new GetProductSkuQuery();
         productSkuQuery.setSkuCode(skuCode);
         productSkuQuery.setSellerId(sellerId);
-        JsonResult<ProductSkuDTO> jsonResult = productApi.getProductSku(productSkuQuery);
-        if (!jsonResult.getSuccess()) {
-            throw new OrderBizException(jsonResult.getErrorCode(), jsonResult.getErrorMessage());
+        Result<ProductSkuDTO> result = productApi.getBySkuCode(productSkuQuery);
+        if (result.getCode() != Result.SUCCESS) {
+            throw new OrderBizException(String.valueOf(result.getCode()), result.getMsg());
         }
-        return jsonResult.getData();
+        return result.getObj();
     }
 
     /**
@@ -55,11 +55,11 @@ public class ProductRemote {
         ListProductSkuQuery productSkuQuery = new ListProductSkuQuery();
         productSkuQuery.setSkuCodeList(skuCodeList);
         productSkuQuery.setSellerId(sellerId);
-        JsonResult<List<ProductSkuDTO>> jsonResult = productApi.listProductSku(productSkuQuery);
-        if (!jsonResult.getSuccess()) {
-            throw new OrderBizException(jsonResult.getErrorCode(), jsonResult.getErrorMessage());
+        Result<List<ProductSkuDTO>> result = productApi.listBySkuCodes(productSkuQuery);
+        if (result.getCode() != Result.SUCCESS) {
+            throw new OrderBizException(String.valueOf(result.getCode()), result.getMsg());
         }
-        return jsonResult.getData();
+        return result.getObj();
     }
 
 }
