@@ -1,11 +1,12 @@
 package com.ruyuan.eshop.fulfill.remote;
 
 
-import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.fulfill.exception.FulfillBizException;
-import com.ruyuan.eshop.wms.api.WmsApi;
-import com.ruyuan.eshop.wms.domain.PickDTO;
-import com.ruyuan.eshop.wms.domain.PickGoodsRequest;
+import moe.ahao.commerce.wms.api.WmsApi;
+import moe.ahao.commerce.wms.api.command.CancelPickGoodsCommand;
+import moe.ahao.commerce.wms.api.command.PickGoodsCommand;
+import moe.ahao.commerce.wms.api.dto.PickDTO;
+import moe.ahao.domain.entity.Result;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Component;
 
@@ -29,21 +30,23 @@ public class WmsRemote {
     /**
      * 捡货
      */
-    public PickDTO pickGoods(PickGoodsRequest request) {
-        JsonResult<PickDTO> jsonResult = wmsApi.pickGoods(request);
-        if (!jsonResult.getSuccess()) {
-            throw new FulfillBizException(jsonResult.getErrorCode(), jsonResult.getErrorMessage());
+    public PickDTO pickGoods(PickGoodsCommand request) {
+        Result<PickDTO> result = wmsApi.pickGoods(request);
+        if (result.getCode() != Result.SUCCESS) {
+            throw new FulfillBizException(String.valueOf(result.getCode()), result.getMsg());
         }
-        return jsonResult.getData();
+        return result.getObj();
     }
 
     /**
      * 取消捡货
      */
     public void cancelPickGoods(String orderId) {
-        JsonResult<Boolean> jsonResult = wmsApi.cancelPickGoods(orderId);
-        if (!jsonResult.getSuccess()) {
-            throw new FulfillBizException(jsonResult.getErrorCode(), jsonResult.getErrorMessage());
+        CancelPickGoodsCommand command = new CancelPickGoodsCommand();
+        command.setOrderId(orderId);
+        Result<Boolean> result = wmsApi.cancelPickGoods(command);
+        if (result.getCode() != Result.SUCCESS) {
+            throw new FulfillBizException(String.valueOf(result.getCode()), result.getMsg());
         }
     }
 

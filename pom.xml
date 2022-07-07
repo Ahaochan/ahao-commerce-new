@@ -21,6 +21,7 @@
         <module>ahao-commerce-market</module>
         <module>ahao-commerce-risk</module>
         <module>ahao-commerce-tms</module>
+        <module>ahao-commerce-wms</module>
 
         <module>ahao-commerce-common-old</module>
         <module>ahao-commerce-customer-api-old</module>
@@ -35,8 +36,6 @@
         <module>ahao-commerce-pay-service-old</module>
         <module>ahao-commerce-fulfill-api-old</module>
         <module>ahao-commerce-fulfill-service-old</module>
-        <module>ahao-commerce-wms-api-old</module>
-        <module>ahao-commerce-wms-service-old</module>
         <module>ahao-commerce-generator</module>
     </modules>
 
@@ -137,6 +136,11 @@
             <dependency>
                 <groupId>moe.ahao</groupId>
                 <artifactId>ahao-commerce-tms-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>moe.ahao</groupId>
+                <artifactId>ahao-commerce-wms-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <!--======================================================= 自定义模块 =======================================================-->

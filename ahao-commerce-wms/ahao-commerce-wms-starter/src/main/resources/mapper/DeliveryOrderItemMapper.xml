@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="moe.ahao.commerce.wms.infrastructure.repository.impl.mybatis.mapper.DeliveryOrderItemMapper">
+    <select id="selectListByDeliveryOrderId" resultType="moe.ahao.commerce.wms.infrastructure.repository.impl.mybatis.data.DeliveryOrderItemDO">
+        select * from wms_delivery_order_item where delivery_order_id = #{deliveryOrderId}
+    </select>
+    <select id="selectListByDeliveryOrderIds" resultType="moe.ahao.commerce.wms.infrastructure.repository.impl.mybatis.data.DeliveryOrderItemDO">
+        select * from wms_delivery_order_item where delivery_order_id in
+        <foreach collection="deliveryOrderIds" item="item" open="(" close=")" separator=",">#{item}</foreach>
+    </select>
+
+    <delete id="deleteListByDeliveryOrderIds">
+        delete from wms_delivery_order_item where delivery_order_id in
+        <foreach collection="deliveryOrderIds" item="item" open="(" close=")" separator=",">#{item}</foreach>
+    </delete>
+</mapper>

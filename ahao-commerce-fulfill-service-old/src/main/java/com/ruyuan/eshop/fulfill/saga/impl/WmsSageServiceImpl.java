@@ -1,18 +1,13 @@
 package com.ruyuan.eshop.fulfill.saga.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.fulfill.converter.FulFillConverter;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
-import com.ruyuan.eshop.fulfill.exception.FulfillBizException;
-import com.ruyuan.eshop.fulfill.exception.FulfillErrorCodeEnum;
 import com.ruyuan.eshop.fulfill.remote.WmsRemote;
 import com.ruyuan.eshop.fulfill.saga.WmsSagaService;
-import com.ruyuan.eshop.wms.api.WmsApi;
-import com.ruyuan.eshop.wms.domain.PickDTO;
-import com.ruyuan.eshop.wms.domain.PickGoodsRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.DubboReference;
+import moe.ahao.commerce.wms.api.command.PickGoodsCommand;
+import moe.ahao.commerce.wms.api.dto.PickDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -53,9 +48,9 @@ public class WmsSageServiceImpl implements WmsSagaService {
     }
 
 
-    private PickGoodsRequest buildPickGoodsRequest(ReceiveFulfillRequest fulfillRequest) {
-        PickGoodsRequest request = fulFillConverter.convertPickGoodsRequest(fulfillRequest);
-        List<PickGoodsRequest.OrderItemRequest> itemRequests = fulFillConverter.convertPickOrderItemRequest(fulfillRequest.getReceiveOrderItems());
+    private PickGoodsCommand buildPickGoodsRequest(ReceiveFulfillRequest fulfillRequest) {
+        PickGoodsCommand request = fulFillConverter.convertPickGoodsRequest(fulfillRequest);
+        List<PickGoodsCommand.OrderItem> itemRequests = fulFillConverter.convertPickOrderItemRequest(fulfillRequest.getReceiveOrderItems());
         request.setOrderItems(itemRequests);
         return request;
     }

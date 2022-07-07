@@ -4,8 +4,8 @@ import com.ruyuan.eshop.fulfill.domain.entity.OrderFulfillDO;
 import com.ruyuan.eshop.fulfill.domain.entity.OrderFulfillItemDO;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveOrderItemRequest;
-import com.ruyuan.eshop.wms.domain.PickGoodsRequest;
 import moe.ahao.commerce.tms.api.command.SendOutCommand;
+import moe.ahao.commerce.wms.api.command.PickGoodsCommand;
 import org.mapstruct.Mapper;
 
 import java.util.List;
@@ -71,7 +71,7 @@ public interface FulFillConverter {
      * @param fulfillRequest 对象
      * @return 对象
      */
-    PickGoodsRequest convertPickGoodsRequest(ReceiveFulfillRequest fulfillRequest);
+    PickGoodsCommand convertPickGoodsRequest(ReceiveFulfillRequest fulfillRequest);
 
     /**
      * 转换对象
@@ -79,7 +79,7 @@ public interface FulFillConverter {
      * @param receiveOrderItem 对象
      * @return 对象
      */
-    PickGoodsRequest.OrderItemRequest convertPickOrderItemRequest(ReceiveOrderItemRequest receiveOrderItem);
+    PickGoodsCommand.OrderItem convertPickOrderItemRequest(ReceiveOrderItemRequest receiveOrderItem);
 
     /**
      * 转换对象
@@ -87,5 +87,5 @@ public interface FulFillConverter {
      * @param receiveOrderItems 对象
      * @return 对象
      */
-    List<PickGoodsRequest.OrderItemRequest> convertPickOrderItemRequest(List<ReceiveOrderItemRequest> receiveOrderItems);
+    List<PickGoodsCommand.OrderItem> convertPickOrderItemRequest(List<ReceiveOrderItemRequest> receiveOrderItems);
 }

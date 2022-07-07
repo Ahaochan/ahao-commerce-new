@@ -38,7 +38,7 @@
 
         <dependency>
             <groupId>moe.ahao</groupId>
-            <artifactId>ahao-commerce-wms-api-old</artifactId>
+            <artifactId>ahao-commerce-wms-api</artifactId>
             <version>1.0.0</version>
         </dependency>
 
