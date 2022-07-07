@@ -82,12 +82,12 @@ public class PickGoodsRequest implements Serializable {
     /**
      * 经度 六位小数点
      */
-    private BigDecimal receiverLon;
+    private String receiverLon;
 
     /**
      * 纬度 六位小数点
      */
-    private BigDecimal receiverLat;
+    private String receiverLat;
 
     /**
      * 用户备注
@@ -102,17 +102,17 @@ public class PickGoodsRequest implements Serializable {
     /**
      * 付款总金额
      */
-    private Integer payAmount;
+    private BigDecimal payAmount;
 
     /**
      * 交易总金额
      */
-    private Integer totalAmount;
+    private BigDecimal totalAmount;
 
     /**
      * 运费
      */
-    private Integer deliveryAmount;
+    private BigDecimal deliveryAmount;
 
     /**
      * 订单商品明细
@@ -152,12 +152,12 @@ public class PickGoodsRequest implements Serializable {
         /**
          * 销售单价
          */
-        private Integer salePrice;
+        private BigDecimal salePrice;
 
         /**
          * 销售数量
          */
-        private Integer saleQuantity;
+        private BigDecimal saleQuantity;
 
         /**
          * 商品单位
@@ -167,12 +167,12 @@ public class PickGoodsRequest implements Serializable {
         /**
          * 付款金额
          */
-        private Integer payAmount;
+        private BigDecimal payAmount;
 
         /**
          * 当前商品支付原总价
          */
-        private Integer originAmount;
+        private BigDecimal originAmount;
 
         @Tolerate
         public OrderItemRequest() {

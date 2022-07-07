@@ -94,12 +94,12 @@ public class CreateOrderRequest implements Serializable {
     /**
      * 经度
      */
-    private BigDecimal lon;
+    private String lon;
 
     /**
      * 纬度
      */
-    private BigDecimal lat;
+    private String lat;
 
     /**
      * 收货人姓名

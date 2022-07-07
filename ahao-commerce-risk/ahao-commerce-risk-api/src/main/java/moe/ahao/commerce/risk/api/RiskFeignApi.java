@@ -11,9 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 public interface RiskFeignApi extends RiskApi{
     String CONTEXT = "/api/risk/";
 
-    /**
-     * 订单风控检查
-     */
     @PostMapping("/checkOrderRisk")
     Result<CheckOrderRiskDTO> checkOrderRisk(CheckOrderRiskCommand command);
 }

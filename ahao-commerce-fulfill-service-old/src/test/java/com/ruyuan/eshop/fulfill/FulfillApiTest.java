@@ -10,7 +10,7 @@ import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveOrderItemRequest;
 import com.ruyuan.eshop.fulfill.domain.request.TriggerOrderWmsShipEventRequest;
 import com.ruyuan.eshop.fulfill.service.FulfillService;
-import com.ruyuan.eshop.tms.api.TmsApi;
+import moe.ahao.commerce.tms.api.TmsApi;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -107,8 +107,8 @@ public class FulfillApiTest {
                 .receiverArea("1")
                 .receiverStreet("1")
                 .receiverDetailAddress("1")
-                .receiverLat(new BigDecimal("1"))
-                .receiverLon(new BigDecimal("1"))
+                .receiverLat("1")
+                .receiverLon("1")
                 .payType(1)
                 .payAmount(new BigDecimal("1.11"))
                 .totalAmount(new BigDecimal("1.11"))

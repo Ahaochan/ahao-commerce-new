@@ -248,8 +248,8 @@ public class OrderServiceImpl implements OrderService {
         ParamCheckUtil.checkStringNonEmpty(regionId, OrderErrorCodeEnum.REGION_ID_IS_NULL);
 
         // 经纬度
-        BigDecimal lon = createOrderRequest.getLon();
-        BigDecimal lat = createOrderRequest.getLat();
+        String lon = createOrderRequest.getLon();
+        String lat = createOrderRequest.getLat();
         ParamCheckUtil.checkObjectNonNull(lon, OrderErrorCodeEnum.USER_LOCATION_IS_NULL);
         ParamCheckUtil.checkObjectNonNull(lat, OrderErrorCodeEnum.USER_LOCATION_IS_NULL);
 

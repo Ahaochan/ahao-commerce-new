@@ -47,7 +47,7 @@
 
         <dependency>
             <groupId>moe.ahao</groupId>
-            <artifactId>ahao-commerce-tms-api-old</artifactId>
+            <artifactId>ahao-commerce-tms-api</artifactId>
             <version>1.0.0</version>
         </dependency>
 

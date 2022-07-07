@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 public interface CouponFeignApi extends CouponApi {
     String CONTEXT = "/api/coupon";
+
     @PostMapping("/get")
     Result<UserCouponDTO> get(@RequestBody GetUserCouponQuery query);
     @PostMapping("/lock")

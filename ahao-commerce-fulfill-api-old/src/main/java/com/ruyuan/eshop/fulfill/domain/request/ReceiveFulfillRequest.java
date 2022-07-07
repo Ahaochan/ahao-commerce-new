@@ -84,12 +84,12 @@ public class ReceiveFulfillRequest implements Serializable {
     /**
      * 经度 六位小数点
      */
-    private BigDecimal receiverLon;
+    private String receiverLon;
 
     /**
      * 纬度 六位小数点
      */
-    private BigDecimal receiverLat;
+    private String receiverLat;
 
     /**
      * 用户备注

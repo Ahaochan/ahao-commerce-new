@@ -4,8 +4,8 @@ import com.ruyuan.eshop.fulfill.domain.entity.OrderFulfillDO;
 import com.ruyuan.eshop.fulfill.domain.entity.OrderFulfillItemDO;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveOrderItemRequest;
-import com.ruyuan.eshop.tms.domain.SendOutRequest;
 import com.ruyuan.eshop.wms.domain.PickGoodsRequest;
+import moe.ahao.commerce.tms.api.command.SendOutCommand;
 import org.mapstruct.Mapper;
 
 import java.util.List;
@@ -47,7 +47,7 @@ public interface FulFillConverter {
      * @param fulfillRequest 对象
      * @return 对象
      */
-    SendOutRequest convertReceiveFulfillRequest(ReceiveFulfillRequest fulfillRequest);
+    SendOutCommand convertReceiveFulfillRequest(ReceiveFulfillRequest fulfillRequest);
 
     /**
      * 转换对象
@@ -55,7 +55,7 @@ public interface FulFillConverter {
      * @param receiveOrderItem 对象
      * @return 对象
      */
-    SendOutRequest.OrderItemRequest convertSendOutOrderItemRequest(ReceiveOrderItemRequest receiveOrderItem);
+    SendOutCommand.OrderItem convertSendOutOrderItemRequest(ReceiveOrderItemRequest receiveOrderItem);
 
     /**
      * 转换对象
@@ -63,7 +63,7 @@ public interface FulFillConverter {
      * @param receiveOrderItems 对象
      * @return 对象
      */
-    List<SendOutRequest.OrderItemRequest> convertSendOutOrderItemRequest(List<ReceiveOrderItemRequest> receiveOrderItems);
+    List<SendOutCommand.OrderItem> convertSendOutOrderItemRequest(List<ReceiveOrderItemRequest> receiveOrderItems);
 
     /**
      * 转换对象

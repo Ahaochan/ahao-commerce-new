@@ -1,20 +1,15 @@
 package com.ruyuan.eshop.fulfill.saga.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.fulfill.converter.FulFillConverter;
 import com.ruyuan.eshop.fulfill.dao.OrderFulfillDAO;
 import com.ruyuan.eshop.fulfill.domain.entity.OrderFulfillDO;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
-import com.ruyuan.eshop.fulfill.exception.FulfillBizException;
-import com.ruyuan.eshop.fulfill.exception.FulfillErrorCodeEnum;
 import com.ruyuan.eshop.fulfill.remote.TmsRemote;
 import com.ruyuan.eshop.fulfill.saga.TmsSagaService;
-import com.ruyuan.eshop.tms.api.TmsApi;
-import com.ruyuan.eshop.tms.domain.SendOutDTO;
-import com.ruyuan.eshop.tms.domain.SendOutRequest;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.DubboReference;
+import moe.ahao.commerce.tms.api.command.SendOutCommand;
+import moe.ahao.commerce.tms.api.dto.SendOutDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -66,9 +61,9 @@ public class TmsSagaServiceImpl implements TmsSagaService {
         return true;
     }
 
-    private SendOutRequest buildSendOutRequest(ReceiveFulfillRequest fulfillRequest) {
-        SendOutRequest request = fulFillConverter.convertReceiveFulfillRequest(fulfillRequest);
-        List<SendOutRequest.OrderItemRequest> itemRequests = fulFillConverter.convertSendOutOrderItemRequest(fulfillRequest.getReceiveOrderItems());
+    private SendOutCommand buildSendOutRequest(ReceiveFulfillRequest fulfillRequest) {
+        SendOutCommand request = fulFillConverter.convertReceiveFulfillRequest(fulfillRequest);
+        List<SendOutCommand.OrderItem> itemRequests = fulFillConverter.convertSendOutOrderItemRequest(fulfillRequest.getReceiveOrderItems());
         request.setOrderItems(itemRequests);
         return request;
     }

@@ -1,11 +1,12 @@
 package com.ruyuan.eshop.fulfill.remote;
 
 
-import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.fulfill.exception.FulfillBizException;
-import com.ruyuan.eshop.tms.api.TmsApi;
-import com.ruyuan.eshop.tms.domain.SendOutDTO;
-import com.ruyuan.eshop.tms.domain.SendOutRequest;
+import moe.ahao.commerce.tms.api.TmsApi;
+import moe.ahao.commerce.tms.api.command.CancelSendOutCommand;
+import moe.ahao.commerce.tms.api.command.SendOutCommand;
+import moe.ahao.commerce.tms.api.dto.SendOutDTO;
+import moe.ahao.domain.entity.Result;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Component;
 
@@ -28,21 +29,23 @@ public class TmsRemote {
     /**
      * 发货
      */
-    public SendOutDTO sendOut(SendOutRequest request) {
-        JsonResult<SendOutDTO> jsonResult = tmsApi.sendOut(request);
-        if (!jsonResult.getSuccess()) {
-            throw new FulfillBizException(jsonResult.getErrorCode(), jsonResult.getErrorMessage());
+    public SendOutDTO sendOut(SendOutCommand request) {
+        Result<SendOutDTO> result = tmsApi.sendOut(request);
+        if (result.getCode() != Result.SUCCESS) {
+            throw new FulfillBizException(String.valueOf(result.getCode()), result.getMsg());
         }
-        return jsonResult.getData();
+        return result.getObj();
     }
 
     /**
      * 取消发货
      */
     public void cancelSendOut(String orderId) {
-        JsonResult<Boolean> jsonResult = tmsApi.cancelSendOut(orderId);
-        if (!jsonResult.getSuccess()) {
-            throw new FulfillBizException(jsonResult.getErrorCode(), jsonResult.getErrorMessage());
+        CancelSendOutCommand command = new CancelSendOutCommand();
+        command.setOrderId(orderId);
+        Result<Boolean> result = tmsApi.cancelSendOut(command);
+        if (result.getCode() != Result.SUCCESS) {
+            throw new FulfillBizException(String.valueOf(result.getCode()), result.getMsg());
         }
     }
 
