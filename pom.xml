@@ -35,7 +35,6 @@
         <module>ahao-commerce-pay-service-old</module>
         <module>ahao-commerce-fulfill-api-old</module>
         <module>ahao-commerce-fulfill-service-old</module>
-        <module>ahao-commerce-generator</module>
     </modules>
 
     <properties>
