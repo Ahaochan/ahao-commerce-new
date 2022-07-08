@@ -38,12 +38,12 @@ import com.ruyuan.eshop.order.remote.PayRemote;
 import com.ruyuan.eshop.order.remote.ProductRemote;
 import com.ruyuan.eshop.order.remote.RiskRemote;
 import com.ruyuan.eshop.order.service.OrderService;
-import com.ruyuan.eshop.pay.domain.dto.PayOrderDTO;
-import com.ruyuan.eshop.pay.domain.request.PayOrderRequest;
-import com.ruyuan.eshop.pay.domain.request.PayRefundRequest;
 import lombok.extern.slf4j.Slf4j;
 import moe.ahao.commerce.market.api.dto.CalculateOrderAmountDTO;
 import moe.ahao.commerce.market.api.query.CalculateOrderAmountQuery;
+import moe.ahao.commerce.pay.api.command.PayOrderCommand;
+import moe.ahao.commerce.pay.api.command.RefundOrderCommand;
+import moe.ahao.commerce.pay.api.dto.PayOrderDTO;
 import moe.ahao.commerce.product.api.dto.ProductSkuDTO;
 import moe.ahao.commerce.risk.api.command.CheckOrderRiskCommand;
 import org.apache.commons.collections.CollectionUtils;
@@ -471,7 +471,7 @@ public class OrderServiceImpl implements OrderService {
             checkPrePayOrderInfo(orderId, payAmount);
 
             // 调用支付系统进行预支付
-            PayOrderRequest payOrderRequest = orderConverter.convertPayOrderRequest(prePayOrderRequest);
+            PayOrderCommand payOrderRequest = orderConverter.convertPayOrderRequest(prePayOrderRequest);
             PayOrderDTO payOrderDTO = payRemote.payOrder(payOrderRequest);
 
             // 更新订单表与支付信息表
@@ -826,7 +826,7 @@ public class OrderServiceImpl implements OrderService {
      * 执行订单退款
      */
     private void executeOrderRefund(OrderInfoDO orderInfoDO, OrderPaymentDetailDO orderPaymentDetailDO) {
-        PayRefundRequest payRefundRequest = new PayRefundRequest();
+        RefundOrderCommand payRefundRequest = new RefundOrderCommand();
         payRefundRequest.setOrderId(orderInfoDO.getOrderId());
         payRefundRequest.setRefundAmount(orderPaymentDetailDO.getPayAmount());
         payRefundRequest.setOutTradeNo(orderPaymentDetailDO.getOutTradeNo());

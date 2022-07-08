@@ -9,11 +9,11 @@ import com.ruyuan.eshop.order.domain.entity.*;
 import com.ruyuan.eshop.order.domain.query.AcceptOrderQuery;
 import com.ruyuan.eshop.order.domain.query.OrderQuery;
 import com.ruyuan.eshop.order.domain.request.*;
-import com.ruyuan.eshop.pay.domain.dto.PayOrderDTO;
-import com.ruyuan.eshop.pay.domain.request.PayOrderRequest;
 import moe.ahao.commerce.market.api.command.LockUserCouponCommand;
 import moe.ahao.commerce.market.api.dto.CalculateOrderAmountDTO;
 import moe.ahao.commerce.market.api.query.CalculateOrderAmountQuery;
+import moe.ahao.commerce.pay.api.command.PayOrderCommand;
+import moe.ahao.commerce.pay.api.dto.PayOrderDTO;
 import moe.ahao.commerce.risk.api.command.CheckOrderRiskCommand;
 import org.mapstruct.Mapper;
 
@@ -328,7 +328,7 @@ public interface OrderConverter {
      * @param prePayOrderRequest 对象
      * @return 对象
      */
-    PayOrderRequest convertPayOrderRequest(PrePayOrderRequest prePayOrderRequest);
+    PayOrderCommand convertPayOrderRequest(PrePayOrderRequest prePayOrderRequest);
 
     /**
      * 对象转换

@@ -3,6 +3,7 @@ package com.ruyuan.eshop.order.service;
 import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.common.message.ActualRefundMessage;
 import com.ruyuan.eshop.order.domain.request.*;
+import moe.ahao.domain.entity.Result;
 
 
 /**
@@ -41,7 +42,7 @@ public interface OrderAfterSaleService {
     /**
      * 支付退款回调 入口
      */
-    JsonResult<Boolean> receivePaymentRefundCallback(RefundCallbackRequest payRefundCallbackRequest);
+    Result<Boolean> receivePaymentRefundCallback(RefundOrderCallbackCommand command);
 
     /**
      * 处理售后申请 入口

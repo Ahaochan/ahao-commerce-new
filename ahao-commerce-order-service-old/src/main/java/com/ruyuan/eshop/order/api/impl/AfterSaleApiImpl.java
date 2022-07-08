@@ -31,6 +31,7 @@ import com.ruyuan.eshop.order.mq.producer.CustomerAuditPassSendReleaseAssetsProd
 import com.ruyuan.eshop.order.service.OrderAfterSaleService;
 import com.ruyuan.eshop.order.service.OrderLackService;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.domain.entity.Result;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.LocalTransactionState;
@@ -126,10 +127,10 @@ public class AfterSaleApiImpl implements AfterSaleApi {
     }
 
     @Override
-    public JsonResult<Boolean> refundCallback(RefundCallbackRequest payRefundCallbackRequest) {
-        String orderId = payRefundCallbackRequest.getOrderId();
+    public Result<Boolean> refundCallback(RefundOrderCallbackCommand command) {
+        String orderId = command.getOrderId();
         log.info("接收到取消订单支付退款回调,orderId:{}", orderId);
-        return orderAfterSaleService.receivePaymentRefundCallback(payRefundCallbackRequest);
+        return orderAfterSaleService.receivePaymentRefundCallback(command);
     }
 
     @Override

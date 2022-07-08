@@ -1,12 +1,12 @@
 package com.ruyuan.eshop.order.remote;
 
-import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.order.exception.OrderBizException;
 import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
-import com.ruyuan.eshop.pay.api.PayApi;
-import com.ruyuan.eshop.pay.domain.dto.PayOrderDTO;
-import com.ruyuan.eshop.pay.domain.request.PayOrderRequest;
-import com.ruyuan.eshop.pay.domain.request.PayRefundRequest;
+import moe.ahao.commerce.pay.api.PayApi;
+import moe.ahao.commerce.pay.api.command.PayOrderCommand;
+import moe.ahao.commerce.pay.api.command.RefundOrderCommand;
+import moe.ahao.commerce.pay.api.dto.PayOrderDTO;
+import moe.ahao.domain.entity.Result;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Component;
 
@@ -28,21 +28,21 @@ public class PayRemote {
      * 调用支付系统进行预支付下单
      * @param payOrderRequest
      */
-    public PayOrderDTO payOrder(PayOrderRequest payOrderRequest) {
-        JsonResult<PayOrderDTO> jsonResult = payApi.payOrder(payOrderRequest);
-        if (!jsonResult.getSuccess()) {
+    public PayOrderDTO payOrder(PayOrderCommand payOrderRequest) {
+        Result<PayOrderDTO> result = payApi.payOrder(payOrderRequest);
+        if (result.getCode() != Result.SUCCESS) {
             throw new OrderBizException(OrderErrorCodeEnum.ORDER_PRE_PAY_ERROR);
         }
-        return jsonResult.getData();
+        return result.getObj();
     }
 
     /**
      * 调用支付系统执行退款
      * @param payRefundRequest
      */
-    public void executeRefund(PayRefundRequest payRefundRequest) {
-        JsonResult<Boolean> jsonResult = payApi.executeRefund(payRefundRequest);
-        if (!jsonResult.getSuccess()) {
+    public void executeRefund(RefundOrderCommand payRefundRequest) {
+        Result<Boolean> result = payApi.refundOrder(payRefundRequest);
+        if (result.getCode() != Result.SUCCESS) {
             throw new OrderBizException(OrderErrorCodeEnum.ORDER_REFUND_AMOUNT_FAILED);
         }
     }

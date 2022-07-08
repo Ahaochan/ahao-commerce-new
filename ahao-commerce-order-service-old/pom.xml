@@ -63,7 +63,7 @@
 
         <dependency>
             <groupId>moe.ahao</groupId>
-            <artifactId>ahao-commerce-pay-api-old</artifactId>
+            <artifactId>ahao-commerce-pay-api</artifactId>
             <version>1.0.0</version>
         </dependency>
 

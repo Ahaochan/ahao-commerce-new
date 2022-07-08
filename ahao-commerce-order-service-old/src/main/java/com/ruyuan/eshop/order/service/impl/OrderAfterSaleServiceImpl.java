@@ -34,9 +34,10 @@ import com.ruyuan.eshop.order.mq.producer.CancelOrderSendReleaseAssetsProducer;
 import com.ruyuan.eshop.order.mq.producer.RefundOrderSendReleaseCouponProducer;
 import com.ruyuan.eshop.order.remote.PayRemote;
 import com.ruyuan.eshop.order.service.OrderAfterSaleService;
-import com.ruyuan.eshop.pay.domain.request.PayRefundRequest;
 import lombok.extern.slf4j.Slf4j;
 import moe.ahao.commerce.market.api.command.ReleaseUserCouponCommand;
+import moe.ahao.commerce.pay.api.command.RefundOrderCommand;
+import moe.ahao.domain.entity.Result;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.LocalTransactionState;
 import org.apache.rocketmq.client.producer.TransactionListener;
@@ -255,7 +256,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
     /**
      * 更新支付退款回调售后信息
      */
-    public void updatePaymentRefundCallbackAfterSale(RefundCallbackRequest payRefundCallbackRequest,
+    public void updatePaymentRefundCallbackAfterSale(RefundOrderCallbackCommand payRefundCallbackRequest,
                                                      Integer afterSaleStatus, Integer refundStatus, String refundStatusMsg) {
         String afterSaleId = payRefundCallbackRequest.getAfterSaleId();
         //  更新 订单售后表
@@ -523,7 +524,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
             AfterSaleRefundDO afterSaleRefundDO = afterSaleRefundDAO.findAfterSaleRefundByfterSaleId(String.valueOf(afterSaleId));
 
             //  1、封装调用支付退款接口的数据
-            PayRefundRequest payRefundRequest = buildPayRefundRequest(actualRefundMessage, afterSaleRefundDO);
+            RefundOrderCommand payRefundRequest = buildPayRefundRequest(actualRefundMessage, afterSaleRefundDO);
 
             //  2、执行退款
             payRemote.executeRefund(payRefundRequest);
@@ -797,8 +798,8 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public JsonResult<Boolean> receivePaymentRefundCallback(RefundCallbackRequest payRefundCallbackRequest) {
-        String afterSaleId = payRefundCallbackRequest.getAfterSaleId();
+    public Result<Boolean> receivePaymentRefundCallback(RefundOrderCallbackCommand command) {
+        String afterSaleId = command.getAfterSaleId();
         String key = RedisLockKeyConstants.REFUND_KEY + afterSaleId;
         try {
             boolean lock = redisLock.tryLock(key);
@@ -806,13 +807,13 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
                 throw new OrderBizException(OrderErrorCodeEnum.PROCESS_PAY_REFUND_CALLBACK_REPEAT);
             }
             //  1、入参校验
-            checkRefundCallbackParam(payRefundCallbackRequest);
+            checkRefundCallbackParam(command);
 
             //  2、获取三方支付退款的返回结果
             Integer afterSaleStatus;
             Integer refundStatus;
             String refundStatusMsg;
-            if (RefundStatusEnum.REFUND_SUCCESS.getCode().equals(payRefundCallbackRequest.getRefundStatus())) {
+            if (RefundStatusEnum.REFUND_SUCCESS.getCode().equals(command.getRefundStatus())) {
                 afterSaleStatus = AfterSaleStatusEnum.REFUNDED.getCode();
                 refundStatus = RefundStatusEnum.REFUND_SUCCESS.getCode();
                 refundStatusMsg = RefundStatusEnum.REFUND_SUCCESS.getMsg();
@@ -823,7 +824,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
             }
 
             //  3、更新售后记录，支付退款回调更新售后信息
-            updatePaymentRefundCallbackAfterSale(payRefundCallbackRequest, afterSaleStatus, refundStatus, refundStatusMsg);
+            updatePaymentRefundCallbackAfterSale(command, afterSaleStatus, refundStatus, refundStatusMsg);
 
             //  4、发短信
             sendRefundMobileMessage(afterSaleId);
@@ -831,7 +832,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
             //  5、发APP通知
             sendRefundAppMessage(afterSaleId);
 
-            return JsonResult.buildSuccess();
+            return Result.success();
 
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -841,7 +842,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
         }
     }
 
-    private void checkRefundCallbackParam(RefundCallbackRequest payRefundCallbackRequest) {
+    private void checkRefundCallbackParam(RefundOrderCallbackCommand payRefundCallbackRequest) {
         ParamCheckUtil.checkObjectNonNull(payRefundCallbackRequest);
 
         String orderId = payRefundCallbackRequest.getOrderId();
@@ -946,9 +947,9 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
 
     }
 
-    private PayRefundRequest buildPayRefundRequest(ActualRefundMessage actualRefundMessage, AfterSaleRefundDO afterSaleRefundDO) {
+    private RefundOrderCommand buildPayRefundRequest(ActualRefundMessage actualRefundMessage, AfterSaleRefundDO afterSaleRefundDO) {
         String orderId = actualRefundMessage.getOrderId();
-        PayRefundRequest payRefundRequest = new PayRefundRequest();
+        RefundOrderCommand payRefundRequest = new RefundOrderCommand();
         payRefundRequest.setOrderId(orderId);
         payRefundRequest.setAfterSaleId(actualRefundMessage.getAfterSaleId());
         payRefundRequest.setRefundAmount(afterSaleRefundDO.getRefundAmount());

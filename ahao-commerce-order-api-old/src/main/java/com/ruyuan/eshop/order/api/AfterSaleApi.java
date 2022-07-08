@@ -6,8 +6,9 @@ import com.ruyuan.eshop.customer.domain.request.CustomerReviewReturnGoodsRequest
 import com.ruyuan.eshop.order.domain.dto.LackDTO;
 import com.ruyuan.eshop.order.domain.request.CancelOrderRequest;
 import com.ruyuan.eshop.order.domain.request.LackRequest;
-import com.ruyuan.eshop.order.domain.request.RefundCallbackRequest;
+import com.ruyuan.eshop.order.domain.request.RefundOrderCallbackCommand;
 import com.ruyuan.eshop.order.domain.request.RevokeAfterSaleRequest;
+import moe.ahao.domain.entity.Result;
 
 /**
  * 订单中心-逆向售后业务接口
@@ -30,7 +31,7 @@ public interface AfterSaleApi {
     /**
      * 取消订单支付退款回调
      */
-    JsonResult<Boolean> refundCallback(RefundCallbackRequest payRefundCallbackRequest);
+    Result<Boolean> refundCallback(RefundOrderCallbackCommand command);
 
     /**
      * 接收客服的审核结果

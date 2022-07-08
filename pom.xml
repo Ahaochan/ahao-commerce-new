@@ -19,6 +19,7 @@
         <module>ahao-commerce-address</module>
         <module>ahao-commerce-common</module>
         <module>ahao-commerce-market</module>
+        <module>ahao-commerce-pay</module>
         <module>ahao-commerce-product</module>
         <module>ahao-commerce-risk</module>
         <module>ahao-commerce-tms</module>
@@ -31,8 +32,6 @@
         <module>ahao-commerce-inventory-service-old</module>
         <module>ahao-commerce-order-api-old</module>
         <module>ahao-commerce-order-service-old</module>
-        <module>ahao-commerce-pay-api-old</module>
-        <module>ahao-commerce-pay-service-old</module>
         <module>ahao-commerce-fulfill-api-old</module>
         <module>ahao-commerce-fulfill-service-old</module>
     </modules>
