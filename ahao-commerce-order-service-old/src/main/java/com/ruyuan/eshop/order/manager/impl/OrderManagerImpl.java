@@ -3,9 +3,7 @@ package com.ruyuan.eshop.order.manager.impl;
 import com.ruyuan.eshop.common.enums.AmountTypeEnum;
 import com.ruyuan.eshop.common.enums.OrderOperateTypeEnum;
 import com.ruyuan.eshop.common.enums.OrderStatusEnum;
-import com.ruyuan.eshop.common.utils.JsonUtil;
 import com.ruyuan.eshop.common.utils.LoggerFormat;
-import com.ruyuan.eshop.inventory.domain.request.DeductProductStockRequest;
 import com.ruyuan.eshop.order.builder.FullOrderData;
 import com.ruyuan.eshop.order.builder.NewOrderBuilder;
 import com.ruyuan.eshop.order.config.OrderProperties;
@@ -26,11 +24,13 @@ import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import moe.ahao.commerce.address.api.dto.AddressFullDTO;
 import moe.ahao.commerce.address.api.query.AddressQuery;
+import moe.ahao.commerce.inventory.api.command.DeductProductStockCommand;
 import moe.ahao.commerce.market.api.command.LockUserCouponCommand;
 import moe.ahao.commerce.market.api.dto.CalculateOrderAmountDTO;
 import moe.ahao.commerce.market.api.dto.UserCouponDTO;
 import moe.ahao.commerce.market.api.query.GetUserCouponQuery;
 import moe.ahao.commerce.product.api.dto.ProductSkuDTO;
+import moe.ahao.util.commons.io.JSONHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -151,11 +151,11 @@ public class OrderManagerImpl implements OrderManager {
      */
     private void deductProductStock(CreateOrderRequest createOrderRequest) {
         String orderId = createOrderRequest.getOrderId();
-        List<DeductProductStockRequest.OrderItemRequest> orderItemRequestList =
+        List<DeductProductStockCommand.OrderItem> orderItemRequestList =
                 orderConverter.convertOrderItemRequest(createOrderRequest.getOrderItemRequestList());
-        DeductProductStockRequest lockProductStockRequest = new DeductProductStockRequest();
+        DeductProductStockCommand lockProductStockRequest = new DeductProductStockCommand();
         lockProductStockRequest.setOrderId(orderId);
-        lockProductStockRequest.setOrderItemRequestList(orderItemRequestList);
+        lockProductStockRequest.setOrderItems(orderItemRequestList);
         inventoryRemote.deductProductStock(lockProductStockRequest);
     }
 
@@ -316,18 +316,18 @@ public class OrderManagerImpl implements OrderManager {
                 userCouponQuery.setUserId(userId);
                 UserCouponDTO userCouponDTO = marketRemote.getUserCoupon(userCouponQuery);
                 if (userCouponDTO != null) {
-                    orderSnapshotDO.setSnapshotJson(JsonUtil.object2Json(userCouponDTO));
+                    orderSnapshotDO.setSnapshotJson(JSONHelper.toString(userCouponDTO));
                 } else {
-                    orderSnapshotDO.setSnapshotJson(JsonUtil.object2Json(couponId));
+                    orderSnapshotDO.setSnapshotJson(JSONHelper.toString(couponId));
                 }
             }
             // 订单费用信息
             else if (orderSnapshotDO.getSnapshotType().equals(SnapshotTypeEnum.ORDER_AMOUNT.getCode())) {
-                orderSnapshotDO.setSnapshotJson(JsonUtil.object2Json(orderAmountDOList));
+                orderSnapshotDO.setSnapshotJson(JSONHelper.toString(orderAmountDOList));
             }
             // 订单条目信息
             else if (orderSnapshotDO.getSnapshotType().equals(SnapshotTypeEnum.ORDER_ITEM.getCode())) {
-                orderSnapshotDO.setSnapshotJson(JsonUtil.object2Json(orderItemDOList));
+                orderSnapshotDO.setSnapshotJson(JSONHelper.toString(orderItemDOList));
             }
         }
 
@@ -535,9 +535,9 @@ public class OrderManagerImpl implements OrderManager {
             subOrderSnapshotDO.setId(null);
             subOrderSnapshotDO.setOrderId(subOrderId);
             if (SnapshotTypeEnum.ORDER_AMOUNT.getCode().equals(orderSnapshotDO.getSnapshotType())) {
-                subOrderSnapshotDO.setSnapshotJson(JsonUtil.object2Json(subOrderAmountList));
+                subOrderSnapshotDO.setSnapshotJson(JSONHelper.toString(subOrderAmountList));
             } else if (SnapshotTypeEnum.ORDER_ITEM.getCode().equals(orderSnapshotDO.getSnapshotType())) {
-                subOrderSnapshotDO.setSnapshotJson(JsonUtil.object2Json(subOrderItemDOList));
+                subOrderSnapshotDO.setSnapshotJson(JSONHelper.toString(subOrderItemDOList));
             }
             subOrderSnapshotDOList.add(subOrderSnapshotDO);
         }

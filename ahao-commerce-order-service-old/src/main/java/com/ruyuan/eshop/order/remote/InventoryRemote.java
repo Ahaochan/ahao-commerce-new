@@ -1,12 +1,13 @@
 package com.ruyuan.eshop.order.remote;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
-import com.ruyuan.eshop.common.core.JsonResult;
-import com.ruyuan.eshop.inventory.api.InventoryApi;
-import com.ruyuan.eshop.inventory.domain.request.DeductProductStockRequest;
 import com.ruyuan.eshop.order.exception.OrderBizException;
+import moe.ahao.commerce.inventory.api.InventoryApi;
+import moe.ahao.commerce.inventory.api.command.DeductProductStockCommand;
+import moe.ahao.domain.entity.Result;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Component;
+
 
 /**
  * 库存服务远程接口
@@ -27,11 +28,11 @@ public class InventoryRemote {
      * @param lockProductStockRequest
      */
     @SentinelResource(value = "InventoryRemote:deductProductStock")
-    public void deductProductStock(DeductProductStockRequest lockProductStockRequest) {
-        JsonResult<Boolean> jsonResult = inventoryApi.deductProductStock(lockProductStockRequest);
+    public void deductProductStock(DeductProductStockCommand lockProductStockRequest) {
+        Result<Boolean> result = inventoryApi.deductProductStock(lockProductStockRequest);
         // 检查锁定商品库存结果
-        if (!jsonResult.getSuccess()) {
-            throw new OrderBizException(jsonResult.getErrorCode(), jsonResult.getErrorMessage());
+        if (result.getCode() != moe.ahao.domain.entity.Result.SUCCESS) {
+            throw new OrderBizException(String.valueOf(result.getCode()), result.getMsg());
         }
     }
 }

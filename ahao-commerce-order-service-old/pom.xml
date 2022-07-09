@@ -57,7 +57,7 @@
 
         <dependency>
             <groupId>moe.ahao</groupId>
-            <artifactId>ahao-commerce-inventory-api-old</artifactId>
+            <artifactId>ahao-commerce-inventory-api</artifactId>
             <version>1.0.0</version>
         </dependency>
 

@@ -1,0 +1,76 @@
+package moe.ahao.commerce.inventory.application;
+
+import com.ruyuan.eshop.common.constants.RedisLockKeyConstants;
+import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.inventory.api.command.ModifyProductStockCommand;
+import moe.ahao.commerce.inventory.infrastructure.exception.InventoryExceptionEnum;
+import moe.ahao.commerce.inventory.infrastructure.repository.impl.mybatis.data.ProductStockDO;
+import moe.ahao.commerce.inventory.infrastructure.repository.impl.mybatis.mapper.ProductStockMapper;
+import org.apache.commons.lang3.StringUtils;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+
+@Slf4j
+@Service
+public class ModifyProductStockAppService {
+    @Autowired
+    private ModifyProductStockProcessor modifyProductStockProcessor;
+    @Autowired
+    private ProductStockMapper productStockMapper;
+    @Autowired
+    private RedissonClient redissonClient;
+
+    public Boolean doModify(ModifyProductStockCommand command) {
+        // 1. 校验入参
+        this.check(command);
+
+        // 2. 查询商品库存
+        ProductStockDO productStock = productStockMapper.selectOneBySkuCode(command.getSkuCode());
+        if (productStock == null) {
+            throw InventoryExceptionEnum.PRODUCT_SKU_STOCK_NOT_FOUND_ERROR.msg();
+        }
+
+        // 3. 校验库存被扣减后是否小于0
+        BigDecimal stockIncremental = command.getStockIncremental();
+        BigDecimal saleStockQuantity = productStock.getSaleStockQuantity();
+        if (saleStockQuantity.add(stockIncremental).compareTo(BigDecimal.ZERO) < 0) {
+            throw InventoryExceptionEnum.SALE_STOCK_QUANTITY_CANNOT_BE_NEGATIVE_NUMBER.msg();
+        }
+
+        // 4. 加分布式锁, 保证mysql和redis数据的一致性
+        String lockKey = RedisLockKeyConstants.MODIFY_PRODUCT_STOCK_KEY + command.getSkuCode();
+        RLock lock = redissonClient.getLock(lockKey);
+        boolean locked = lock.tryLock();
+        if (!locked) {
+            throw InventoryExceptionEnum.INCREASE_PRODUCT_SKU_STOCK_ERROR.msg();
+        }
+        try {
+            modifyProductStockProcessor.doModifyWithTx(productStock, stockIncremental);
+        } finally {
+            lock.unlock();
+        }
+
+        return true;
+    }
+
+    /**
+     * 校验调整商品库存入参
+     */
+    private void check(ModifyProductStockCommand command) {
+        String skuCode = command.getSkuCode();
+        if (StringUtils.isEmpty(skuCode)) {
+            throw InventoryExceptionEnum.SKU_CODE_IS_EMPTY.msg();
+        }
+        BigDecimal stockIncremental = command.getStockIncremental();
+        if (stockIncremental == null) {
+            throw InventoryExceptionEnum.SALE_STOCK_INCREMENTAL_QUANTITY_IS_EMPTY.msg();
+        }
+        if (stockIncremental.compareTo(BigDecimal.ZERO) == 0) {
+            throw InventoryExceptionEnum.SALE_STOCK_INCREMENTAL_QUANTITY_CANNOT_BE_ZERO.msg();
+        }
+    }
+}

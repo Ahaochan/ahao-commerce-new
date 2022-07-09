@@ -14,7 +14,6 @@ import com.ruyuan.eshop.common.message.PaidOrderSuccessMessage;
 import com.ruyuan.eshop.common.message.PayOrderTimeoutDelayMessage;
 import com.ruyuan.eshop.common.mq.MQMessage;
 import com.ruyuan.eshop.common.redis.RedisLock;
-import com.ruyuan.eshop.common.utils.JsonUtil;
 import com.ruyuan.eshop.common.utils.LoggerFormat;
 import com.ruyuan.eshop.common.utils.ParamCheckUtil;
 import com.ruyuan.eshop.order.converter.OrderConverter;
@@ -46,6 +45,7 @@ import moe.ahao.commerce.pay.api.command.RefundOrderCommand;
 import moe.ahao.commerce.pay.api.dto.PayOrderDTO;
 import moe.ahao.commerce.product.api.dto.ProductSkuDTO;
 import moe.ahao.commerce.risk.api.command.CheckOrderRiskCommand;
+import moe.ahao.util.commons.io.JSONHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -440,7 +440,7 @@ public class OrderServiceImpl implements OrderService {
         message.setOrderType(createOrderRequest.getOrderType());
         message.setOrderStatus(OrderStatusEnum.CREATED.getCode());
 
-        String msgJson = JsonUtil.object2Json(message);
+        String msgJson = JSONHelper.toString(message);
         defaultProducer.sendMessage(RocketMqConstant.PAY_ORDER_TIMEOUT_DELAY_TOPIC, msgJson,
                 RocketDelayedLevel.DELAYED_30m, "支付订单超时延迟消息", null, orderId);
     }

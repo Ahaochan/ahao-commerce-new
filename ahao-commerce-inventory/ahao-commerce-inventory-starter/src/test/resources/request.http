@@ -1,0 +1,47 @@
+### 查询商品库存
+POST http://127.0.0.1:8083/api/inventory/test/getStockInfo
+Content-Type: application/json
+
+{
+    "skuCode": "10101010"
+}
+
+### 同步商品sku库存数据到缓存
+POST http://127.0.0.1:8083/api/inventory/test/syncStockToCache
+Content-Type: application/json
+
+{
+    "skuCode": "10101010"
+}
+
+### 新增商品库存
+POST http://127.0.0.1:8083/api/inventory/addStock
+Content-Type: application/json
+
+{
+    "skuCode": "110",
+    "saleStockQuantity": "2"
+}
+
+### 增减商品库存
+POST http://127.0.0.1:8083/api/inventory/modifyStock
+Content-Type: application/json
+
+{
+    "skuCode": "10101010",
+    "stockIncremental": "-2"
+}
+
+### 扣减商品库存
+POST http://127.0.0.1:8083/api/inventory/deductProductStock
+Content-Type: application/json
+
+{
+    "businessIdentifier": "100",
+    "orderNo": "O20220617201922",
+    "userNo": "lsh01",
+    "sellerNo": "lsh02",
+    "orderItems": [
+        {"skuCode": "10101010", "saleQuantity": "2"}
+    ]
+}

@@ -5,13 +5,13 @@ import com.google.common.base.Strings;
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
 import com.ruyuan.eshop.common.enums.OrderStatusEnum;
 import com.ruyuan.eshop.common.mq.AbstractMessageListenerConcurrently;
-import com.ruyuan.eshop.inventory.domain.request.ReleaseProductStockRequest;
 import com.ruyuan.eshop.order.dao.OrderItemDAO;
 import com.ruyuan.eshop.order.domain.dto.OrderInfoDTO;
 import com.ruyuan.eshop.order.domain.entity.OrderItemDO;
 import com.ruyuan.eshop.order.domain.request.CancelOrderAssembleRequest;
 import com.ruyuan.eshop.order.mq.producer.DefaultProducer;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.inventory.api.event.ReleaseProductStockEvent;
 import moe.ahao.commerce.market.api.command.ReleaseUserCouponCommand;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
@@ -54,7 +54,7 @@ public class ReleaseAssetsListener extends AbstractMessageListenerConcurrently {
                 }
 
                 // 3、发送释放库存MQ
-                ReleaseProductStockRequest releaseProductStockRequest = buildReleaseProductStock(orderInfoDTO, orderItemDAO);
+                ReleaseProductStockEvent releaseProductStockRequest = buildReleaseProductStock(orderInfoDTO, orderItemDAO);
                 defaultProducer.sendMessage(RocketMqConstant.CANCEL_RELEASE_INVENTORY_TOPIC,
                         JSONObject.toJSONString(releaseProductStockRequest), "取消订单释放库存", null, orderInfoDTO.getOrderId());
 
@@ -88,24 +88,24 @@ public class ReleaseAssetsListener extends AbstractMessageListenerConcurrently {
     /**
      * 组装释放库存数据
      */
-    private ReleaseProductStockRequest buildReleaseProductStock(OrderInfoDTO orderInfoDTO, OrderItemDAO orderItemDAO) {
+    private ReleaseProductStockEvent buildReleaseProductStock(OrderInfoDTO orderInfoDTO, OrderItemDAO orderItemDAO) {
         String orderId = orderInfoDTO.getOrderId();
-        List<ReleaseProductStockRequest.OrderItemRequest> orderItemRequestList = new ArrayList<>();
+        List<ReleaseProductStockEvent.OrderItem> orderItemRequestList = new ArrayList<>();
 
         //  查询订单条目
-        ReleaseProductStockRequest.OrderItemRequest orderItemRequest;
+        ReleaseProductStockEvent.OrderItem orderItemRequest;
         List<OrderItemDO> orderItemDOList = orderItemDAO.listByOrderId(orderId);
         for (OrderItemDO orderItemDO : orderItemDOList) {
-            orderItemRequest = new ReleaseProductStockRequest.OrderItemRequest();
+            orderItemRequest = new ReleaseProductStockEvent.OrderItem();
             orderItemRequest.setSkuCode(orderItemDO.getSkuCode());
             orderItemRequest.setSaleQuantity(orderItemDO.getSaleQuantity());
 
             orderItemRequestList.add(orderItemRequest);
         }
 
-        ReleaseProductStockRequest releaseProductStockRequest = new ReleaseProductStockRequest();
+        ReleaseProductStockEvent releaseProductStockRequest = new ReleaseProductStockEvent();
         releaseProductStockRequest.setOrderId(orderInfoDTO.getOrderId());
-        releaseProductStockRequest.setOrderItemRequestList(orderItemRequestList);
+        releaseProductStockRequest.setOrderItems(orderItemRequestList);
 
         return releaseProductStockRequest;
     }

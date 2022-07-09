@@ -2,13 +2,13 @@ package com.ruyuan.eshop.order.converter;
 
 import com.ruyuan.eshop.customer.domain.request.CustomerReceiveAfterSaleRequest;
 import com.ruyuan.eshop.fulfill.domain.request.CancelFulfillRequest;
-import com.ruyuan.eshop.inventory.domain.request.DeductProductStockRequest;
-import com.ruyuan.eshop.inventory.domain.request.ReleaseProductStockRequest;
 import com.ruyuan.eshop.order.domain.dto.*;
 import com.ruyuan.eshop.order.domain.entity.*;
 import com.ruyuan.eshop.order.domain.query.AcceptOrderQuery;
 import com.ruyuan.eshop.order.domain.query.OrderQuery;
 import com.ruyuan.eshop.order.domain.request.*;
+import moe.ahao.commerce.inventory.api.command.DeductProductStockCommand;
+import moe.ahao.commerce.inventory.api.event.ReleaseProductStockEvent;
 import moe.ahao.commerce.market.api.command.LockUserCouponCommand;
 import moe.ahao.commerce.market.api.dto.CalculateOrderAmountDTO;
 import moe.ahao.commerce.market.api.query.CalculateOrderAmountQuery;
@@ -168,7 +168,7 @@ public interface OrderConverter {
      * @param releaseProductOrderItemRequest 对象
      * @return 对象
      */
-    ReleaseProductStockRequest.OrderItemRequest convertOrderItemRequest(ReleaseProductStockDTO.OrderItemRequest releaseProductOrderItemRequest);
+    ReleaseProductStockEvent.OrderItem convertOrderItemRequest(ReleaseProductStockDTO.OrderItemRequest releaseProductOrderItemRequest);
 
     /**
      * 对象转换
@@ -296,7 +296,7 @@ public interface OrderConverter {
      * @param orderItemRequest 对象
      * @return 对象
      */
-    DeductProductStockRequest.OrderItemRequest convertOrderItemRequest(CreateOrderRequest.OrderItemRequest orderItemRequest);
+    DeductProductStockCommand.OrderItem convertOrderItemRequest(CreateOrderRequest.OrderItemRequest orderItemRequest);
 
     /**
      * 对象转换
@@ -304,7 +304,7 @@ public interface OrderConverter {
      * @param orderItemRequestList 对象
      * @return 对象
      */
-    List<DeductProductStockRequest.OrderItemRequest> convertOrderItemRequest(List<CreateOrderRequest.OrderItemRequest> orderItemRequestList);
+    List<DeductProductStockCommand.OrderItem> convertOrderItemRequest(List<CreateOrderRequest.OrderItemRequest> orderItemRequestList);
 
     /**
      * 对象转换
