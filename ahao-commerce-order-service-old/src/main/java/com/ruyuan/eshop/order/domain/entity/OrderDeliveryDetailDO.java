@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -75,12 +76,12 @@ public class OrderDeliveryDetailDO implements Serializable {
     /**
      * 经度
      */
-    private String lon;
+    private BigDecimal lon;
 
     /**
      * 维度
      */
-    private String lat;
+    private BigDecimal lat;
 
     /**
      * 收货人姓名

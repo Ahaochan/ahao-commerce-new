@@ -1,10 +1,10 @@
 package com.ruyuan.eshop.order.service;
 
 
-import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
 import com.ruyuan.eshop.order.domain.dto.WmsShipDTO;
 import com.ruyuan.eshop.order.domain.entity.OrderInfoDO;
 import com.ruyuan.eshop.order.exception.OrderBizException;
+import moe.ahao.commerce.fulfill.api.command.ReceiveFulfillCommand;
 
 /**
  * <p>
@@ -31,5 +31,5 @@ public interface OrderFulFillService {
     void informOrderWmsShipResult(WmsShipDTO wmsShipDTO) throws OrderBizException;
 
 
-    ReceiveFulfillRequest buildReceiveFulFillRequest(OrderInfoDO orderInfo);
+    ReceiveFulfillCommand buildReceiveFulFillRequest(OrderInfoDO orderInfo);
 }

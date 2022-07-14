@@ -2,7 +2,6 @@ package com.ruyuan.eshop.order.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ruyuan.eshop.common.enums.OrderStatusEnum;
 import com.ruyuan.eshop.common.page.PagingInfo;
 import com.ruyuan.eshop.common.utils.LoggerFormat;
 import com.ruyuan.eshop.common.utils.ParamCheckUtil;
@@ -22,6 +21,7 @@ import com.ruyuan.eshop.order.service.AfterSaleQueryService;
 import com.ruyuan.eshop.order.service.OrderLackService;
 import com.ruyuan.eshop.order.service.OrderQueryService;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.common.enums.OrderStatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

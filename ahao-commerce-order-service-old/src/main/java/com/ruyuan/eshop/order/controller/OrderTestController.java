@@ -5,15 +5,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
 import com.ruyuan.eshop.common.core.JsonResult;
-import com.ruyuan.eshop.common.enums.OrderStatusChangeEnum;
 import com.ruyuan.eshop.common.message.PaidOrderSuccessMessage;
 import com.ruyuan.eshop.common.page.PagingInfo;
-import com.ruyuan.eshop.fulfill.api.FulfillApi;
-import com.ruyuan.eshop.fulfill.domain.event.OrderDeliveredWmsEvent;
-import com.ruyuan.eshop.fulfill.domain.event.OrderOutStockWmsEvent;
-import com.ruyuan.eshop.fulfill.domain.event.OrderSignedWmsEvent;
-import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
-import com.ruyuan.eshop.fulfill.domain.request.TriggerOrderWmsShipEventRequest;
 import com.ruyuan.eshop.order.api.OrderApi;
 import com.ruyuan.eshop.order.api.OrderQueryApi;
 import com.ruyuan.eshop.order.dao.OrderInfoDAO;
@@ -24,6 +17,14 @@ import com.ruyuan.eshop.order.domain.request.*;
 import com.ruyuan.eshop.order.mq.producer.DefaultProducer;
 import com.ruyuan.eshop.order.service.impl.OrderFulFillServiceImpl;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.common.enums.OrderStatusChangeEnum;
+import moe.ahao.commerce.fulfill.api.FulfillFeignApi;
+import moe.ahao.commerce.fulfill.api.command.ReceiveFulfillCommand;
+import moe.ahao.commerce.fulfill.api.event.OrderDeliveredWmsEvent;
+import moe.ahao.commerce.fulfill.api.event.OrderOutStockWmsEvent;
+import moe.ahao.commerce.fulfill.api.event.OrderSignedWmsEvent;
+import moe.ahao.commerce.fulfill.api.event.TriggerOrderWmsShipEvent;
+import moe.ahao.domain.entity.Result;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -49,8 +50,8 @@ public class OrderTestController {
     @DubboReference(version = "1.0.0")
     private OrderQueryApi queryApi;
 
-    @DubboReference(version = "1.0.0", retries = 0)
-    private FulfillApi fulfillApi;
+    @Autowired
+    private FulfillFeignApi fulfillApi;
 
     @Autowired
     private DefaultProducer defaultProducer;
@@ -168,14 +169,14 @@ public class OrderTestController {
      * @return
      */
     @PostMapping("/triggerOutStockEvent")
-    public JsonResult<Boolean> triggerOrderOutStockWmsEvent(@RequestParam("orderId") String orderId
+    public Result<Boolean> triggerOrderOutStockWmsEvent(@RequestParam("orderId") String orderId
             , @RequestParam("fulfillId") String fulfillId, @RequestBody OrderOutStockWmsEvent event) {
         log.info("orderId={},fulfillId={},event={}", orderId, fulfillId, JSONObject.toJSONString(event));
 
-        TriggerOrderWmsShipEventRequest request = new TriggerOrderWmsShipEventRequest(orderId
+        TriggerOrderWmsShipEvent request = new TriggerOrderWmsShipEvent(orderId
                 , fulfillId, OrderStatusChangeEnum.ORDER_OUT_STOCKED, event);
 
-        JsonResult<Boolean> result = fulfillApi.triggerOrderWmsShipEvent(request);
+        Result<Boolean> result = fulfillApi.triggerOrderWmsShipEvent(request);
         return result;
     }
 
@@ -186,14 +187,14 @@ public class OrderTestController {
      * @return
      */
     @PostMapping("/triggerDeliveredWmsEvent")
-    public JsonResult<Boolean> triggerOrderDeliveredWmsEvent(@RequestParam("orderId") String orderId
+    public Result<Boolean> triggerOrderDeliveredWmsEvent(@RequestParam("orderId") String orderId
             , @RequestParam("fulfillId") String fulfillId, @RequestBody OrderDeliveredWmsEvent event) {
         log.info("orderId={},fulfillId={},event={}", orderId, fulfillId, JSONObject.toJSONString(event));
 
-        TriggerOrderWmsShipEventRequest request = new TriggerOrderWmsShipEventRequest(orderId
+        TriggerOrderWmsShipEvent request = new TriggerOrderWmsShipEvent(orderId
                 , fulfillId, OrderStatusChangeEnum.ORDER_DELIVERED, event);
 
-        JsonResult<Boolean> result = fulfillApi.triggerOrderWmsShipEvent(request);
+        Result<Boolean> result = fulfillApi.triggerOrderWmsShipEvent(request);
         return result;
     }
 
@@ -204,14 +205,14 @@ public class OrderTestController {
      * @return
      */
     @PostMapping("/triggerSignedWmsEvent")
-    public JsonResult<Boolean> triggerOrderSignedWmsEvent(@RequestParam("orderId") String orderId
+    public Result<Boolean> triggerOrderSignedWmsEvent(@RequestParam("orderId") String orderId
             , @RequestParam("fulfillId") String fulfillId, @RequestBody OrderSignedWmsEvent event) {
         log.info("orderId={},fulfillId={},event={}", orderId, fulfillId, JSONObject.toJSONString(event));
 
-        TriggerOrderWmsShipEventRequest request = new TriggerOrderWmsShipEventRequest(orderId
+        TriggerOrderWmsShipEvent request = new TriggerOrderWmsShipEvent(orderId
                 , fulfillId, OrderStatusChangeEnum.ORDER_SIGNED, event);
 
-        JsonResult<Boolean> result = fulfillApi.triggerOrderWmsShipEvent(request);
+        Result<Boolean> result = fulfillApi.triggerOrderWmsShipEvent(request);
         return result;
     }
 
@@ -240,14 +241,14 @@ public class OrderTestController {
      * @return
      */
     @GetMapping("/triggerReceiveOrderFulFill")
-    public JsonResult<Boolean> triggerReceiveOrderFulFill(@RequestParam("orderId") String orderId,
-                                                          @RequestParam("fulfillException") String fulfillException,
-                                                          @RequestParam("wmsException") String wmsException,
-                                                          @RequestParam("tmsException") String tmsException) {
+    public Result<Boolean> triggerReceiveOrderFulFill(@RequestParam("orderId") String orderId,
+                                                      @RequestParam("fulfillException") String fulfillException,
+                                                      @RequestParam("wmsException") String wmsException,
+                                                      @RequestParam("tmsException") String tmsException) {
         log.info("orderId={}", orderId);
 
         OrderInfoDO order = orderInfoDAO.getByOrderId(orderId);
-        ReceiveFulfillRequest request = orderFulFillService.buildReceiveFulFillRequest(order);
+        ReceiveFulfillCommand request = orderFulFillService.buildReceiveFulFillRequest(order);
         request.setFulfillException(fulfillException);
         request.setWmsException(wmsException);
         request.setTmsException(tmsException);

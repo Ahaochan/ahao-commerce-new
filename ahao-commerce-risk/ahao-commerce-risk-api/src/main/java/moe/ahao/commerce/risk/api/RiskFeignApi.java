@@ -8,9 +8,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 /**
  * 风控服务API
  */
-public interface RiskFeignApi extends RiskApi{
-    String CONTEXT = "/api/risk/";
+public interface RiskFeignApi {
+    String PATH = "/api/risk/";
 
+    /**
+     * 订单风控检查
+     */
     @PostMapping("/checkOrderRisk")
     Result<CheckOrderRiskDTO> checkOrderRisk(CheckOrderRiskCommand command);
 }

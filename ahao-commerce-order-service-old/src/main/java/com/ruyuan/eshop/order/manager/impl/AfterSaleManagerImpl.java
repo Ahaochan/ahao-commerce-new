@@ -3,10 +3,7 @@ package com.ruyuan.eshop.order.manager.impl;
 import com.google.common.collect.Lists;
 import com.ruyuan.eshop.common.enums.AfterSaleTypeDetailEnum;
 import com.ruyuan.eshop.common.enums.AfterSaleTypeEnum;
-import com.ruyuan.eshop.common.enums.OrderOperateTypeEnum;
-import com.ruyuan.eshop.common.enums.OrderStatusEnum;
 import com.ruyuan.eshop.common.utils.RandomUtil;
-import com.ruyuan.eshop.fulfill.domain.request.CancelFulfillRequest;
 import com.ruyuan.eshop.order.converter.OrderConverter;
 import com.ruyuan.eshop.order.dao.*;
 import com.ruyuan.eshop.order.domain.dto.OrderInfoDTO;
@@ -18,6 +15,9 @@ import com.ruyuan.eshop.order.manager.AfterSaleManager;
 import com.ruyuan.eshop.order.remote.FulfillRemote;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.common.enums.OrderOperateTypeEnum;
+import moe.ahao.commerce.common.enums.OrderStatusEnum;
+import moe.ahao.commerce.fulfill.api.command.CancelFulfillCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -77,7 +77,7 @@ public class AfterSaleManagerImpl implements AfterSaleManager {
         if (OrderStatusEnum.CREATED.getCode().equals(orderInfoDTO.getOrderStatus())) {
             return;
         }
-        CancelFulfillRequest cancelFulfillRequest = orderConverter.convertCancelFulfillRequest(orderInfoDTO);
+        CancelFulfillCommand cancelFulfillRequest = orderConverter.convertCancelFulfillRequest(orderInfoDTO);
         fulfillRemote.cancelFulfill(cancelFulfillRequest);
     }
 

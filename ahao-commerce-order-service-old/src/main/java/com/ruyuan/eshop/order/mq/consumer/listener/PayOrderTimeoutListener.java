@@ -1,7 +1,6 @@
 package com.ruyuan.eshop.order.mq.consumer.listener;
 
 import com.alibaba.fastjson.JSON;
-import com.ruyuan.eshop.common.enums.OrderStatusEnum;
 import com.ruyuan.eshop.common.message.PayOrderTimeoutDelayMessage;
 import com.ruyuan.eshop.common.mq.AbstractMessageListenerConcurrently;
 import com.ruyuan.eshop.order.dao.OrderInfoDAO;
@@ -9,6 +8,7 @@ import com.ruyuan.eshop.order.domain.entity.OrderInfoDO;
 import com.ruyuan.eshop.order.domain.request.CancelOrderRequest;
 import com.ruyuan.eshop.order.service.OrderAfterSaleService;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.common.enums.OrderStatusEnum;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.common.message.MessageExt;

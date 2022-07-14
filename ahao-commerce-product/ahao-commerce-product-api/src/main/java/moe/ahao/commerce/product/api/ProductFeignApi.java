@@ -9,11 +9,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-public interface ProductFeignApi extends ProductApi {
-    String CONTEXT = "/api/product";
+public interface ProductFeignApi {
+    String PATH = "/api/product";
 
+    /**
+     * 查询商品SKU详情
+     */
     @PostMapping("/getBySkuCode")
     Result<ProductSkuDTO> getBySkuCode(@RequestBody GetProductSkuQuery query);
+
+    /**
+     * 批量查询商品SKU详情
+     */
     @PostMapping("/listBySkuCodes")
     Result<List<ProductSkuDTO>> listBySkuCodes(@RequestBody ListProductSkuQuery query);
 }

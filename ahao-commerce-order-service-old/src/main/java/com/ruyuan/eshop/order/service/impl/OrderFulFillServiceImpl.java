@@ -2,10 +2,6 @@ package com.ruyuan.eshop.order.service.impl;
 
 import com.ruyuan.eshop.common.bean.SpringApplicationContext;
 import com.ruyuan.eshop.common.enums.AmountTypeEnum;
-import com.ruyuan.eshop.common.enums.OrderStatusChangeEnum;
-import com.ruyuan.eshop.common.enums.OrderStatusEnum;
-import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
-import com.ruyuan.eshop.fulfill.domain.request.ReceiveOrderItemRequest;
 import com.ruyuan.eshop.order.dao.*;
 import com.ruyuan.eshop.order.domain.dto.WmsShipDTO;
 import com.ruyuan.eshop.order.domain.entity.OrderAmountDO;
@@ -19,6 +15,10 @@ import com.ruyuan.eshop.order.wms.OrderOutStockedProcessor;
 import com.ruyuan.eshop.order.wms.OrderSignedProcessor;
 import com.ruyuan.eshop.order.wms.OrderWmsShipResultProcessor;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.common.enums.OrderStatusChangeEnum;
+import moe.ahao.commerce.common.enums.OrderStatusEnum;
+import moe.ahao.commerce.fulfill.api.command.ReceiveFulfillCommand;
+import moe.ahao.commerce.fulfill.api.command.ReceiveOrderItemCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,35 +101,34 @@ public class OrderFulFillServiceImpl implements OrderFulFillService {
      * @return
      */
     @Override
-    public ReceiveFulfillRequest buildReceiveFulFillRequest(OrderInfoDO orderInfo) {
+    public ReceiveFulfillCommand buildReceiveFulFillRequest(OrderInfoDO orderInfo) {
 
         OrderDeliveryDetailDO orderDeliveryDetail = orderDeliveryDetailDAO.getByOrderId(orderInfo.getOrderId());
         List<OrderItemDO> orderItems = orderItemDAO.listByOrderId(orderInfo.getOrderId());
 
         OrderAmountDO deliveryAmount = orderAmountDAO.getOne(orderInfo.getOrderId()
-                , AmountTypeEnum.SHIPPING_AMOUNT.getCode());
+            , AmountTypeEnum.SHIPPING_AMOUNT.getCode());
 
         //构造请求
-        ReceiveFulfillRequest request = ReceiveFulfillRequest.builder()
-                .businessIdentifier(orderInfo.getBusinessIdentifier())
-                .orderId(orderInfo.getOrderId())
-                .sellerId(orderInfo.getSellerId())
-                .userId(orderInfo.getUserId())
-                .deliveryType(orderDeliveryDetail.getDeliveryType())
-                .receiverName(orderDeliveryDetail.getReceiverName())
-                .receiverPhone(orderDeliveryDetail.getReceiverPhone())
-                .receiverProvince(orderDeliveryDetail.getProvince())
-                .receiverCity(orderDeliveryDetail.getCity())
-                .receiverArea(orderDeliveryDetail.getArea())
-                .receiverStreet(orderDeliveryDetail.getStreet())
-                .receiverDetailAddress(orderDeliveryDetail.getDetailAddress())
-                .receiverLat(orderDeliveryDetail.getLat())
-                .receiverLon(orderDeliveryDetail.getLon())
-                .payType(orderInfo.getPayType())
-                .payAmount(orderInfo.getPayAmount())
-                .totalAmount(orderInfo.getTotalAmount())
-                .receiveOrderItems(buildReceiveOrderItemRequest(orderInfo, orderItems))
-                .build();
+        ReceiveFulfillCommand request = new ReceiveFulfillCommand();
+        request.setBusinessIdentifier(orderInfo.getBusinessIdentifier());
+        request.setOrderId(orderInfo.getOrderId());
+        request.setSellerId(orderInfo.getSellerId());
+        request.setUserId(orderInfo.getUserId());
+        request.setDeliveryType(orderDeliveryDetail.getDeliveryType());
+        request.setReceiverName(orderDeliveryDetail.getReceiverName());
+        request.setReceiverPhone(orderDeliveryDetail.getReceiverPhone());
+        request.setReceiverProvince(orderDeliveryDetail.getProvince());
+        request.setReceiverCity(orderDeliveryDetail.getCity());
+        request.setReceiverArea(orderDeliveryDetail.getArea());
+        request.setReceiverStreet(orderDeliveryDetail.getStreet());
+        request.setReceiverDetailAddress(orderDeliveryDetail.getDetailAddress());
+        request.setReceiverLat(orderDeliveryDetail.getLat());
+        request.setReceiverLon(orderDeliveryDetail.getLon());
+        request.setPayType(orderInfo.getPayType());
+        request.setPayAmount(orderInfo.getPayAmount());
+        request.setTotalAmount(orderInfo.getTotalAmount());
+        request.setReceiveOrderItems(buildReceiveOrderItemRequest(orderInfo, orderItems));
 
         //运费
         if (null != deliveryAmount) {
@@ -139,22 +138,22 @@ public class OrderFulFillServiceImpl implements OrderFulFillService {
     }
 
 
-    private List<ReceiveOrderItemRequest> buildReceiveOrderItemRequest(OrderInfoDO orderInfo, List<OrderItemDO> items) {
+    private List<ReceiveOrderItemCommand> buildReceiveOrderItemRequest(OrderInfoDO orderInfo, List<OrderItemDO> items) {
 
-        List<ReceiveOrderItemRequest> itemRequests = new ArrayList<>();
+        List<ReceiveOrderItemCommand> itemRequests = new ArrayList<>();
 
-        items.forEach(item -> {
-            ReceiveOrderItemRequest request = ReceiveOrderItemRequest.builder()
-                    .skuCode(item.getSkuCode())
-                    .productName(item.getProductName())
-                    .salePrice(item.getSalePrice())
-                    .saleQuantity(item.getSaleQuantity())
-                    .productUnit(item.getProductUnit())
-                    .payAmount(item.getPayAmount())
-                    .originAmount(item.getOriginAmount())
-                    .build();
+        for (OrderItemDO item : items) {
+            ReceiveOrderItemCommand request = new ReceiveOrderItemCommand();
+            request.setSkuCode(item.getSkuCode());
+            request.setProductName(item.getProductName());
+            request.setSalePrice(item.getSalePrice());
+            request.setSaleQuantity(item.getSaleQuantity());
+            request.setProductUnit(item.getProductUnit());
+            request.setPayAmount(item.getPayAmount());
+            request.setOriginAmount(item.getOriginAmount());
+
             itemRequests.add(request);
-        });
+        }
 
         return itemRequests;
     }

@@ -3,11 +3,11 @@ package com.ruyuan.eshop.order.remote;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.ruyuan.eshop.order.exception.OrderBizException;
 import com.ruyuan.eshop.order.remote.fallback.RiskRemoteFallback;
-import moe.ahao.commerce.risk.api.RiskApi;
+import moe.ahao.commerce.risk.api.RiskFeignApi;
 import moe.ahao.commerce.risk.api.command.CheckOrderRiskCommand;
 import moe.ahao.commerce.risk.api.dto.CheckOrderRiskDTO;
 import moe.ahao.domain.entity.Result;
-import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,8 +21,8 @@ public class RiskRemote {
     /**
      * 风控服务
      */
-    @DubboReference(version = "1.0.0", retries = 0)
-    private RiskApi riskApi;
+    @Autowired
+    private RiskFeignApi riskApi;
 
     /**
      * 订单风控检查

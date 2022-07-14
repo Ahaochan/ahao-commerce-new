@@ -6,11 +6,21 @@ import moe.ahao.commerce.wms.api.dto.PickDTO;
 import moe.ahao.domain.entity.Result;
 import org.springframework.web.bind.annotation.PostMapping;
 
-public interface WmsFeignApi extends WmsApi{
-    String CONTEXT = "/api/wms/";
+/**
+ * 仓储系统api
+ */
+public interface WmsFeignApi {
+    String PATH = "/api/wms/";
 
+    /**
+     * 捡货
+     */
     @PostMapping("/pickGoods")
     Result<PickDTO> pickGoods(PickGoodsCommand command);
+
+    /**
+     * 取消捡货
+     */
     @PostMapping("/cancelPickGoods")
     Result<Boolean> cancelPickGoods(CancelPickGoodsCommand command);
 }

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping(AddressFeignApi.CONTEXT)
+@RequestMapping(AddressFeignApi.PATH)
 public class AddressController implements AddressFeignApi {
 
     @Autowired

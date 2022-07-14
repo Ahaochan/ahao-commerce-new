@@ -2,15 +2,15 @@ package com.ruyuan.eshop.order.remote;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.ruyuan.eshop.order.exception.OrderBizException;
-import moe.ahao.commerce.market.api.CouponDubboApi;
-import moe.ahao.commerce.market.api.MarketDubboApi;
+import moe.ahao.commerce.market.api.CouponFeignApi;
+import moe.ahao.commerce.market.api.MarketFeignApi;
 import moe.ahao.commerce.market.api.command.LockUserCouponCommand;
 import moe.ahao.commerce.market.api.dto.CalculateOrderAmountDTO;
 import moe.ahao.commerce.market.api.dto.UserCouponDTO;
 import moe.ahao.commerce.market.api.query.CalculateOrderAmountQuery;
 import moe.ahao.commerce.market.api.query.GetUserCouponQuery;
 import moe.ahao.domain.entity.Result;
-import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -24,10 +24,10 @@ public class MarketRemote {
     /**
      * 营销服务
      */
-    @DubboReference(version = "1.0.0", retries = 0)
-    private CouponDubboApi couponApi;
-    @DubboReference(version = "1.0.0", retries = 0)
-    private MarketDubboApi marketApi;
+    @Autowired
+    private CouponFeignApi couponApi;
+    @Autowired
+    private MarketFeignApi marketApi;
 
     /**
      * 计算订单费用

@@ -63,11 +63,11 @@ public class SendOutCommand {
     /**
      * 经度 六位小数点
      */
-    private String receiverLon;
+    private BigDecimal receiverLon;
     /**
      * 纬度 六位小数点
      */
-    private String receiverLat;
+    private BigDecimal receiverLat;
     /**
      * 用户备注
      */

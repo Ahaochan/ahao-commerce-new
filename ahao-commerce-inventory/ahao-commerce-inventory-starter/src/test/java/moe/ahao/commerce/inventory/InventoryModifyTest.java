@@ -56,7 +56,7 @@ class InventoryModifyTest {
 
         BigDecimal saleStockQuantity = new BigDecimal("100");
         AddProductStockCommand addProductStockCommand = new AddProductStockCommand(skuCode, saleStockQuantity);
-        mockMvc.perform(post(InventoryFeignApi.CONTEXT + "/addProductStock")
+        mockMvc.perform(post(InventoryFeignApi.PATH + "/addProductStock")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(JSONHelper.toString(addProductStockCommand)))
             .andDo(print())
@@ -66,7 +66,7 @@ class InventoryModifyTest {
 
         BigDecimal stockIncremental = new BigDecimal("20");
         ModifyProductStockCommand modifyProductStockCommand = new ModifyProductStockCommand(skuCode, stockIncremental);
-        mockMvc.perform(post(InventoryFeignApi.CONTEXT + "/modifyProductStock")
+        mockMvc.perform(post(InventoryFeignApi.PATH + "/modifyProductStock")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .content(JSONHelper.toString(modifyProductStockCommand)))
             .andDo(print())
@@ -76,7 +76,7 @@ class InventoryModifyTest {
     }
 
     void assertResult(BigDecimal saleStockQuantity) throws Exception {
-        ResultActions actions = mockMvc.perform(get(InventoryFeignApi.CONTEXT + "/getStockInfo")
+        ResultActions actions = mockMvc.perform(get(InventoryFeignApi.PATH + "/getStockInfo")
                 .contentType(MediaType.APPLICATION_JSON_UTF8)
                 .param("skuCode", InventoryModifyTest.skuCode))
             .andDo(print())

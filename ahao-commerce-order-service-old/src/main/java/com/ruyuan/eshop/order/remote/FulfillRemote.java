@@ -1,11 +1,11 @@
 package com.ruyuan.eshop.order.remote;
 
-import com.ruyuan.eshop.common.core.JsonResult;
-import com.ruyuan.eshop.fulfill.api.FulfillApi;
-import com.ruyuan.eshop.fulfill.domain.request.CancelFulfillRequest;
 import com.ruyuan.eshop.order.exception.OrderBizException;
 import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
-import org.apache.dubbo.config.annotation.DubboReference;
+import moe.ahao.commerce.fulfill.api.FulfillFeignApi;
+import moe.ahao.commerce.fulfill.api.command.CancelFulfillCommand;
+import moe.ahao.domain.entity.Result;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,16 +16,16 @@ import org.springframework.stereotype.Component;
 @Component
 public class FulfillRemote {
 
-    @DubboReference(version = "1.0.0")
-    private FulfillApi fulfillApi;
+    @Autowired
+    private FulfillFeignApi fulfillApi;
 
     /**
      * 取消订单履约
      * @param cancelFulfillRequest
      */
-    public void cancelFulfill(CancelFulfillRequest cancelFulfillRequest) {
-        JsonResult<Boolean> jsonResult = fulfillApi.cancelFulfill(cancelFulfillRequest);
-        if (!jsonResult.getSuccess()) {
+    public void cancelFulfill(CancelFulfillCommand cancelFulfillRequest) {
+        Result<Boolean> result = fulfillApi.cancelFulfill(cancelFulfillRequest);
+        if (result.getCode() != Result.SUCCESS) {
             throw new OrderBizException(OrderErrorCodeEnum.CANCEL_ORDER_FULFILL_ERROR);
         }
     }

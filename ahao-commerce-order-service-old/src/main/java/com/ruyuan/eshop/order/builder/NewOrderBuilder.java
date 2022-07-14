@@ -2,8 +2,6 @@ package com.ruyuan.eshop.order.builder;
 
 import com.ruyuan.eshop.common.enums.AmountTypeEnum;
 import com.ruyuan.eshop.common.enums.DeleteStatusEnum;
-import com.ruyuan.eshop.common.enums.OrderOperateTypeEnum;
-import com.ruyuan.eshop.common.enums.OrderStatusEnum;
 import com.ruyuan.eshop.order.config.OrderProperties;
 import com.ruyuan.eshop.order.converter.OrderConverter;
 import com.ruyuan.eshop.order.domain.dto.OrderAmountDTO;
@@ -14,6 +12,8 @@ import com.ruyuan.eshop.order.enums.CommentStatusEnum;
 import com.ruyuan.eshop.order.enums.OrderTypeEnum;
 import com.ruyuan.eshop.order.enums.PayStatusEnum;
 import com.ruyuan.eshop.order.enums.SnapshotTypeEnum;
+import moe.ahao.commerce.common.enums.OrderOperateTypeEnum;
+import moe.ahao.commerce.common.enums.OrderStatusEnum;
 import moe.ahao.commerce.market.api.dto.CalculateOrderAmountDTO;
 import moe.ahao.commerce.product.api.dto.ProductSkuDTO;
 import org.apache.commons.lang3.StringUtils;

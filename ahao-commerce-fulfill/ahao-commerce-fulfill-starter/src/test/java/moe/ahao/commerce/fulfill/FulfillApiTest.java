@@ -1,0 +1,112 @@
+package moe.ahao.commerce.fulfill;
+
+import moe.ahao.commerce.common.enums.OrderStatusChangeEnum;
+import moe.ahao.commerce.common.enums.PayTypeEnum;
+import moe.ahao.commerce.fulfill.api.command.ReceiveFulfillCommand;
+import moe.ahao.commerce.fulfill.api.command.ReceiveOrderItemCommand;
+import moe.ahao.commerce.fulfill.api.event.OrderDeliveredWmsEvent;
+import moe.ahao.commerce.fulfill.api.event.OrderOutStockWmsEvent;
+import moe.ahao.commerce.fulfill.api.event.OrderSignedWmsEvent;
+import moe.ahao.commerce.fulfill.api.event.TriggerOrderWmsShipEvent;
+import moe.ahao.commerce.fulfill.application.CancelFulfillAppService;
+import moe.ahao.commerce.fulfill.application.ReceiveFulfillAppService;
+import moe.ahao.commerce.fulfill.application.TriggerOrderWmsShipAppService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Date;
+
+@ExtendWith(SpringExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = FulfillApplication.class)
+public class FulfillApiTest {
+    @Autowired
+    private ReceiveFulfillAppService receiveFulfillAppService;
+    @Autowired
+    private CancelFulfillAppService cancelFulfillAppService;
+    @Autowired
+    private TriggerOrderWmsShipAppService triggerOrderWmsShipAppService;
+
+    /**
+     * 触发接收订单履约
+     */
+    @Test
+    public void fulfill() throws Exception {
+        ReceiveFulfillCommand command = new ReceiveFulfillCommand();
+        command.setBusinessIdentifier(1);
+        command.setOrderId("1021121945762025110");
+        command.setSellerId("101");
+        command.setUserId("110");
+        command.setDeliveryType(1);
+        command.setReceiverName("??");
+        command.setReceiverPhone("13434545545");
+        command.setReceiverProvince("110000");
+        command.setReceiverCity("110100");
+        command.setReceiverArea("110105");
+        command.setReceiverStreet("110101007");
+        command.setReceiverDetailAddress("北京北京市东城区朝阳门街道???10?");
+        command.setReceiverLon(new BigDecimal("1010.2010100000"));
+        command.setReceiverLat(new BigDecimal("100.1000000000"));
+        command.setUserRemark(null);
+        command.setPayType(PayTypeEnum.WEIXIN_PAY.getCode());
+        command.setPayAmount(new BigDecimal("10000"));
+        command.setTotalAmount(new BigDecimal("10000"));
+        command.setDeliveryAmount(BigDecimal.ZERO);
+        command.setFulfillException(null);
+        command.setWmsException(null);
+        command.setTmsException(null);
+        command.setReceiveOrderItems(Arrays.asList(
+            new ReceiveOrderItemCommand("skuCode411", "压测数据411", new BigDecimal("1000"), new BigDecimal("10"), "个", new BigDecimal("10000"), new BigDecimal("10000"))
+        ));
+
+        receiveFulfillAppService.fulfill(command);
+        cancelFulfillAppService.cancelFulfill(command.getOrderId());
+    }
+
+    @Test
+    public void triggerOrderWmsShipEvent() throws Exception {
+        String orderId = "1011250000000010000";
+        OrderStatusChangeEnum orderStatusChange = OrderStatusChangeEnum.ORDER_OUT_STOCKED;
+        OrderOutStockWmsEvent wmsEvent1 = new OrderOutStockWmsEvent();
+        wmsEvent1.setOrderId(orderId);
+        wmsEvent1.setOutStockTime(new Date());
+
+        TriggerOrderWmsShipEvent request = new TriggerOrderWmsShipEvent(
+            orderId, "11", orderStatusChange, wmsEvent1
+        );
+        triggerOrderWmsShipAppService.trigger(request);
+
+
+        orderStatusChange = OrderStatusChangeEnum.ORDER_DELIVERED;
+        OrderDeliveredWmsEvent wmsEvent2 = new OrderDeliveredWmsEvent();
+        wmsEvent2.setOrderId(orderId);
+        wmsEvent2.setDelivererNo("rc2019");
+        wmsEvent2.setDelivererName("张三");
+        wmsEvent2.setDelivererPhone("19100012112");
+
+        request = new TriggerOrderWmsShipEvent(
+            orderId, "11", orderStatusChange, wmsEvent2
+        );
+
+        triggerOrderWmsShipAppService.trigger(request);
+
+
+        orderStatusChange = OrderStatusChangeEnum.ORDER_SIGNED;
+        OrderSignedWmsEvent wmsEvent3 = new OrderSignedWmsEvent();
+        wmsEvent3.setOrderId(orderId);
+        wmsEvent3.setSignedTime(new Date());
+
+        request = new TriggerOrderWmsShipEvent(
+            orderId, "11", orderStatusChange, wmsEvent3
+        );
+
+        triggerOrderWmsShipAppService.trigger(request);
+    }
+
+
+
+}

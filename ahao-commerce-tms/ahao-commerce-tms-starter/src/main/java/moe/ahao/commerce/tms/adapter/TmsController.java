@@ -9,12 +9,13 @@ import moe.ahao.commerce.tms.application.CancelSendOutAppService;
 import moe.ahao.commerce.tms.application.SendOutAppService;
 import moe.ahao.domain.entity.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping(TmsFeignApi.CONTEXT)
+@RequestMapping(TmsFeignApi.PATH)
 public class TmsController implements TmsFeignApi {
     @Autowired
     private SendOutAppService sendOutAppService;
@@ -22,13 +23,13 @@ public class TmsController implements TmsFeignApi {
     private CancelSendOutAppService cancelSendOutAppService;
 
     @Override
-    public Result<SendOutDTO> sendOut(SendOutCommand command) {
+    public Result<SendOutDTO> sendOut(@RequestBody SendOutCommand command) {
         SendOutDTO sendOutDTO = sendOutAppService.sendOut(command);
         return Result.success(sendOutDTO);
     }
 
     @Override
-    public Result<Boolean> cancelSendOut(CancelSendOutCommand command) {
+    public Result<Boolean> cancelSendOut(@RequestBody CancelSendOutCommand command) {
         Boolean success = cancelSendOutAppService.cancelSendOut(command);
         return Result.success(success);
     }

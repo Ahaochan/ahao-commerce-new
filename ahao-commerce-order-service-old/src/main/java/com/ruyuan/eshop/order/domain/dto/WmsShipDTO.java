@@ -1,7 +1,7 @@
 package com.ruyuan.eshop.order.domain.dto;
 
-import com.ruyuan.eshop.common.enums.OrderStatusChangeEnum;
 import lombok.Data;
+import moe.ahao.commerce.common.enums.OrderStatusChangeEnum;
 
 import java.util.Date;
 

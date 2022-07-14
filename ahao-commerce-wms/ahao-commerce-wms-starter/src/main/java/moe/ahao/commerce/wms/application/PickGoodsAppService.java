@@ -89,7 +89,7 @@ public class PickGoodsAppService {
     }
 
     /**
-     * 生成履约单id
+     * 生成出库单id
      * TODO 接入发号器
      */
     private String genDeliveryOrderId() {

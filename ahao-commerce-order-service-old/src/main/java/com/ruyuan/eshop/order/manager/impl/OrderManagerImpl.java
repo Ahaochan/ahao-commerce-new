@@ -1,8 +1,6 @@
 package com.ruyuan.eshop.order.manager.impl;
 
 import com.ruyuan.eshop.common.enums.AmountTypeEnum;
-import com.ruyuan.eshop.common.enums.OrderOperateTypeEnum;
-import com.ruyuan.eshop.common.enums.OrderStatusEnum;
 import com.ruyuan.eshop.common.utils.LoggerFormat;
 import com.ruyuan.eshop.order.builder.FullOrderData;
 import com.ruyuan.eshop.order.builder.NewOrderBuilder;
@@ -24,6 +22,8 @@ import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import moe.ahao.commerce.address.api.dto.AddressFullDTO;
 import moe.ahao.commerce.address.api.query.AddressQuery;
+import moe.ahao.commerce.common.enums.OrderOperateTypeEnum;
+import moe.ahao.commerce.common.enums.OrderStatusEnum;
 import moe.ahao.commerce.inventory.api.command.DeductProductStockCommand;
 import moe.ahao.commerce.market.api.command.LockUserCouponCommand;
 import moe.ahao.commerce.market.api.dto.CalculateOrderAmountDTO;

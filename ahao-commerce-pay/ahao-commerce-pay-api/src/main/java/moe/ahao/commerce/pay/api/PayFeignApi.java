@@ -7,12 +7,18 @@ import moe.ahao.domain.entity.Result;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-public interface PayFeignApi extends PayApi {
-    String CONTEXT = "/api/pay/";
+public interface PayFeignApi {
+    String PATH = "/api/pay/";
 
+    /**
+     * 支付订单
+     */
     @PostMapping("/payOrder")
     Result<PayOrderDTO> payOrder(@RequestBody PayOrderCommand command);
 
+    /**
+     * 调用支付接口执行退款
+     */
     @PostMapping("/refundOrder")
     Result<Boolean> refundOrder(@RequestBody RefundOrderCommand command);
 }

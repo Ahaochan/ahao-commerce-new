@@ -2,12 +2,12 @@ package com.ruyuan.eshop.order.remote;
 
 import com.ruyuan.eshop.order.exception.OrderBizException;
 import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
-import moe.ahao.commerce.pay.api.PayApi;
+import moe.ahao.commerce.pay.api.PayFeignApi;
 import moe.ahao.commerce.pay.api.command.PayOrderCommand;
 import moe.ahao.commerce.pay.api.command.RefundOrderCommand;
 import moe.ahao.commerce.pay.api.dto.PayOrderDTO;
 import moe.ahao.domain.entity.Result;
-import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -21,8 +21,8 @@ public class PayRemote {
     /**
      * 支付服务
      */
-    @DubboReference(version = "1.0.0", retries = 0)
-    private PayApi payApi;
+    @Autowired
+    private PayFeignApi payApi;
 
     /**
      * 调用支付系统进行预支付下单

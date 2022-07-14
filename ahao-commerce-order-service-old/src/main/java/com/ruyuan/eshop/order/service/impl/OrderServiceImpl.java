@@ -7,7 +7,6 @@ import com.ruyuan.eshop.common.constants.RocketDelayedLevel;
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
 import com.ruyuan.eshop.common.enums.AmountTypeEnum;
 import com.ruyuan.eshop.common.enums.DeleteStatusEnum;
-import com.ruyuan.eshop.common.enums.OrderStatusEnum;
 import com.ruyuan.eshop.common.enums.PayTypeEnum;
 import com.ruyuan.eshop.common.exception.BaseBizException;
 import com.ruyuan.eshop.common.message.PaidOrderSuccessMessage;
@@ -38,6 +37,7 @@ import com.ruyuan.eshop.order.remote.ProductRemote;
 import com.ruyuan.eshop.order.remote.RiskRemote;
 import com.ruyuan.eshop.order.service.OrderService;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.common.enums.OrderStatusEnum;
 import moe.ahao.commerce.market.api.dto.CalculateOrderAmountDTO;
 import moe.ahao.commerce.market.api.query.CalculateOrderAmountQuery;
 import moe.ahao.commerce.pay.api.command.PayOrderCommand;
@@ -248,8 +248,8 @@ public class OrderServiceImpl implements OrderService {
         ParamCheckUtil.checkStringNonEmpty(regionId, OrderErrorCodeEnum.REGION_ID_IS_NULL);
 
         // 经纬度
-        String lon = createOrderRequest.getLon();
-        String lat = createOrderRequest.getLat();
+        BigDecimal lon = createOrderRequest.getLon();
+        BigDecimal lat = createOrderRequest.getLat();
         ParamCheckUtil.checkObjectNonNull(lon, OrderErrorCodeEnum.USER_LOCATION_IS_NULL);
         ParamCheckUtil.checkObjectNonNull(lat, OrderErrorCodeEnum.USER_LOCATION_IS_NULL);
 

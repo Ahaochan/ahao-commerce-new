@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Slf4j
 @RestController
-@RequestMapping(InventoryFeignApi.CONTEXT)
+@RequestMapping(InventoryFeignApi.PATH)
 public class InventoryController implements InventoryFeignApi {
     @Autowired
     private AddProductStockAppService addProductStockAppService;
@@ -33,7 +33,7 @@ public class InventoryController implements InventoryFeignApi {
      * 扣减商品库存
      */
     @Override
-    public Result<Boolean> deductProductStock(DeductProductStockCommand command) {
+    public Result<Boolean> deductProductStock(@RequestBody DeductProductStockCommand command) {
         Boolean result = deductProductStockAppService.deduct(command);
         return Result.success(result);
     }

@@ -9,11 +9,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-public interface AddressFeignApi extends AddressApi {
-    String CONTEXT = "/api/address/";
+public interface AddressFeignApi {
+    String PATH = "/api/address/";
 
     @PostMapping("/listProvinces")
     Result<List<AddressDTO>> listProvinces();
+
     @PostMapping("/queryAddress")
     Result<AddressFullDTO> queryFullAddress(@RequestBody AddressQuery query);
 }

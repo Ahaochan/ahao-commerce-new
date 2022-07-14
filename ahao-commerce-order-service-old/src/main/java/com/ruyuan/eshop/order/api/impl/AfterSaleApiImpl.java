@@ -41,6 +41,7 @@ import org.apache.rocketmq.client.producer.TransactionSendResult;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -127,7 +128,7 @@ public class AfterSaleApiImpl implements AfterSaleApi {
     }
 
     @Override
-    public Result<Boolean> refundCallback(RefundOrderCallbackCommand command) {
+    public Result<Boolean> refundCallback(@RequestBody RefundOrderCallbackCommand command) {
         String orderId = command.getOrderId();
         log.info("接收到取消订单支付退款回调,orderId:{}", orderId);
         return orderAfterSaleService.receivePaymentRefundCallback(command);

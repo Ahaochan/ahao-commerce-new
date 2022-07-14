@@ -8,13 +8,13 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruyuan.eshop.common.dao.BaseDAO;
 import com.ruyuan.eshop.common.enums.DeleteStatusEnum;
-import com.ruyuan.eshop.common.enums.OrderStatusEnum;
 import com.ruyuan.eshop.order.domain.dto.OrderExtJsonDTO;
 import com.ruyuan.eshop.order.domain.dto.OrderListDTO;
 import com.ruyuan.eshop.order.domain.dto.OrderListQueryDTO;
 import com.ruyuan.eshop.order.domain.entity.OrderInfoDO;
 import com.ruyuan.eshop.order.mapper.OrderInfoMapper;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.common.enums.OrderStatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

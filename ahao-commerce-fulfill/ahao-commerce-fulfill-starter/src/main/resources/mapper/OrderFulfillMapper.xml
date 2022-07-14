@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="moe.ahao.commerce.fulfill.infrastructure.repository.impl.mybatis.mapper.OrderFulfillMapper">
+    <update id="updateLogisticsCodeByFulfillId">
+        update order_fulfill set logistics_code = #{logisticsCode} where fulfill_id = #{fulfillId}
+    </update>
+    <update id="updateDelivererInfoByFulfillId">
+        update order_fulfill set deliverer_no = #{delivererNo}, deliverer_name = #{delivererName}, deliverer_phone = #{delivererPhone}
+        where fulfill_id = #{fulfillId}
+    </update>
+    <select id="selectOneByOrderId" resultType="moe.ahao.commerce.fulfill.infrastructure.repository.impl.mybatis.data.OrderFulfillDO">
+        select * from order_fulfill where order_id = #{orderId}
+    </select>
+</mapper>

@@ -2,18 +2,19 @@ package com.ruyuan.eshop.order.remote;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.ruyuan.eshop.order.exception.OrderBizException;
-import moe.ahao.commerce.product.api.ProductDubboApi;
+import moe.ahao.commerce.product.api.ProductFeignApi;
 import moe.ahao.commerce.product.api.dto.ProductSkuDTO;
 import moe.ahao.commerce.product.api.query.GetProductSkuQuery;
 import moe.ahao.commerce.product.api.query.ListProductSkuQuery;
 import moe.ahao.domain.entity.Result;
-import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 /**
  * 商品服务远程接口
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -23,11 +24,12 @@ public class ProductRemote {
     /**
      * 商品服务
      */
-    @DubboReference(version = "1.0.0")
-    private ProductDubboApi productApi;
+    @Autowired
+    private ProductFeignApi productFeignApi;
 
     /**
      * 查询商品信息
+     *
      * @param skuCode
      * @param sellerId
      * @return
@@ -37,7 +39,7 @@ public class ProductRemote {
         GetProductSkuQuery productSkuQuery = new GetProductSkuQuery();
         productSkuQuery.setSkuCode(skuCode);
         productSkuQuery.setSellerId(sellerId);
-        Result<ProductSkuDTO> result = productApi.getBySkuCode(productSkuQuery);
+        Result<ProductSkuDTO> result = productFeignApi.getBySkuCode(productSkuQuery);
         if (result.getCode() != Result.SUCCESS) {
             throw new OrderBizException(String.valueOf(result.getCode()), result.getMsg());
         }
@@ -46,6 +48,7 @@ public class ProductRemote {
 
     /**
      * 批量查询商品信息
+     *
      * @param skuCodeList
      * @param sellerId
      * @return
@@ -55,7 +58,7 @@ public class ProductRemote {
         ListProductSkuQuery productSkuQuery = new ListProductSkuQuery();
         productSkuQuery.setSkuCodeList(skuCodeList);
         productSkuQuery.setSellerId(sellerId);
-        Result<List<ProductSkuDTO>> result = productApi.listBySkuCodes(productSkuQuery);
+        Result<List<ProductSkuDTO>> result = productFeignApi.listBySkuCodes(productSkuQuery);
         if (result.getCode() != Result.SUCCESS) {
             throw new OrderBizException(String.valueOf(result.getCode()), result.getMsg());
         }

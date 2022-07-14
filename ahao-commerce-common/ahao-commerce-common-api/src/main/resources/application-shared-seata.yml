@@ -1,0 +1,23 @@
+################################################## Seata 配置 ##################################################
+# 如果引入的是seata-spring-boot-starter 请关闭自动代理，需要关闭自动代理
+seata.enable-auto-data-source-proxy: false
+seata.application-id: seata-server # Seata应用的名称
+seata.tx-service-group: default_tx_group # 事务组
+seata.service.vgroup-mapping.default_tx_group: default
+
+seata.config.type: nacos
+seata.config.nacos.server-addr: 192.168.19.128:8848 # Nacos服务地址
+#seata.config.nacos.namespace: seata # Seata的NameSpace ID
+seata.config.nacos.group: SEATA_GROUP
+seata.config.nacos.username: nacos
+seata.config.nacos.password: nacos
+seata.registry.type: nacos # 基于Nacos实现分布式事务管理
+
+seata.registry.nacos.server-addr: 192.168.19.128:8848 # Nacos服务地址
+#seata.registry.nacos.namespace: seata # Seata的NameSpace ID
+seata.registry.nacos.group: SEATA_GROUP
+seata.registry.nacos.username: nacos
+seata.registry.nacos.password: nacos
+seata.registry.nacos.cluster: default
+seata.registry.nacos.application: seata-server
+################################################## Seata 配置 ##################################################

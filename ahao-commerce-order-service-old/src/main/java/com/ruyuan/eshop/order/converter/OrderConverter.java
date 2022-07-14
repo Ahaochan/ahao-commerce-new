@@ -1,12 +1,12 @@
 package com.ruyuan.eshop.order.converter;
 
 import com.ruyuan.eshop.customer.domain.request.CustomerReceiveAfterSaleRequest;
-import com.ruyuan.eshop.fulfill.domain.request.CancelFulfillRequest;
 import com.ruyuan.eshop.order.domain.dto.*;
 import com.ruyuan.eshop.order.domain.entity.*;
 import com.ruyuan.eshop.order.domain.query.AcceptOrderQuery;
 import com.ruyuan.eshop.order.domain.query.OrderQuery;
 import com.ruyuan.eshop.order.domain.request.*;
+import moe.ahao.commerce.fulfill.api.command.CancelFulfillCommand;
 import moe.ahao.commerce.inventory.api.command.DeductProductStockCommand;
 import moe.ahao.commerce.inventory.api.event.ReleaseProductStockEvent;
 import moe.ahao.commerce.market.api.command.LockUserCouponCommand;
@@ -256,7 +256,7 @@ public interface OrderConverter {
      * @param orderInfoDTO 对象
      * @return 对象
      */
-    CancelFulfillRequest convertCancelFulfillRequest(OrderInfoDTO orderInfoDTO);
+    CancelFulfillCommand convertCancelFulfillRequest(OrderInfoDTO orderInfoDTO);
 
     /**
      * 对象转换

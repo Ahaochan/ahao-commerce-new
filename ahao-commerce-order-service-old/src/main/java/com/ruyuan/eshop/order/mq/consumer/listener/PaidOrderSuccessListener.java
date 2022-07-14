@@ -2,13 +2,11 @@ package com.ruyuan.eshop.order.mq.consumer.listener;
 
 import com.alibaba.fastjson.JSON;
 import com.ruyuan.eshop.common.constants.RedisLockKeyConstants;
-import com.ruyuan.eshop.common.enums.OrderStatusEnum;
 import com.ruyuan.eshop.common.exception.BaseBizException;
 import com.ruyuan.eshop.common.message.PaidOrderSuccessMessage;
 import com.ruyuan.eshop.common.mq.AbstractMessageListenerConcurrently;
 import com.ruyuan.eshop.common.mq.MQMessage;
 import com.ruyuan.eshop.common.redis.RedisLock;
-import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
 import com.ruyuan.eshop.order.dao.OrderInfoDAO;
 import com.ruyuan.eshop.order.domain.entity.OrderInfoDO;
 import com.ruyuan.eshop.order.exception.OrderBizException;
@@ -16,6 +14,8 @@ import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
 import com.ruyuan.eshop.order.mq.producer.TriggerOrderFulfillProducer;
 import com.ruyuan.eshop.order.service.OrderFulFillService;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.common.enums.OrderStatusEnum;
+import moe.ahao.commerce.fulfill.api.command.ReceiveFulfillCommand;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -106,7 +106,7 @@ public class PaidOrderSuccessListener extends AbstractMessageListenerConcurrentl
         setTriggerOrderFulfillTransactionListener(producer);
 
         // 发送触发履约的消息
-        ReceiveFulfillRequest receiveFulfillRequest = orderFulFillService.buildReceiveFulFillRequest(orderInfoDO);
+        ReceiveFulfillCommand receiveFulfillRequest = orderFulFillService.buildReceiveFulFillRequest(orderInfoDO);
         String topic = TRIGGER_ORDER_FULFILL_TOPIC;
         byte[] body = JSON.toJSONString(receiveFulfillRequest).getBytes(StandardCharsets.UTF_8);
         Message mq = new MQMessage(topic, null, orderId, body);
@@ -138,8 +138,8 @@ public class PaidOrderSuccessListener extends AbstractMessageListenerConcurrentl
 
             @Override
             public LocalTransactionState checkLocalTransaction(MessageExt messageExt) {
-                ReceiveFulfillRequest receiveFulfillRequest = JSON.parseObject(
-                        new String(messageExt.getBody(), StandardCharsets.UTF_8), ReceiveFulfillRequest.class);
+                ReceiveFulfillCommand receiveFulfillRequest = JSON.parseObject(
+                        new String(messageExt.getBody(), StandardCharsets.UTF_8), ReceiveFulfillCommand.class);
                 // 检查订单是否"已履约"状态
                 OrderInfoDO orderInfoDO = orderInfoDAO.getByOrderId(receiveFulfillRequest.getOrderId());
                 if (orderInfoDO != null

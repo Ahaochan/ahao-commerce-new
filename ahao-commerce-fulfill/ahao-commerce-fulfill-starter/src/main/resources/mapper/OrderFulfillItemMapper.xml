@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="moe.ahao.commerce.fulfill.infrastructure.repository.impl.mybatis.mapper.OrderFulfillItemMapper">
+    <delete id="deleteByFulfillId">
+        delete from order_fulfill_item where fulfill_id = #{fulfillId};
+    </delete>
+
+    <select id="selectListByFulfillId" resultType="moe.ahao.commerce.fulfill.infrastructure.repository.impl.mybatis.data.OrderFulfillItemDO">
+        select * from order_fulfill_item where fulfill_id = #{fulfillId};
+    </select>
+</mapper>

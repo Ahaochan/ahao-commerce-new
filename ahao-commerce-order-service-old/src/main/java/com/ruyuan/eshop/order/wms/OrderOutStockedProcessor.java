@@ -1,11 +1,11 @@
 package com.ruyuan.eshop.order.wms;
 
-import com.ruyuan.eshop.common.enums.OrderStatusEnum;
 import com.ruyuan.eshop.order.dao.OrderDeliveryDetailDAO;
 import com.ruyuan.eshop.order.domain.dto.WmsShipDTO;
 import com.ruyuan.eshop.order.domain.entity.OrderDeliveryDetailDO;
 import com.ruyuan.eshop.order.domain.entity.OrderInfoDO;
 import com.ruyuan.eshop.order.exception.OrderBizException;
+import moe.ahao.commerce.common.enums.OrderStatusEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

@@ -9,12 +9,13 @@ import moe.ahao.commerce.wms.application.CancelPickGoodsAppService;
 import moe.ahao.commerce.wms.application.PickGoodsAppService;
 import moe.ahao.domain.entity.Result;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping(WmsFeignApi.CONTEXT)
+@RequestMapping(WmsFeignApi.PATH)
 public class WmsController implements WmsFeignApi {
     @Autowired
     private PickGoodsAppService pickGoodsAppService;
@@ -22,13 +23,13 @@ public class WmsController implements WmsFeignApi {
     private CancelPickGoodsAppService cancelPickGoodsAppService;
 
     @Override
-    public Result<PickDTO> pickGoods(PickGoodsCommand command) {
+    public Result<PickDTO> pickGoods(@RequestBody PickGoodsCommand command) {
         PickDTO pickDTO = pickGoodsAppService.pickGoods(command);
         return Result.success(pickDTO);
     }
 
     @Override
-    public Result<Boolean> cancelPickGoods(CancelPickGoodsCommand command) {
+    public Result<Boolean> cancelPickGoods(@RequestBody CancelPickGoodsCommand command) {
         Boolean success = cancelPickGoodsAppService.cancelPickGoods(command);
         return Result.success(success);
     }

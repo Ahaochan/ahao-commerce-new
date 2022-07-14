@@ -1,9 +1,9 @@
 package com.ruyuan.eshop.order.converter;
 
-import com.ruyuan.eshop.fulfill.domain.event.OrderDeliveredWmsEvent;
-import com.ruyuan.eshop.fulfill.domain.event.OrderOutStockWmsEvent;
-import com.ruyuan.eshop.fulfill.domain.event.OrderSignedWmsEvent;
 import com.ruyuan.eshop.order.domain.dto.WmsShipDTO;
+import moe.ahao.commerce.fulfill.api.event.OrderDeliveredWmsEvent;
+import moe.ahao.commerce.fulfill.api.event.OrderOutStockWmsEvent;
+import moe.ahao.commerce.fulfill.api.event.OrderSignedWmsEvent;
 import org.mapstruct.Mapper;
 
 /**

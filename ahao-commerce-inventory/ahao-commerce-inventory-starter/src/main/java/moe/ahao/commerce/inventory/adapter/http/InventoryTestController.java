@@ -22,7 +22,7 @@ import java.util.Map;
  */
 @Slf4j
 @RestController
-@RequestMapping(InventoryFeignApi.CONTEXT)
+@RequestMapping(InventoryFeignApi.PATH)
 public class InventoryTestController {
     @Autowired
     private InventoryQueryService inventoryQueryService;

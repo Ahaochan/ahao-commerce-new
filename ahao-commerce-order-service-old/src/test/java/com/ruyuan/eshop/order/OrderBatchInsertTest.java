@@ -97,8 +97,8 @@ public class OrderBatchInsertTest {
         orderDeliveryDetailDO.setArea("110105");
         orderDeliveryDetailDO.setStreet("110101007");
         orderDeliveryDetailDO.setDetailAddress("压测数据");
-        orderDeliveryDetailDO.setLon("100.1000000000");
-        orderDeliveryDetailDO.setLat("1010.2010100000");
+        orderDeliveryDetailDO.setLon(new BigDecimal("100.1000000000"));
+        orderDeliveryDetailDO.setLat(new BigDecimal("1010.2010100000"));
         orderDeliveryDetailDO.setReceiverName("压测数据");
         orderDeliveryDetailDO.setReceiverPhone("13434545545");
         orderDeliveryDetailDO.setModifyAddressCount(0);

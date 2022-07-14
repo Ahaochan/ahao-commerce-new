@@ -6,9 +6,12 @@ import moe.ahao.domain.entity.Result;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-public interface MarketFeignApi extends MarketApi {
-    String CONTEXT = "/api/market/";
+public interface MarketFeignApi {
+    String PATH = "/api/market/";
 
+    /**
+     * 计算订单费用
+     */
     @PostMapping("/calculateOrderAmount")
     Result<CalculateOrderAmountDTO> calculateOrderAmount(@RequestBody CalculateOrderAmountQuery query);
 }

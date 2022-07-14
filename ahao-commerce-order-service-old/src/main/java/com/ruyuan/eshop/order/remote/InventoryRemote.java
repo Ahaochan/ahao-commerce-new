@@ -2,7 +2,7 @@ package com.ruyuan.eshop.order.remote;
 
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.ruyuan.eshop.order.exception.OrderBizException;
-import moe.ahao.commerce.inventory.api.InventoryApi;
+import moe.ahao.commerce.inventory.api.InventoryFeignApi;
 import moe.ahao.commerce.inventory.api.command.DeductProductStockCommand;
 import moe.ahao.domain.entity.Result;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -21,7 +21,7 @@ public class InventoryRemote {
      * 库存服务
      */
     @DubboReference(version = "1.0.0", retries = 0)
-    private InventoryApi inventoryApi;
+    private InventoryFeignApi inventoryApi;
 
     /**
      * 扣减订单条目库存
