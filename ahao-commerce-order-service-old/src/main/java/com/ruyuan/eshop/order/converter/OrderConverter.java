@@ -1,11 +1,11 @@
 package com.ruyuan.eshop.order.converter;
 
-import com.ruyuan.eshop.customer.domain.request.CustomerReceiveAfterSaleRequest;
 import com.ruyuan.eshop.order.domain.dto.*;
 import com.ruyuan.eshop.order.domain.entity.*;
 import com.ruyuan.eshop.order.domain.query.AcceptOrderQuery;
 import com.ruyuan.eshop.order.domain.query.OrderQuery;
 import com.ruyuan.eshop.order.domain.request.*;
+import moe.ahao.commerce.customer.api.command.CustomerReceiveAfterSaleCommand;
 import moe.ahao.commerce.fulfill.api.command.CancelFulfillCommand;
 import moe.ahao.commerce.inventory.api.command.DeductProductStockCommand;
 import moe.ahao.commerce.inventory.api.event.ReleaseProductStockEvent;
@@ -280,7 +280,7 @@ public interface OrderConverter {
      * @param returnGoodsAssembleRequest 对象
      * @return 对象
      */
-    CustomerReceiveAfterSaleRequest convertReturnGoodsAssembleRequest(ReturnGoodsAssembleRequest returnGoodsAssembleRequest);
+    CustomerReceiveAfterSaleCommand convertReturnGoodsAssembleRequest(ReturnGoodsAssembleRequest returnGoodsAssembleRequest);
 
     /**
      * 对象转换

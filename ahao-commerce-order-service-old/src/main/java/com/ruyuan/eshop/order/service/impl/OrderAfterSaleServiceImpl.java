@@ -16,7 +16,6 @@ import com.ruyuan.eshop.common.mq.MQMessage;
 import com.ruyuan.eshop.common.redis.RedisLock;
 import com.ruyuan.eshop.common.utils.ParamCheckUtil;
 import com.ruyuan.eshop.common.utils.RandomUtil;
-import com.ruyuan.eshop.customer.domain.request.CustomerReceiveAfterSaleRequest;
 import com.ruyuan.eshop.order.converter.AfterSaleConverter;
 import com.ruyuan.eshop.order.converter.OrderConverter;
 import com.ruyuan.eshop.order.dao.*;
@@ -39,6 +38,7 @@ import com.ruyuan.eshop.order.remote.PayRemote;
 import com.ruyuan.eshop.order.service.OrderAfterSaleService;
 import lombok.extern.slf4j.Slf4j;
 import moe.ahao.commerce.common.enums.OrderStatusEnum;
+import moe.ahao.commerce.customer.api.command.CustomerReceiveAfterSaleCommand;
 import moe.ahao.commerce.market.api.command.ReleaseUserCouponCommand;
 import moe.ahao.commerce.pay.api.command.RefundOrderCommand;
 import moe.ahao.domain.entity.Result;
@@ -688,7 +688,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
                                                 ReturnGoodsAssembleRequest returnGoodsAssembleRequest,
                                                 String afterSaleId) throws MQClientException {
         // 组装发送消息数据
-        CustomerReceiveAfterSaleRequest customerReceiveAfterSaleRequest
+        CustomerReceiveAfterSaleCommand customerReceiveAfterSaleRequest
                 = orderConverter.convertReturnGoodsAssembleRequest(returnGoodsAssembleRequest);
         customerReceiveAfterSaleRequest.setAfterSaleId(afterSaleId);
         Message message = new MQMessage(RocketMqConstant.AFTER_SALE_CUSTOMER_AUDIT_TOPIC,
@@ -717,8 +717,8 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
 
             @Override
             public LocalTransactionState checkLocalTransaction(MessageExt messageExt) {
-                CustomerReceiveAfterSaleRequest customerReceiveAfterSaleRequest = JSON.parseObject(
-                        new String(messageExt.getBody(), StandardCharsets.UTF_8), CustomerReceiveAfterSaleRequest.class);
+                CustomerReceiveAfterSaleCommand customerReceiveAfterSaleRequest = JSON.parseObject(
+                        new String(messageExt.getBody(), StandardCharsets.UTF_8), CustomerReceiveAfterSaleCommand.class);
                 String afterSaleId = customerReceiveAfterSaleRequest.getAfterSaleId();
                 //  查询售后数据是否插入成功
                 AfterSaleInfoDO afterSaleInfoDO = afterSaleInfoDAO.getOneByAfterSaleId(afterSaleId);

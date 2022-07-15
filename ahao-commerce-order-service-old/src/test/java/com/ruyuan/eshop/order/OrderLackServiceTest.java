@@ -2,7 +2,7 @@ package com.ruyuan.eshop.order;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ruyuan.eshop.common.core.JsonResult;
-import com.ruyuan.eshop.order.api.AfterSaleApi;
+import com.ruyuan.eshop.order.api.AfterSaleFeignApi;
 import com.ruyuan.eshop.order.domain.dto.LackDTO;
 import com.ruyuan.eshop.order.domain.request.LackItemRequest;
 import com.ruyuan.eshop.order.domain.request.LackRequest;
@@ -21,7 +21,7 @@ import java.util.Set;
 public class OrderLackServiceTest {
 
     @DubboReference(version = "1.0.0")
-    private AfterSaleApi api;
+    private AfterSaleFeignApi api;
 
     @Test
     public void lockItem() throws Exception {

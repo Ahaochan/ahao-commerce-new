@@ -4,7 +4,7 @@ import com.ruyuan.eshop.common.constants.RedisLockKeyConstants;
 import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.common.page.PagingInfo;
 import com.ruyuan.eshop.common.redis.RedisLock;
-import com.ruyuan.eshop.order.api.AfterSaleApi;
+import com.ruyuan.eshop.order.api.AfterSaleFeignApi;
 import com.ruyuan.eshop.order.api.AfterSaleQueryApi;
 import com.ruyuan.eshop.order.domain.dto.AfterSaleOrderDetailDTO;
 import com.ruyuan.eshop.order.domain.dto.AfterSaleOrderListDTO;
@@ -37,7 +37,7 @@ public class AfterSaleController {
     private OrderAfterSaleService orderAfterSaleService;
 
     @DubboReference(version = "1.0.0", retries = 0)
-    private AfterSaleApi afterSaleApi;
+    private AfterSaleFeignApi afterSaleApi;
 
     @DubboReference(version = "1.0.0")
     private AfterSaleQueryApi afterSaleQueryApi;

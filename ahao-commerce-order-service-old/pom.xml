@@ -72,10 +72,9 @@
 
         <dependency>
             <groupId>moe.ahao</groupId>
-            <artifactId>ahao-commerce-customer-api-old</artifactId>
+            <artifactId>ahao-commerce-customer-api</artifactId>
             <version>1.0.0</version>
         </dependency>
-
         <dependency>
             <groupId>moe.ahao</groupId>
             <artifactId>ahao-commerce-fulfill-api</artifactId>

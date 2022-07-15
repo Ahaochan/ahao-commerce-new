@@ -1,0 +1,18 @@
+################################################## Nacos 配置 ##################################################
+spring.application.name: ahao-commerce-address
+spring.cloud.nacos.server-addr: 192.168.19.128:8848
+spring.cloud.nacos.config.server-addr: ${spring.cloud.nacos.server-addr}
+spring.cloud.nacos.config.file-extension: yaml
+spring.cloud.nacos.config.username: nacos
+spring.cloud.nacos.config.password: nacos
+spring.cloud.nacos.config.shared-configs:
+  - data-id: application-shared-mysql.yml
+    group: DEFAULT_GROUP
+    refresh: false
+  - data-id: application-shared-redis.yml
+    group: DEFAULT_GROUP
+    refresh: false
+  - data-id: application-shared-rocketmq.yml
+    group: DEFAULT_GROUP
+    refresh: false
+################################################## Nacos 配置 ##################################################

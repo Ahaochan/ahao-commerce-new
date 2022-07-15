@@ -11,9 +11,7 @@ import com.ruyuan.eshop.common.message.ActualRefundMessage;
 import com.ruyuan.eshop.common.mq.MQMessage;
 import com.ruyuan.eshop.common.redis.RedisLock;
 import com.ruyuan.eshop.common.utils.ParamCheckUtil;
-import com.ruyuan.eshop.customer.domain.request.CustomerReceiveAfterSaleRequest;
-import com.ruyuan.eshop.customer.domain.request.CustomerReviewReturnGoodsRequest;
-import com.ruyuan.eshop.order.api.AfterSaleApi;
+import com.ruyuan.eshop.order.api.AfterSaleFeignApi;
 import com.ruyuan.eshop.order.dao.AfterSaleItemDAO;
 import com.ruyuan.eshop.order.dao.AfterSaleRefundDAO;
 import com.ruyuan.eshop.order.dao.OrderItemDAO;
@@ -31,6 +29,8 @@ import com.ruyuan.eshop.order.mq.producer.CustomerAuditPassSendReleaseAssetsProd
 import com.ruyuan.eshop.order.service.OrderAfterSaleService;
 import com.ruyuan.eshop.order.service.OrderLackService;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.customer.api.command.CustomerReceiveAfterSaleCommand;
+import moe.ahao.commerce.customer.api.command.CustomerReviewReturnGoodsCommand;
 import moe.ahao.domain.entity.Result;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.apache.rocketmq.client.exception.MQClientException;
@@ -55,8 +55,8 @@ import java.util.List;
  * @version 1.0
  */
 @Slf4j
-@DubboService(version = "1.0.0", interfaceClass = AfterSaleApi.class, retries = 0)
-public class AfterSaleApiImpl implements AfterSaleApi {
+@DubboService(version = "1.0.0", interfaceClass = AfterSaleFeignApi.class, retries = 0)
+public class AfterSaleApiImpl implements AfterSaleFeignApi {
 
     @Autowired
     private OrderLackService orderLackItemService;
@@ -135,15 +135,15 @@ public class AfterSaleApiImpl implements AfterSaleApi {
     }
 
     @Override
-    public JsonResult<Boolean> receiveCustomerAuditResult(CustomerReviewReturnGoodsRequest customerReviewReturnGoodsRequest) {
+    public Result<Boolean> receiveCustomerAuditResult(CustomerReviewReturnGoodsCommand command) {
         //  1、组装接收客服审核结果的数据
-        CustomerAuditAssembleRequest customerAuditAssembleResult = buildCustomerAuditAssembleData(customerReviewReturnGoodsRequest);
+        CustomerAuditAssembleRequest customerAuditAssembleResult = buildCustomerAuditAssembleData(command);
 
         //  2、客服审核拒绝
         if (CustomerAuditResult.REJECT.getCode().equals(customerAuditAssembleResult.getReviewReasonCode())) {
             //  更新 审核拒绝 售后信息
             orderAfterSaleService.receiveCustomerAuditReject(customerAuditAssembleResult);
-            return JsonResult.buildSuccess(true);
+            return Result.success(true);
         }
         //  3、客服审核通过
         if (CustomerAuditResult.ACCEPT.getCode().equals(customerAuditAssembleResult.getReviewReasonCode())) {
@@ -158,7 +158,7 @@ public class AfterSaleApiImpl implements AfterSaleApi {
             //  5、发送客服审核通过释放权益资产事务MQ
             sendAuditPassReleaseAssets(customerAuditAssembleResult, auditPassReleaseAssetsRequest);
         }
-        return JsonResult.buildSuccess(true);
+        return Result.success(true);
     }
 
     private void sendAuditPassReleaseAssets(CustomerAuditAssembleRequest customerAuditAssembleResult,
@@ -167,7 +167,7 @@ public class AfterSaleApiImpl implements AfterSaleApi {
             TransactionMQProducer transactionMQProducer = customerAuditPassSendReleaseAssetsProducer.getProducer();
             setSendAuditPassReleaseAssetsListener(transactionMQProducer);
             sendAuditPassReleaseAssetsSuccessMessage(transactionMQProducer,
-                    customerAuditAssembleResult, auditPassReleaseAssetsRequest);
+                customerAuditAssembleResult, auditPassReleaseAssetsRequest);
         } catch (Exception e) {
             throw new OrderBizException(OrderErrorCodeEnum.SEND_TRANSACTION_MQ_FAILED);
         }
@@ -178,7 +178,7 @@ public class AfterSaleApiImpl implements AfterSaleApi {
                                                           AuditPassReleaseAssetsRequest auditPassReleaseAssetsRequest
     ) throws MQClientException {
         Message message = new MQMessage(RocketMqConstant.CUSTOMER_AUDIT_PASS_RELEASE_ASSETS_TOPIC,
-                JSONObject.toJSONString(auditPassReleaseAssetsRequest).getBytes(StandardCharsets.UTF_8));
+            JSONObject.toJSONString(auditPassReleaseAssetsRequest).getBytes(StandardCharsets.UTF_8));
         TransactionSendResult result = transactionMQProducer.sendMessageInTransaction(message, customerAuditAssembleResult);
         if (!result.getLocalTransactionState().equals(LocalTransactionState.COMMIT_MESSAGE)) {
             throw new OrderBizException(OrderErrorCodeEnum.SEND_AUDIT_PASS_RELEASE_ASSETS_FAILED);
@@ -203,9 +203,9 @@ public class AfterSaleApiImpl implements AfterSaleApi {
             @Override
             public LocalTransactionState checkLocalTransaction(MessageExt msg) {
                 AuditPassReleaseAssetsRequest message = JSON.parseObject(
-                        new String(msg.getBody(), StandardCharsets.UTF_8), AuditPassReleaseAssetsRequest.class);
+                    new String(msg.getBody(), StandardCharsets.UTF_8), AuditPassReleaseAssetsRequest.class);
                 Integer customerAuditAfterSaleStatus = orderAfterSaleService
-                        .findCustomerAuditAfterSaleStatus(message.getActualRefundMessage().getAfterSaleId());
+                    .findCustomerAuditAfterSaleStatus(message.getActualRefundMessage().getAfterSaleId());
                 if (AfterSaleStatusEnum.REVIEW_PASS.getCode().equals(customerAuditAfterSaleStatus)) {
                     return LocalTransactionState.COMMIT_MESSAGE;
                 }
@@ -265,7 +265,7 @@ public class AfterSaleApiImpl implements AfterSaleApi {
     /**
      * 组装接收客服审核结果的数据
      */
-    private CustomerAuditAssembleRequest buildCustomerAuditAssembleData(CustomerReviewReturnGoodsRequest customerReviewReturnGoodsRequest) {
+    private CustomerAuditAssembleRequest buildCustomerAuditAssembleData(CustomerReviewReturnGoodsCommand customerReviewReturnGoodsRequest) {
         CustomerAuditAssembleRequest customerAuditAssembleRequest = new CustomerAuditAssembleRequest();
 
         String afterSaleId = customerReviewReturnGoodsRequest.getAfterSaleId();
@@ -309,16 +309,12 @@ public class AfterSaleApiImpl implements AfterSaleApi {
     }
 
     @Override
-    public JsonResult<Long> customerFindAfterSaleRefundInfo(CustomerReceiveAfterSaleRequest customerReceiveAfterSaleRequest) {
-        String afterSaleId = customerReceiveAfterSaleRequest.getAfterSaleId();
+    public Result<String> customerFindAfterSaleRefundInfo(CustomerReceiveAfterSaleCommand command) {
+        String afterSaleId = command.getAfterSaleId();
         AfterSaleRefundDO afterSaleRefundDO = afterSaleRefundDAO.findAfterSaleRefundByfterSaleId(afterSaleId);
         if (afterSaleRefundDO == null) {
             throw new OrderBizException(OrderErrorCodeEnum.AFTER_SALE_REFUND_ID_IS_NULL);
         }
-        JsonResult<Long> jsonResult = new JsonResult<>();
-        jsonResult.setData(afterSaleRefundDO.getId());
-        jsonResult.setSuccess(true);
-        return jsonResult;
+        return Result.success(afterSaleRefundDO.getAfterSaleRefundId());
     }
-
 }
