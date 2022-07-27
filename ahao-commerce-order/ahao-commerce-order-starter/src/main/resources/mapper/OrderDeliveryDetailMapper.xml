@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="moe.ahao.commerce.order.infrastructure.repository.impl.mybatis.mapper.OrderDeliveryDetailMapper">
+    <update id="updateOutStockTimeByOrderId">
+        update order_delivery_detail
+        set out_stock_time = #{outStockTime}
+        where order_id = #{orderId}
+    </update>
+    <update id="updateDelivererByOrderId">
+        update order_delivery_detail
+        set deliverer_no    = #{delivererNo},
+            deliverer_name  = #{delivererName},
+            deliverer_phone = #{delivererPhone}
+        where order_id = #{orderId}
+    </update>
+    <update id="updateSignedTimeByOrderId">
+        update order_delivery_detail
+        set signed_time = #{signedTime}
+        where order_id = #{orderId}
+    </update>
+    <update id="updateDeliveryAddressByOrderId">
+        update order_delivery_detail
+        set
+        <if test="province != null and province.length() > 0">province = #{province},</if>
+        <if test="city != null and city.length() > 0">city = #{city},</if>
+        <if test="area != null and area.length() > 0">area = #{area},</if>
+        <if test="street != null and street.length() > 0">street = #{street},</if>
+        <if test="detailAddress != null and detailAddress.length() > 0">detail_address = #{detailAddress},</if>
+        <if test="lat != null">lat = #{lat},</if>
+        <if test="lon != null">lat = #{lon},</if>
+        modify_address_count = modify_address_count + 1
+        where order_id = #{orderId}
+    </update>
+    <select id="selectOneByOrderId"
+            resultType="moe.ahao.commerce.order.infrastructure.repository.impl.mybatis.data.OrderDeliveryDetailDO">
+        select *
+        from order_delivery_detail
+        where order_id = #{orderId}
+    </select>
+</mapper>

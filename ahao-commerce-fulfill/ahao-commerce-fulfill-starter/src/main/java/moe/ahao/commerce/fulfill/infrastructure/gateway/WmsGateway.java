@@ -2,7 +2,7 @@ package moe.ahao.commerce.fulfill.infrastructure.gateway;
 
 
 import moe.ahao.commerce.fulfill.infrastructure.exception.FulfillExceptionEnum;
-import moe.ahao.commerce.wms.api.WmsFeignApi;
+import moe.ahao.commerce.fulfill.infrastructure.gateway.feign.WmsFeignClient;
 import moe.ahao.commerce.wms.api.command.CancelPickGoodsCommand;
 import moe.ahao.commerce.wms.api.command.PickGoodsCommand;
 import moe.ahao.commerce.wms.api.dto.PickDTO;
@@ -16,13 +16,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class WmsGateway {
     @Autowired
-    private WmsFeignApi wmsFeignApi;
+    private WmsFeignClient wmsFeignClient;
 
     /**
      * 捡货
      */
     public PickDTO pickGoods(PickGoodsCommand request) {
-        Result<PickDTO> result = wmsFeignApi.pickGoods(request);
+        Result<PickDTO> result = wmsFeignClient.pickGoods(request);
         if (result.getCode() != Result.SUCCESS) {
             throw FulfillExceptionEnum.WMS_IS_ERROR.msg(result.getMsg());
         }
@@ -35,7 +35,7 @@ public class WmsGateway {
     public void cancelPickGoods(String orderId) {
         CancelPickGoodsCommand command = new CancelPickGoodsCommand();
         command.setOrderId(orderId);
-        Result<Boolean> result = wmsFeignApi.cancelPickGoods(command);
+        Result<Boolean> result = wmsFeignClient.cancelPickGoods(command);
         if (result.getCode() != Result.SUCCESS) {
             throw FulfillExceptionEnum.WMS_IS_ERROR.msg(result.getMsg());
         }

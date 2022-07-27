@@ -1,8 +1,8 @@
 package moe.ahao.commerce.inventory.adapter.mq;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ruyuan.eshop.common.mq.AbstractMessageListenerConcurrently;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.common.infrastructure.rocketmq.AbstractMessageListenerConcurrently;
 import moe.ahao.commerce.inventory.api.command.ReleaseProductStockCommand;
 import moe.ahao.commerce.inventory.application.ReleaseProductStockAppService;
 import moe.ahao.commerce.inventory.infrastructure.exception.InventoryExceptionEnum;

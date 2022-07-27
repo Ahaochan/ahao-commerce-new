@@ -9,9 +9,18 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum PayTypeEnum {
-    ALIPAY(1, "支付宝"),
-    WEIXIN_PAY(2, "微信支付"),
+    ALIPAY(10, "支付宝"),
+    WEIXIN_PAY(20, "微信支付"),
     ;
     private final Integer code;
     private final String name;
+
+    public static PayTypeEnum getByCode(Integer code) {
+        for (PayTypeEnum element : PayTypeEnum.values()) {
+            if (code.equals(element.getCode())) {
+                return element;
+            }
+        }
+        return null;
+    }
 }

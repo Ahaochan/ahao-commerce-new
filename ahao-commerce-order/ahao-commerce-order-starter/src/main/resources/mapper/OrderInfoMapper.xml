@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="moe.ahao.commerce.order.infrastructure.repository.impl.mybatis.mapper.OrderInfoMapper">
+    <update id="updateDeleteStatusByIds">
+        update order_info
+        set delete_status = #{deleteStatus}
+        where id in
+        <foreach collection="ids" item="item" open="(" close=")" separator=",">#{item}</foreach>
+    </update>
+    <update id="updateExtJsonByOrderId">
+        update order_info
+        set ext_json = #{extJson}
+        where order_id = #{orderId}
+    </update>
+    <update id="updateOrderStatusByOrderId">
+        update order_info
+        set order_status = #{toStatus}
+        where order_id = #{orderId}
+          and order_status = #{fromStatus}
+    </update>
+    <update id="updateOrderStatusByOrderIds">
+        update order_info
+        set order_status = #{toStatus}
+        where order_id in
+        <foreach collection="orderIds" item="item" open="(" close=")" separator=",">#{item}</foreach>
+        and order_status = #{fromStatus}
+    </update>
+    <update id="updatePrePayInfoByOrderId">
+        update order_info
+        set pay_type = #{payType},
+            pay_time = #{payTime}
+        where order_id = #{orderId}
+    </update>
+    <update id="updatePrePayInfoByOrderIds">
+        update order_info
+        set pay_type = #{payType}, pay_time = #{payTime}
+        where order_id in
+        <foreach collection="orderIds" item="item" open="(" close=")" separator=",">#{item}</foreach>
+    </update>
+    <update id="updateCancelInfoByOrderId">
+        update order_info
+        set cancel_type = #{cancelType}, order_status = #{orderStatus}, cancel_time = #{cancelTime}
+        where order_id = #{orderId}
+    </update>
+
+    <select id="selectListByOrderIds"
+            resultType="moe.ahao.commerce.order.infrastructure.repository.impl.mybatis.data.OrderInfoDO">
+        select *
+        from order_info
+        where order_id in
+        <foreach collection="orderIds" item="item" open="(" close=")" separator=",">#{item}</foreach>
+    </select>
+    <select id="selectListByParentOrderId"
+            resultType="moe.ahao.commerce.order.infrastructure.repository.impl.mybatis.data.OrderInfoDO">
+        select *
+        from order_info
+        where parent_order_id = #{parentOrderId}
+    </select>
+    <select id="selectListByOrderStatus"
+            resultType="moe.ahao.commerce.order.infrastructure.repository.impl.mybatis.data.OrderInfoDO">
+        select *
+        from order_info
+        where order_status in
+        <foreach collection="orderStatus" item="item" open="(" close=")" separator=",">#{item}</foreach>
+    </select>
+    <select id="selectOneByOrderId"
+            resultType="moe.ahao.commerce.order.infrastructure.repository.impl.mybatis.data.OrderInfoDO">
+        select *
+        from order_info
+        where order_id = #{orderId}
+    </select>
+    <select id="selectPage" parameterType="moe.ahao.commerce.order.api.query.OrderQuery"
+            resultType="moe.ahao.commerce.order.api.dto.OrderListDTO">
+        select o.business_identifier as businessIdentifier, o.order_id as orderId, o.business_order_id as
+        businessOrderId,
+        o.order_type as orderType, o.order_status as orderStatus,
+        o.seller_id as sellerId, o.user_id as userId,
+        o.pay_type as payType, o.pay_time as payTime, o.pay_amount as payAmount, o.coupon_id as couponId,
+        o.user_remark as userRemark, o.comment_status as commentStatus,
+        item.product_img as productImg, item.product_name as productName, item.sku_code as skuCode, item.sale_quantity
+        as saleQuantity, item.pay_amount as skuPayAmount
+        from order_info as o
+        left join order_item as item on o.order_id = item.order_id
+        left join order_payment_detail as pay on o.order_id = pay.order_id
+        left join order_delivery_detail as delivery on o.order_id = delivery.order_id
+        where o.delete_status = 0
+        <if test='query.businessIdentifier != null'>
+            and o.business_identifier = #{query.businessIdentifier}
+        </if>
+        <if test='query.orderTypes != null and query.orderTypes.size != 0'>
+            and o.order_type in <foreach collection='query.orderTypes' item='item' open='(' close=')' separator=','>#{item}</foreach>
+        </if>
+        <if test='query.orderIds != null and query.orderIds.size != 0'>
+            and o.order_id in <foreach collection='query.orderIds' item='item' open='(' close=')' separator=','>#{item}</foreach>
+        </if>
+        <if test='query.sellerIds != null and query.sellerIds.size != 0'>
+            and o.seller_id in <foreach collection='query.sellerIds' item='item' open='(' close=')' separator=','>#{item}</foreach>
+        </if>
+        <if test='query.parentOrderIds != null and query.parentOrderIds.size != 0'>
+            and o.parent_order_id in <foreach collection='query.parentOrderIds' item='item' open='(' close=')' separator=','>#{item}</foreach>
+        </if>
+        <if test='query.orderStatus != null and query.orderStatus.size != 0'>
+            and o.order_status in <foreach collection='query.orderStatus' item='item' open='(' close=')' separator=','>#{item}</foreach>
+        </if>
+        <if test='query.userIds != null and query.userIds.size != 0'>
+            and o.user_id in <foreach collection='query.userIds' item='item' open='(' close=')' separator=','>#{item}</foreach>
+        </if>
+        <if test='query.receiverPhones != null and query.receiverPhones.size != 0'>
+            and delivery.receiver_phone in <foreach collection='query.receiverPhones' item='item' open='(' close=')' separator=','>#{item}</foreach>
+        </if>
+        <if test='query.receiverNames != null and query.receiverNames.size != 0'>
+            and delivery.receiver_name in <foreach collection='query.receiverNames' item='item' open='(' close=')' separator=','>#{item}</foreach>
+        </if>
+        <if test='query.tradeNos != null and query.tradeNos.size != 0'>
+            and pay.out_trade_no in <foreach collection='query.tradeNos' item='item' open='(' close=')' separator=','>#{item}</foreach>
+        </if>
+        <if test='query.skuCodes != null and query.skuCodes.size != 0'>
+            and item.sku_code in <foreach collection='query.skuCodes' item='item' open='(' close=')' separator=','>#{item}</foreach>
+        </if>
+        <if test='query.productNames != null and query.productNames.size != 0'>
+            and item.product_name in <foreach collection='query.productNames' item='item' open='(' close=')' separator=','>#{item}</foreach>
+        </if>
+        <if test='query.queryStartCreatedTime != null'>
+            and o.create_time >= #{query.queryStartCreatedTime}
+        </if>
+        <if test='query.queryEndCreatedTime != null'>
+             and o.create_time <![CDATA[<=]]> #{query.queryEndCreatedTime}
+        </if>
+        <if test='query.queryStartPayTime != null'>
+            and o.pay_time >= #{query.queryStartPayTime}
+        </if>
+        <if test='query.queryEndPayTime != null'>
+            and o.pay_time <![CDATA[<=]]> #{query.queryEndPayTime}
+        </if>
+        <if test='query.queryStartPayAmount != null'>
+            and o.pay_amount >= #{query.queryStartPayAmount}
+        </if>
+        <if test='query.queryEndPayAmount != null'>
+            and o.pay_amount <![CDATA[<=]]> #{query.queryEndPayAmount}
+        </if>
+        ORDER BY o.create_time DESC
+    </select>
+</mapper>

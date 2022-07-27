@@ -1,0 +1,48 @@
+#server.port: 8080
+server.servlet.context-path: /
+#spring.application.name: Ahao-App
+#spring.profiles.active: dev
+
+# =================================== servlet 配置 ==========================================
+server.max-http-header-size: 8KB # 每个请求都会创建一个8KB大小的byte[], org.apache.coyote.http11.Http11InputBuffer.java:698
+
+server.tomcat.max-threads: 200       # 最大工作线程数
+server.tomcat.max-connections: 10000 # 超过10000个请求连接就放到请求队列里
+server.tomcat.accept-count: 100      # 请求队列的大小
+server.tomcat.accesslog.enabled: true
+server.tomcat.accesslog.encoding: UTF-8
+server.tomcat.accesslog.directory: logs
+server.tomcat.max-http-form-post-size: # Post请求体最大长度, 默认不限制
+
+spring.http.encoding.charset: UTF-8
+spring.servlet.multipart.enabled: true
+spring.servlet.multipart.max-file-size: 1MB
+spring.servlet.multipart.max-request-size: 10MB
+spring.servlet.multipart.location: ${java.io.tmpdir}
+# =================================== servlet 配置 ==========================================
+
+# =================================== jackson 配置 ==========================================
+spring.jackson.date-format: moe.ahao.util.commons.lang.time.MultiDateFormat
+spring.jackson.default-property-inclusion: always # 允许输出 null 值
+spring.jackson.time-zone: GMT+8
+# 配置: https://www.w3cschool.cn/article/28650020.html
+spring.jackson.serialization.INDENT_OUTPUT: false # 是否美化输出格式
+spring.jackson.serialization.FAIL_ON_EMPTY_BEANS: false # 空对象允许进行序列化
+spring.jackson.deserialization.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT: true # 空字符串设置为null
+spring.jackson.deserialization.FAIL_ON_UNKNOWN_PROPERTIES: false # 发现未知属性是否抛出异常\
+# =================================== jackson 配置 ==========================================
+
+# =================================== spring定时任务配置 ==========================================
+spring.task.execution.pool.allow-core-thread-timeout: true
+spring.task.execution.pool.core-size: 8
+spring.task.execution.pool.max-size: 128
+spring.task.execution.pool.keep-alive: 60s
+spring.task.execution.thread-name-prefix: task-
+spring.task.scheduling.pool.size: 8
+spring.task.scheduling.thread-name-prefix: scheduling-
+# =================================== spring定时任务配置 ==========================================
+
+# =================================== 日志配置 ==========================================
+logging.level.root: info
+logging.config: classpath:logback/logback-${spring.profiles.active}.xml
+# =================================== 日志配置 ==========================================

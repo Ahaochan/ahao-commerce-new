@@ -39,9 +39,9 @@ public enum OrderStatusChangeEnum {
         this.operateType = operateType;
     }
 
-    private OrderStatusEnum preStatus;
-    private OrderStatusEnum currentStatus;
-    private OrderOperateTypeEnum operateType;
+    private final OrderStatusEnum preStatus;
+    private final OrderStatusEnum currentStatus;
+    private final OrderOperateTypeEnum operateType;
 
 
     public static OrderStatusChangeEnum getBy(int preStatus, int currentStatus) {

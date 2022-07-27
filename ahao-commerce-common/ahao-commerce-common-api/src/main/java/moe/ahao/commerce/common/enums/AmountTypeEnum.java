@@ -9,7 +9,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum AmountTypeEnum {
-    UNKNOWN(-1, "未知"),
     ORIGIN_PAY_AMOUNT(10, "订单支付原价"),
     COUPON_DISCOUNT_AMOUNT(20, "优惠券抵扣金额"),
     SHIPPING_AMOUNT(30, "运费"),
@@ -21,14 +20,11 @@ public enum AmountTypeEnum {
     private final String name;
 
     public static AmountTypeEnum getByCode(Integer code) {
-        if(code == null) {
-            return UNKNOWN;
-        }
         for (AmountTypeEnum element : AmountTypeEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }
         }
-        return UNKNOWN;
+        return null;
     }
 }

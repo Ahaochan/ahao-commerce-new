@@ -2,7 +2,7 @@ package moe.ahao.commerce.market.application;
 
 import lombok.extern.slf4j.Slf4j;
 import moe.ahao.commerce.common.constants.RedisLockKeyConstants;
-import moe.ahao.commerce.market.api.command.ReleaseUserCouponCommand;
+import moe.ahao.commerce.market.api.command.ReleaseUserCouponEvent;
 import moe.ahao.commerce.market.infrastructure.enums.CouponUsedStatusEnum;
 import moe.ahao.commerce.market.infrastructure.exception.MarketExceptionEnum;
 import moe.ahao.commerce.market.infrastructure.repository.impl.mybatis.data.CouponDO;
@@ -26,7 +26,7 @@ public class ReleaseUserCouponAppService {
     @Autowired
     private RedissonClient redissonClient;
 
-    public Boolean releaseUserCoupon(ReleaseUserCouponCommand command) {
+    public Boolean releaseUserCoupon(ReleaseUserCouponEvent command) {
         log.info("开始执行回滚优惠券, couponId:{}", command.getCouponId());
         String couponId = command.getCouponId();
         String lockKey = RedisLockKeyConstants.RELEASE_COUPON_KEY + couponId;
@@ -50,7 +50,7 @@ public class ReleaseUserCouponAppService {
      * 这里不会有并发问题, 数据库会加上行锁
      */
     @Transactional(rollbackFor = Exception.class)
-    public Boolean releaseUserCouponWithTx(ReleaseUserCouponCommand command) {
+    public Boolean releaseUserCouponWithTx(ReleaseUserCouponEvent command) {
         // 1. 检查入参
         this.check(command);
 
@@ -72,7 +72,7 @@ public class ReleaseUserCouponAppService {
         return true;
     }
 
-    private void check(ReleaseUserCouponCommand command) {
+    private void check(ReleaseUserCouponEvent command) {
         String userId = command.getUserId();
         String couponId = command.getCouponId();
         if (StringUtils.isAnyEmpty(userId, couponId)) {

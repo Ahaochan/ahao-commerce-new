@@ -1,8 +1,8 @@
 package moe.ahao.commerce.inventory.adapter.mq;
 
 import com.alibaba.fastjson.JSON;
-import com.ruyuan.eshop.common.mq.AbstractMessageListenerConcurrently;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.common.infrastructure.rocketmq.AbstractMessageListenerConcurrently;
 import moe.ahao.commerce.inventory.api.command.DeductProductStockCommand;
 import moe.ahao.commerce.inventory.application.DeductProductStockAppService;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;

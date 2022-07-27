@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="moe.ahao.commerce.aftersale.infrastructure.repository.impl.mybatis.mapper.AfterSaleRefundMapper">
+    <update id="updateRefundInfoByAfterSaleId">
+        update after_sale_refund
+        set refund_status = #{refundStatus}, refund_pay_time = #{refundPayTime}, remark = #{remark}
+        where after_sale_id = #{afterSaleId}
+    </update>
+    <select id="selectOneByAfterSaleId" resultType="moe.ahao.commerce.aftersale.infrastructure.repository.impl.mybatis.data.AfterSaleRefundDO">
+        select * from after_sale_refund where after_sale_id = #{afterSaleId}
+    </select>
+
+</mapper>

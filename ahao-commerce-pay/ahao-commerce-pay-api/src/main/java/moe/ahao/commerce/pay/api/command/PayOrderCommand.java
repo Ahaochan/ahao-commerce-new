@@ -14,7 +14,7 @@ public class PayOrderCommand {
     /**
      * 业务方标识
      */
-    private String businessIdentifier;
+    private Integer businessIdentifier;
     /**
      * 支付类型
      */

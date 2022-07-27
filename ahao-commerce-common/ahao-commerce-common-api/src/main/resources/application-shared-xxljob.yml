@@ -1,0 +1,11 @@
+# =================================== xxljob 配置 ==========================================
+# 配置 https://www.xuxueli.com/xxl-job/#%E6%AD%A5%E9%AA%A4%E4%BA%8C%EF%BC%9A%E6%89%A7%E8%A1%8C%E5%99%A8%E9%85%8D%E7%BD%AE
+xxl.job.admin-addresses: http://192.168.19.128/xxl-job-admin
+#xxl.job.access-token:
+xxl.job.app-name: ${spring.application.name}
+#xxl.job.address:
+#xxl.job.ip:
+#xxl.job.port:
+xxl.job.log-path: data/applogs/xxl-job/jobhandler
+xxl.job.log-retention-days: -1 # 执行器日志文件保存天数
+# =================================== xxljob 配置 ==========================================

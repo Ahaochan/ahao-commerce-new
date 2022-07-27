@@ -7,6 +7,7 @@ import moe.ahao.commerce.inventory.api.InventoryFeignApi;
 import moe.ahao.commerce.inventory.application.InventoryQueryService;
 import moe.ahao.commerce.inventory.application.SyncStockToCacheProcessor;
 import moe.ahao.commerce.inventory.infrastructure.repository.impl.mybatis.data.ProductStockDO;
+import moe.ahao.commerce.inventory.infrastructure.repository.impl.mybatis.data.ProductStockLogDO;
 import moe.ahao.commerce.inventory.infrastructure.repository.impl.mybatis.mapper.ProductStockLogMapper;
 import moe.ahao.commerce.inventory.infrastructure.repository.impl.mybatis.mapper.ProductStockMapper;
 import moe.ahao.domain.entity.Result;
@@ -66,7 +67,7 @@ public class InventoryTestController {
                 // 同步缓存
                 syncStockToCacheProcessor.syncStock(skuCode);
             }
-            productStockLogMapper.delete(new LambdaUpdateWrapper<>());
+            productStockLogMapper.delete(new LambdaUpdateWrapper<ProductStockLogDO>().eq(ProductStockLogDO::getSkuCode, skuCodes));
         }
         return Result.success(true);
     }

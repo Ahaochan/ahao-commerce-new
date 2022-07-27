@@ -22,15 +22,12 @@
         <module>ahao-commerce-fulfill</module>
         <module>ahao-commerce-inventory</module>
         <module>ahao-commerce-market</module>
+        <module>ahao-commerce-order</module>
         <module>ahao-commerce-pay</module>
         <module>ahao-commerce-product</module>
         <module>ahao-commerce-risk</module>
         <module>ahao-commerce-tms</module>
         <module>ahao-commerce-wms</module>
-
-        <module>ahao-commerce-common-old</module>
-        <module>ahao-commerce-order-api-old</module>
-        <module>ahao-commerce-order-service-old</module>
     </modules>
 
     <properties>
@@ -131,12 +128,27 @@
             </dependency>
             <dependency>
                 <groupId>moe.ahao</groupId>
+                <artifactId>ahao-commerce-fulfill-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>moe.ahao</groupId>
                 <artifactId>ahao-commerce-inventory-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>moe.ahao</groupId>
                 <artifactId>ahao-commerce-market-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>moe.ahao</groupId>
+                <artifactId>ahao-commerce-order-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>moe.ahao</groupId>
+                <artifactId>ahao-commerce-pay-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

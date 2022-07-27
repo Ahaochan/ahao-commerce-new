@@ -1,7 +1,7 @@
 package moe.ahao.commerce.inventory.application;
 
-import com.ruyuan.eshop.common.constants.RedisLockKeyConstants;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.common.constants.RedisLockKeyConstants;
 import moe.ahao.commerce.inventory.api.command.ReleaseProductStockCommand;
 import moe.ahao.commerce.inventory.infrastructure.cache.RedisCacheSupport;
 import moe.ahao.commerce.inventory.infrastructure.enums.StockLogStatusEnum;

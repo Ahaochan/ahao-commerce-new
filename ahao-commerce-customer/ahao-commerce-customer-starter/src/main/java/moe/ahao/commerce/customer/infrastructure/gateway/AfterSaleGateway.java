@@ -1,6 +1,6 @@
 package moe.ahao.commerce.customer.infrastructure.gateway;
 
-import moe.ahao.commerce.customer.api.command.CustomerReceiveAfterSaleCommand;
+import moe.ahao.commerce.aftersale.api.command.AfterSaleAuditCommand;
 import moe.ahao.commerce.customer.api.command.CustomerReviewReturnGoodsCommand;
 import moe.ahao.commerce.customer.infrastructure.exception.CustomerExceptionEnum;
 import moe.ahao.commerce.customer.infrastructure.gateway.feign.AfterSaleFeignClient;
@@ -20,20 +20,17 @@ public class AfterSaleGateway {
      * 接收客服的审核结果
      */
     public Boolean receiveCustomerAuditResult(CustomerReviewReturnGoodsCommand command) {
-        Result<Boolean> result = afterSaleFeignClient.receiveCustomerAuditResult(command);
+        AfterSaleAuditCommand afterSaleAuditCommand = new AfterSaleAuditCommand();
+        afterSaleAuditCommand.setAfterSaleId(command.getAfterSaleId());
+        afterSaleAuditCommand.setCustomerId(command.getCustomerId());
+        afterSaleAuditCommand.setAuditResult(command.getAuditResult());
+        afterSaleAuditCommand.setAfterSaleRefundId(command.getAfterSaleRefundId());
+        afterSaleAuditCommand.setOrderId(command.getOrderId());
+        afterSaleAuditCommand.setAuditResultDesc(command.getAuditResultDesc());
+
+        Result<Boolean> result = afterSaleFeignClient.receiveCustomerAuditResult(afterSaleAuditCommand);
         if (result.getCode() != Result.SUCCESS) {
             throw CustomerExceptionEnum.PROCESS_RECEIVE_AFTER_SALE.msg();
-        }
-        return result.getObj();
-    }
-
-    /**
-     * 客服系统查询售后支付单信息
-     */
-    public String customerFindAfterSaleRefundInfo(CustomerReceiveAfterSaleCommand command) {
-        Result<String> result = afterSaleFeignClient.customerFindAfterSaleRefundInfo(command);
-        if (result.getCode() != Result.SUCCESS) {
-            throw CustomerExceptionEnum.AFTER_SALE_REFUND_ID_IS_NULL.msg();
         }
         return result.getObj();
     }

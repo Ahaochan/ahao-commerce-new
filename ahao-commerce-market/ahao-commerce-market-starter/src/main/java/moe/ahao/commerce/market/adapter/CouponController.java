@@ -4,7 +4,7 @@ package moe.ahao.commerce.market.adapter;
 import lombok.extern.slf4j.Slf4j;
 import moe.ahao.commerce.market.api.CouponFeignApi;
 import moe.ahao.commerce.market.api.command.LockUserCouponCommand;
-import moe.ahao.commerce.market.api.command.ReleaseUserCouponCommand;
+import moe.ahao.commerce.market.api.command.ReleaseUserCouponEvent;
 import moe.ahao.commerce.market.api.dto.UserCouponDTO;
 import moe.ahao.commerce.market.api.query.GetUserCouponQuery;
 import moe.ahao.commerce.market.application.CouponQueryService;
@@ -40,7 +40,7 @@ public class CouponController implements CouponFeignApi {
     }
 
     @Override
-    public Result<Boolean> release(@RequestBody ReleaseUserCouponCommand command) {
+    public Result<Boolean> release(@RequestBody ReleaseUserCouponEvent command) {
         Boolean result = releaseUserCouponService.releaseUserCoupon(command);
         return Result.success(result);
     }

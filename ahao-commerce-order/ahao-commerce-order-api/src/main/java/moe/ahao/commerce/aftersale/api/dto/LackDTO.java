@@ -1,0 +1,21 @@
+package moe.ahao.commerce.aftersale.api.dto;
+
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class LackDTO implements Serializable {
+    /**
+     * 订单id
+     */
+    private String orderId;
+    /**
+     * 售后id
+     */
+    private String afterSaleId;
+}

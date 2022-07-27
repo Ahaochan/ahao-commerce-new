@@ -1,7 +1,7 @@
 package moe.ahao.commerce.market;
 
 import moe.ahao.commerce.market.api.command.LockUserCouponCommand;
-import moe.ahao.commerce.market.api.command.ReleaseUserCouponCommand;
+import moe.ahao.commerce.market.api.command.ReleaseUserCouponEvent;
 import moe.ahao.commerce.market.api.dto.UserCouponDTO;
 import moe.ahao.commerce.market.api.query.GetUserCouponQuery;
 import moe.ahao.commerce.market.application.CouponQueryService;
@@ -64,7 +64,7 @@ public class CouponTest {
         Boolean locked = lockUserCouponService.lockUserCoupon(command1);
         Assertions.assertTrue(locked);
 
-        ReleaseUserCouponCommand command2 = new ReleaseUserCouponCommand();
+        ReleaseUserCouponEvent command2 = new ReleaseUserCouponEvent();
         command2.setUserId(command1.getUserId());
         command2.setCouponId(command1.getCouponId());
         command2.setOrderId(command1.getOrderId());

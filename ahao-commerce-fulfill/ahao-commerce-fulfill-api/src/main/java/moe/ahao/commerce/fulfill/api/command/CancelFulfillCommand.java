@@ -12,10 +12,6 @@ public class CancelFulfillCommand {
      */
     private Integer businessIdentifier;
     /**
-     * 主键id
-     */
-    private Long id;
-    /**
      * 订单编号
      */
     private String orderId;
@@ -38,7 +34,7 @@ public class CancelFulfillCommand {
     /**
      * 订单取消类型
      */
-    private String cancelType;
+    private Integer cancelType;
     /**
      * 订单取消时间
      */

@@ -11,25 +11,64 @@ import moe.ahao.commerce.fulfill.api.event.TriggerOrderWmsShipEvent;
 import moe.ahao.commerce.fulfill.application.CancelFulfillAppService;
 import moe.ahao.commerce.fulfill.application.ReceiveFulfillAppService;
 import moe.ahao.commerce.fulfill.application.TriggerOrderWmsShipAppService;
+import moe.ahao.commerce.fulfill.infrastructure.gateway.feign.TmsFeignClient;
+import moe.ahao.commerce.fulfill.infrastructure.gateway.feign.WmsFeignClient;
+import moe.ahao.commerce.fulfill.infrastructure.publisher.DefaultProducer;
+import moe.ahao.commerce.tms.api.dto.SendOutDTO;
+import moe.ahao.commerce.wms.api.dto.PickDTO;
+import moe.ahao.domain.entity.Result;
+import moe.ahao.embedded.RedisExtension;
+import org.apache.rocketmq.spring.autoconfigure.RocketMQAutoConfiguration;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Date;
 
+import static org.mockito.ArgumentMatchers.any;
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE, classes = FulfillApplication.class)
+@ActiveProfiles("test")
+
+@EnableAutoConfiguration(exclude = RocketMQAutoConfiguration.class)
 public class FulfillApiTest {
+    @RegisterExtension
+    static RedisExtension redisExtension = new RedisExtension();
+    @MockBean
+    private DefaultProducer defaultProducer;
+    @MockBean
+    private WmsFeignClient wmsFeignClient;
+    @MockBean
+    private TmsFeignClient tmsFeignClient;
+
     @Autowired
     private ReceiveFulfillAppService receiveFulfillAppService;
     @Autowired
     private CancelFulfillAppService cancelFulfillAppService;
     @Autowired
     private TriggerOrderWmsShipAppService triggerOrderWmsShipAppService;
+
+    @BeforeEach
+    public void beforeEach() {
+        Mockito.doNothing().when(defaultProducer).sendMessage(any(), any(), any());
+
+        PickDTO pickDTO = new PickDTO("订单号");
+        Mockito.when(wmsFeignClient.pickGoods(any())).thenReturn(Result.success(pickDTO));
+
+        SendOutDTO sendOutDTO = new SendOutDTO("订单号", "物流单号");
+        Mockito.when(tmsFeignClient.sendOut(any())).thenReturn(Result.success(sendOutDTO));
+    }
 
     /**
      * 触发接收订单履约

@@ -1,8 +1,8 @@
 package moe.ahao.commerce.inventory.application;
 
-import com.ruyuan.eshop.common.utils.MdcUtil;
 import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.common.infrastructure.utils.MdcUtil;
 import moe.ahao.commerce.inventory.infrastructure.exception.InventoryExceptionEnum;
 import moe.ahao.commerce.inventory.infrastructure.tcc.DeductStockDTO;
 import moe.ahao.commerce.inventory.infrastructure.tcc.LockMysqlStockTccService;

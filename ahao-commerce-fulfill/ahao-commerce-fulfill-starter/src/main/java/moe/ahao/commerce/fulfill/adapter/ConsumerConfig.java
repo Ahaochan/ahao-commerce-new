@@ -4,6 +4,7 @@ import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.spring.autoconfigure.RocketMQProperties;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,6 +13,7 @@ import static moe.ahao.commerce.common.constants.RocketMqConstant.TRIGGER_ORDER_
 
 
 @Configuration(proxyBeanMethods = false)
+@ConditionalOnBean(RocketMQProperties.class)
 public class ConsumerConfig {
     @Autowired
     private RocketMQProperties rocketMQProperties;

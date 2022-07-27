@@ -1,7 +1,7 @@
 package moe.ahao.commerce.market.adapter;
 
 import lombok.extern.slf4j.Slf4j;
-import moe.ahao.commerce.market.api.command.ReleaseUserCouponCommand;
+import moe.ahao.commerce.market.api.command.ReleaseUserCouponEvent;
 import moe.ahao.commerce.market.application.ReleaseUserCouponAppService;
 import moe.ahao.commerce.market.infrastructure.exception.MarketExceptionEnum;
 import moe.ahao.util.commons.io.JSONHelper;
@@ -26,7 +26,7 @@ public class ReleasePropertyListener implements MessageListenerConcurrently {
                 String content = new String(msg.getBody(), StandardCharsets.UTF_8);
                 log.info("ReleasePropertyConsumer message:{}", content);
 
-                ReleaseUserCouponCommand command = JSONHelper.parse(content, ReleaseUserCouponCommand.class);
+                ReleaseUserCouponEvent command = JSONHelper.parse(content, ReleaseUserCouponEvent.class);
                 if(command == null) {
                     throw MarketExceptionEnum.CONSUME_MQ_FAILED.msg();
                 }

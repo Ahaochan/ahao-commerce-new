@@ -1,7 +1,7 @@
 package moe.ahao.commerce.inventory.application;
 
-import com.ruyuan.eshop.common.constants.RedisLockKeyConstants;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.common.constants.RedisLockKeyConstants;
 import moe.ahao.commerce.inventory.api.command.ModifyProductStockCommand;
 import moe.ahao.commerce.inventory.infrastructure.exception.InventoryExceptionEnum;
 import moe.ahao.commerce.inventory.infrastructure.repository.impl.mybatis.data.ProductStockDO;

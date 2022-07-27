@@ -49,7 +49,7 @@ public class ReleaseProductStockProcessor {
         String saledStockKey = RedisCacheSupport.SALED_STOCK;
         String productStockKey = RedisCacheSupport.buildProductStockKey(skuCode);
 
-        Long result = RedisHelper.getRedisTemplate().execute(new DefaultRedisScript<>(luaScript, Long.class),
+        Long result = RedisHelper.getStringRedisTemplate().execute(new DefaultRedisScript<>(luaScript, Long.class),
             Arrays.asList(productStockKey, saleStockKey, saledStockKey), String.valueOf(saleQuantity));
         if (result == null || result < 0) {
             throw InventoryExceptionEnum.INCREASE_PRODUCT_SKU_STOCK_ERROR.msg();

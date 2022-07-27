@@ -41,7 +41,7 @@ public class RedisLockKeyConstants {
     /**
      * 调整库存存锁
      */
-    public static final String INCREASE_PRODUCT_STOCK_KEY = "#MODIFY_PRODUCT_STOCK_KEY:";
+    public static final String MODIFY_PRODUCT_STOCK_KEY = "#MODIFY_PRODUCT_STOCK_KEY:";
 
     /**
      * 释放优惠券锁

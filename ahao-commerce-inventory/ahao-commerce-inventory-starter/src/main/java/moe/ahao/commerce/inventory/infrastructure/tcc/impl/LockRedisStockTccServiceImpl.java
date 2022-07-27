@@ -1,9 +1,9 @@
 package moe.ahao.commerce.inventory.infrastructure.tcc.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ruyuan.eshop.common.utils.MdcUtil;
 import io.seata.rm.tcc.api.BusinessActionContext;
 import lombok.extern.slf4j.Slf4j;
+import moe.ahao.commerce.common.infrastructure.utils.MdcUtil;
 import moe.ahao.commerce.inventory.infrastructure.cache.LuaScript;
 import moe.ahao.commerce.inventory.infrastructure.cache.RedisCacheSupport;
 import moe.ahao.commerce.inventory.infrastructure.tcc.DeductStockDTO;

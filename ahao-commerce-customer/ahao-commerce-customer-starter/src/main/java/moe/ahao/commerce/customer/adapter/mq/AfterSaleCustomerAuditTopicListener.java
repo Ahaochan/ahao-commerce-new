@@ -1,8 +1,8 @@
 package moe.ahao.commerce.customer.adapter.mq;
 
-import com.ruyuan.eshop.common.mq.AbstractMessageListenerConcurrently;
 import lombok.extern.slf4j.Slf4j;
-import moe.ahao.commerce.customer.api.command.CustomerReceiveAfterSaleCommand;
+import moe.ahao.commerce.common.infrastructure.rocketmq.AbstractMessageListenerConcurrently;
+import moe.ahao.commerce.customer.api.event.CustomerReceiveAfterSaleEvent;
 import moe.ahao.commerce.customer.application.ReceivableAfterSaleAppService;
 import moe.ahao.commerce.customer.infrastructure.exception.CustomerExceptionEnum;
 import moe.ahao.util.commons.io.JSONHelper;
@@ -30,9 +30,9 @@ public class AfterSaleCustomerAuditTopicListener extends AbstractMessageListener
             for (MessageExt messageExt : list) {
                 String message = new String(messageExt.getBody());
                 log.info("AfterSaleCustomerAuditTopicListener message:{}", message);
-                CustomerReceiveAfterSaleCommand command = JSONHelper.parse(message, CustomerReceiveAfterSaleCommand.class);
+                CustomerReceiveAfterSaleEvent event = JSONHelper.parse(message, CustomerReceiveAfterSaleEvent.class);
                 //  客服接收订单系统的售后申请
-                boolean result = receivableAfterSaleAppService.handler(command);
+                boolean result = receivableAfterSaleAppService.handler(event);
                 if (!result) {
                     throw CustomerExceptionEnum.PROCESS_RECEIVE_AFTER_SALE.msg();
                 }

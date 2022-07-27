@@ -1,10 +1,10 @@
 package moe.ahao.commerce.inventory.infrastructure.tcc.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ruyuan.eshop.common.utils.MdcUtil;
 import io.seata.rm.tcc.api.BusinessActionContext;
 import lombok.extern.slf4j.Slf4j;
 import moe.ahao.commerce.common.constants.RedisLockKeyConstants;
+import moe.ahao.commerce.common.infrastructure.utils.MdcUtil;
 import moe.ahao.commerce.inventory.infrastructure.repository.impl.mybatis.data.ProductStockDO;
 import moe.ahao.commerce.inventory.infrastructure.repository.impl.mybatis.data.ProductStockLogDO;
 import moe.ahao.commerce.inventory.infrastructure.repository.impl.mybatis.mapper.ProductStockLogMapper;

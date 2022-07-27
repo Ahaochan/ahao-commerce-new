@@ -30,12 +30,11 @@
         </dependency>
         <dependency>
             <groupId>moe.ahao</groupId>
-            <artifactId>ahao-commerce-inventory-api</artifactId>
+            <artifactId>ahao-commerce-common-infrastructure</artifactId>
         </dependency>
         <dependency>
             <groupId>moe.ahao</groupId>
-            <artifactId>ahao-commerce-common-old</artifactId>
-            <version>1.0.0</version>
+            <artifactId>ahao-commerce-inventory-api</artifactId>
         </dependency>
         <!--======================================================= 自定义模块 =======================================================-->
 
