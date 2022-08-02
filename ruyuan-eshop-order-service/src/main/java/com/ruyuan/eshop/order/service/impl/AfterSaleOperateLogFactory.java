@@ -1,8 +1,8 @@
 package com.ruyuan.eshop.order.service.impl;
 
+import com.ruyuan.eshop.common.enums.AfterSaleStatusChangeEnum;
 import com.ruyuan.eshop.order.domain.entity.AfterSaleInfoDO;
 import com.ruyuan.eshop.order.domain.entity.AfterSaleLogDO;
-import com.ruyuan.eshop.order.enums.AfterSaleStatusChangeEnum;
 import org.springframework.stereotype.Component;
 
 /**
@@ -18,7 +18,7 @@ public class AfterSaleOperateLogFactory {
      * 获取售后操作日志
      */
     public AfterSaleLogDO get(AfterSaleInfoDO afterSaleInfo, AfterSaleStatusChangeEnum statusChange) {
-        String operateRemark = statusChange.getOperateRemark();
+        String operateRemark = statusChange.getOperateType().getMsg();
         Integer preStatus = statusChange.getPreStatus().getCode();
         Integer currentStatus = statusChange.getCurrentStatus().getCode();
         return create(afterSaleInfo, preStatus, currentStatus, operateRemark);

@@ -1,11 +1,12 @@
 package com.ruyuan.eshop.common.web;
 
+import com.alibaba.csp.sentinel.adapter.spring.webmvc.callback.BlockExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ruyuan.eshop.common.core.DateProvider;
 import com.ruyuan.eshop.common.core.DateProviderImpl;
 import com.ruyuan.eshop.common.core.ObjectMapperImpl;
-import com.ruyuan.eshop.common.exception.GlobalExceptionHandler;
 import com.ruyuan.eshop.common.exception.CustomBlockExceptionHandler;
+import com.ruyuan.eshop.common.exception.GlobalExceptionHandler;
 import com.ruyuan.eshop.common.json.JsonExtractor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +20,7 @@ import org.springframework.context.annotation.Import;
  * @version 1.0
  */
 @Configuration
-@Import(value = {GlobalExceptionHandler.class, GlobalResponseBodyAdvice.class, CustomBlockExceptionHandler.class})
+@Import(value = {GlobalExceptionHandler.class, GlobalResponseBodyAdvice.class})
 public class WebConfiguration {
 
     @Bean
@@ -35,5 +36,10 @@ public class WebConfiguration {
     @Bean
     public JsonExtractor jsonExtractor() {
         return new JsonExtractor();
+    }
+
+    @Bean
+    public BlockExceptionHandler blockExceptionHandler() {
+        return new CustomBlockExceptionHandler();
     }
 }

@@ -25,9 +25,21 @@ public class AfterSaleRefundDAO extends BaseDAO<AfterSaleRefundMapper, AfterSale
      * @param afterSaleId
      * @return
      */
-    public List<AfterSaleRefundDO> listByAfterSaleId(Long afterSaleId) {
+    public List<AfterSaleRefundDO> listByAfterSaleId(String afterSaleId) {
         LambdaQueryWrapper<AfterSaleRefundDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AfterSaleRefundDO::getAfterSaleId, afterSaleId);
+        return list(queryWrapper);
+    }
+
+    /**
+     * 查询售后单退款记录
+     *
+     * @param afterSaleIds
+     * @return
+     */
+    public List<AfterSaleRefundDO> listByAfterSaleIds(List<String> afterSaleIds) {
+        LambdaQueryWrapper<AfterSaleRefundDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(AfterSaleRefundDO::getAfterSaleId, afterSaleIds);
         return list(queryWrapper);
     }
 
@@ -47,4 +59,14 @@ public class AfterSaleRefundDAO extends BaseDAO<AfterSaleRefundMapper, AfterSale
         queryWrapper.eq(AfterSaleRefundDO::getAfterSaleId, afterSaleId);
         return baseMapper.selectOne(queryWrapper);
     }
+
+    /**
+     * 删除售后支付记录
+     */
+    public boolean delete(String afterSaleId) {
+        LambdaQueryWrapper<AfterSaleRefundDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(AfterSaleRefundDO::getAfterSaleId, afterSaleId);
+        return remove(queryWrapper);
+    }
+
 }

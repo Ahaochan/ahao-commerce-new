@@ -4,6 +4,8 @@ import com.alibaba.csp.sentinel.Entry;
 import com.alibaba.csp.sentinel.SphU;
 import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.csp.sentinel.slots.block.BlockException;
+import com.alibaba.csp.sentinel.slots.block.authority.AuthorityException;
+import com.alibaba.csp.sentinel.slots.block.flow.FlowException;
 import com.ruyuan.eshop.common.core.JsonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -80,8 +82,8 @@ public class SentinelTestController {
     @GetMapping("/fallbackByErrorRatio")
     public JsonResult<String> fallbackByErrorRatio(@RequestParam(required = false) String test) {
         num++;
-        if(num % 2 == 0){
-           throw new RuntimeException("系统错误");
+        if (num % 2 == 0) {
+            throw new RuntimeException("系统错误");
         }
         return JsonResult.buildSuccess("fallbackByErrorRatio:" + test);
     }
@@ -96,8 +98,8 @@ public class SentinelTestController {
     @GetMapping("/fallbackByErrorCount")
     public JsonResult<String> fallbackByErrorCount(@RequestParam(required = false) String test) {
         num++;
-        if(num % 2 == 0){
-            throw  new RuntimeException("系统错误");
+        if (num % 2 == 0) {
+            throw new RuntimeException("系统错误");
         }
         return JsonResult.buildSuccess("fallbackByErrorCount:" + test);
     }
@@ -146,12 +148,21 @@ public class SentinelTestController {
      * @param test
      * @return
      */
-    @SentinelResource(value = "SentinelTestController:authRuleByUserId")
+    @SentinelResource(value = "SentinelTestController:authRuleByUserId", blockHandler = "authRuleByUserId_blockHandler")
     @GetMapping("/authRuleByUserId")
     public JsonResult<String> authRuleByUserId(@RequestParam(required = false) String test, HttpServletRequest request)
             throws BlockException {
         String userId = request.getHeader("user_id");
         return JsonResult.buildSuccess("userId=" + userId + ", test=" + test);
+    }
+
+    public JsonResult<String> authRuleByUserId_blockHandler(String test, HttpServletRequest request, BlockException e) {
+        if (e instanceof FlowException) {
+            return JsonResult.buildError("接口被限流了...");
+        } else if (e instanceof AuthorityException) {
+            return JsonResult.buildError("没有权限访问这个接口...");
+        }
+        return JsonResult.buildError("流控异常");
     }
 
 }

@@ -8,12 +8,14 @@ import com.ruyuan.eshop.market.domain.dto.UserCouponDTO;
 import com.ruyuan.eshop.market.domain.query.UserCouponQuery;
 import com.ruyuan.eshop.market.domain.request.CalculateOrderAmountRequest;
 import com.ruyuan.eshop.market.domain.request.LockUserCouponRequest;
+import com.ruyuan.eshop.market.domain.request.ReleaseUserCouponRequest;
 import com.ruyuan.eshop.order.exception.OrderBizException;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Component;
 
 /**
  * 营销服务远程接口
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -28,6 +30,7 @@ public class MarketRemote {
 
     /**
      * 计算订单费用
+     *
      * @param calculateOrderPriceRequest
      * @return
      */
@@ -43,8 +46,6 @@ public class MarketRemote {
 
     /**
      * 锁定用户优惠券
-     * @param lockUserCouponRequest
-     * @return
      */
     @SentinelResource(value = "MarketRemote:lockUserCoupon")
     public Boolean lockUserCoupon(LockUserCouponRequest lockUserCouponRequest) {
@@ -58,7 +59,6 @@ public class MarketRemote {
 
     /**
      * 获取用户优惠券
-     * @return
      */
     public UserCouponDTO getUserCoupon(UserCouponQuery userCouponQuery) {
         JsonResult<UserCouponDTO> jsonResult = marketApi.getUserCoupon(userCouponQuery);
@@ -68,5 +68,17 @@ public class MarketRemote {
         return null;
     }
 
+    /**
+     * 释放用户优惠券
+     */
+    @SentinelResource(value = "MarketRemote:releaseUserCoupon")
+    public Boolean releaseUserCoupon(ReleaseUserCouponRequest releaseUserCouponRequest) {
+        JsonResult<Boolean> jsonResult = marketApi.releaseUserCoupon(releaseUserCouponRequest);
+        // 检查锁定用户优惠券结果
+        if (!jsonResult.getSuccess()) {
+            throw new OrderBizException(jsonResult.getErrorCode(), jsonResult.getErrorMessage());
+        }
+        return jsonResult.getData();
+    }
 
 }

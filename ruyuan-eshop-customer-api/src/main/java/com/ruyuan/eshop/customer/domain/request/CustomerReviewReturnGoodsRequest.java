@@ -17,7 +17,7 @@ public class CustomerReviewReturnGoodsRequest implements Serializable {
     /**
      * 售后id
      */
-    private Long afterSaleId;
+    private String afterSaleId;
     /**
      * 客服id
      */
@@ -38,5 +38,13 @@ public class CustomerReviewReturnGoodsRequest implements Serializable {
      * 客服审核结果描述信息
      */
     private String auditResultDesc;
+    /**
+     * 售后的skuCode
+     */
+    private String skuCode;
+    /**
+     * 客服审核售后单类型 10 订单条目售后单 20 优惠券售后单 30 运费售后单
+     */
+    private Integer afterSaleItemType;
 
 }

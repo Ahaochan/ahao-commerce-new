@@ -27,5 +27,5 @@ CREATE TABLE `customer_receives_after_sales_info`
     KEY                    `idx_customer_receives_after_sales_info_id` (`after_sale_id`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='客服接收售后申请信息表';
 
-
-
+-- 更新字段注释
+ALTER TABLE customer_receives_after_sales_info modify after_sale_type tinyint NOT NULL COMMENT '售后类型 1 整笔退款 2 售后退货';

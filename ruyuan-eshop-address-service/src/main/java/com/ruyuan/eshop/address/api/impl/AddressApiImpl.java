@@ -50,7 +50,7 @@ public class AddressApiImpl implements AddressApi {
     public JsonResult<AddressDTO> queryAddress(AddressQuery query) {
         log.info(LoggerFormat.build()
                 .remark("queryAddress->request")
-                .data("query",query)
+                .data("query", query)
                 .finish());
         //1、参数校验
         checkParam(query);
@@ -122,7 +122,7 @@ public class AddressApiImpl implements AddressApi {
             if (isMatch(candidate, query)) {
                 log.info(LoggerFormat.build()
                         .remark("queryAddress->response")
-                        .data("response",candidate)
+                        .data("response", candidate)
                         .finish());
                 //7、组装返参
                 return JsonResult.buildSuccess(candidate);

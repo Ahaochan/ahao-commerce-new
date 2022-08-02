@@ -2,6 +2,8 @@ package com.ruyuan.eshop.order.domain.request;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 用户撤销售后申请
  *
@@ -9,9 +11,10 @@ import lombok.Data;
  * @version 1.0
  */
 @Data
-public class RevokeAfterSaleRequest {
+public class RevokeAfterSaleRequest implements Serializable {
+    private static final long serialVersionUID = 8685567262789130599L;
     /**
      * 售后单
      */
-    private Long afterSaleId;
+    private String afterSaleId;
 }

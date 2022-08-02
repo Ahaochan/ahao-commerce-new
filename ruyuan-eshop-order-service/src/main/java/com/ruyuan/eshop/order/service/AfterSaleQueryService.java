@@ -5,6 +5,7 @@ import com.ruyuan.eshop.order.domain.dto.AfterSaleOrderDetailDTO;
 import com.ruyuan.eshop.order.domain.dto.AfterSaleOrderListDTO;
 import com.ruyuan.eshop.order.domain.dto.OrderLackItemDTO;
 import com.ruyuan.eshop.order.domain.query.AfterSaleQuery;
+import com.ruyuan.eshop.order.enums.AfterSaleQueryDataTypeEnums;
 
 import java.util.List;
 
@@ -25,19 +26,36 @@ public interface AfterSaleQueryService {
     void checkQueryParam(AfterSaleQuery query);
 
     /**
-     * 执行列表查询
+     * 执行列表查询 v1
      *
      * @param query
      */
-    PagingInfo<AfterSaleOrderListDTO> executeListQuery(AfterSaleQuery query);
+    PagingInfo<AfterSaleOrderListDTO> executeListQueryV1(AfterSaleQuery query);
 
     /**
-     * 查询售后单详情
+     * 执行列表查询 v2 toC
+     *
+     * @param query     入参
+     * @param downgrade false : es+mysql; true:es+es
+     * @return
+     */
+    PagingInfo<AfterSaleOrderDetailDTO> executeListQueryV2(AfterSaleQuery query, Boolean downgrade, AfterSaleQueryDataTypeEnums... queryDataTypes) throws Exception;
+
+    /**
+     * 查询售后单详情 v1
      *
      * @param afterSaleId
      * @return
      */
-    AfterSaleOrderDetailDTO afterSaleDetail(Long afterSaleId);
+    AfterSaleOrderDetailDTO afterSaleDetailV1(String afterSaleId);
+
+    /**
+     * 查询售后单详情 v1
+     *
+     * @param afterSaleId
+     * @return
+     */
+    AfterSaleOrderDetailDTO afterSaleDetailV2(String afterSaleId, AfterSaleQueryDataTypeEnums... queryDataTypes);
 
     /**
      * 查询缺品信息

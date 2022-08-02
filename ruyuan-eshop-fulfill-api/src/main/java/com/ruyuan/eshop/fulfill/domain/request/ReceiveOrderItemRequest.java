@@ -25,6 +25,11 @@ public class ReceiveOrderItemRequest implements Serializable {
     private String skuCode;
 
     /**
+     * 商品类型
+     */
+    private Integer productType;
+
+    /**
      * 商品名称
      */
     private String productName;
@@ -53,6 +58,11 @@ public class ReceiveOrderItemRequest implements Serializable {
      * 当前商品支付原总价
      */
     private Integer originAmount;
+
+    /**
+     * 扩展信息
+     */
+    private String extJson;
 
     @Tolerate
     public ReceiveOrderItemRequest() {

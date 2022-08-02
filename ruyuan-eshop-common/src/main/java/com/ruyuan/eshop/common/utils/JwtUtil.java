@@ -16,7 +16,7 @@ import java.util.Date;
  */
 public class JwtUtil {
 
-    // 以下配置，在生产环境应该做成可配置的 TODO
+    // 以下配置，在生产环境应该做成可配置的
 
     /**
      * 过期时间，一个月

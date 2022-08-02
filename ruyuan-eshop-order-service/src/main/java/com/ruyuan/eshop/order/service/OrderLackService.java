@@ -36,5 +36,5 @@ public interface OrderLackService {
      * @param checkLackDTO
      * @return
      */
-    LackDTO  executeLackRequest(LackRequest request, CheckLackDTO checkLackDTO) throws Exception;
+    LackDTO executeLackRequest(LackRequest request, CheckLackDTO checkLackDTO) throws Exception;
 }

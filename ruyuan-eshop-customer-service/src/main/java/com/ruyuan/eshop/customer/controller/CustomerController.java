@@ -36,7 +36,7 @@ public class CustomerController {
      */
     @PostMapping("/audit")
     public JsonResult<Boolean> audit(@RequestBody CustomerReviewReturnGoodsRequest customerReviewReturnGoodsRequest) {
-        Long afterSaleId = customerReviewReturnGoodsRequest.getAfterSaleId();
+        String afterSaleId = customerReviewReturnGoodsRequest.getAfterSaleId();
         //  分布式锁
         String key = RedisLockKeyConstants.REFUND_KEY + afterSaleId;
         boolean lock = redisLock.tryLock(key);

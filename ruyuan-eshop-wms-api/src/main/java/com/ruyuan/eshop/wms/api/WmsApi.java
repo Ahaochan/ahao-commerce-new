@@ -14,17 +14,11 @@ public interface WmsApi {
 
     /**
      * 捡货
-     *
-     * @param request
-     * @return
      */
     JsonResult<PickDTO> pickGoods(PickGoodsRequest request);
 
     /**
      * 取消捡货
-     *
-     * @param orderId
-     * @return
      */
     JsonResult<Boolean> cancelPickGoods(String orderId);
 

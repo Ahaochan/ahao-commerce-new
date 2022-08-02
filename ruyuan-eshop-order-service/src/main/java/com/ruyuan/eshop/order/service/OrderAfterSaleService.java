@@ -1,7 +1,7 @@
 package com.ruyuan.eshop.order.service;
 
 import com.ruyuan.eshop.common.core.JsonResult;
-import com.ruyuan.eshop.common.message.ActualRefundMessage;
+import com.ruyuan.eshop.common.message.RefundMessage;
 import com.ruyuan.eshop.order.domain.request.*;
 
 
@@ -16,17 +16,12 @@ public interface OrderAfterSaleService {
     /**
      * 取消订单/超时未支付取消 入口
      * <p>
-     * 有3个调用的地方：
-     * 1、用户手动取消，订单出库状态之前都可以取消
-     * 2、消费正向生单之后的MQ取消，要先判断支付状态，未支付才取消。
-     * 3、定时任务定时扫描，超过30分钟，未支付才取消
+     * 接收3处调用：
+     * 1、用户手动取消调用
+     * 2、下单后订单流入延迟MQ,30分钟后触发调用
+     * 3、XXL-JOB定时任务扫描触发调用
      */
     JsonResult<Boolean> cancelOrder(CancelOrderRequest cancelOrderRequest);
-
-    /**
-     * 取消订单逻辑
-     */
-    JsonResult<Boolean> executeCancelOrder(CancelOrderRequest cancelOrderRequest, String orderId);
 
     /**
      * 取消订单/超时未支付取消 执行 退款前计算金额、记录售后信息等准备工作
@@ -36,7 +31,7 @@ public interface OrderAfterSaleService {
     /**
      * 执行退款
      */
-    JsonResult<Boolean> refundMoney(ActualRefundMessage actualRefundMessage);
+    JsonResult<Boolean> refundMoney(RefundMessage refundMessage);
 
     /**
      * 支付退款回调 入口
@@ -61,21 +56,10 @@ public interface OrderAfterSaleService {
     /**
      * 撤销售后申请
      */
-    void revokeAfterSale(RevokeAfterSaleRequest request);
+    void revokeAfterSale(RevokeAfterSaleRequest revokeAfterSaleRequest);
 
     /**
-     * 接收客服审核拒绝结果 入口
+     * 正向生单后的执行取消订单前验证 入口
      */
-    void receiveCustomerAuditReject(CustomerAuditAssembleRequest customerAuditAssembleResult);
-
-    /**
-     * 接收客服审核通过结果 入口
-     */
-    void receiveCustomerAuditAccept(CustomerAuditAssembleRequest customerAuditAssembleResult);
-
-    /**
-     * 查询售后信息的客服审核状态
-     */
-    Integer findCustomerAuditAfterSaleStatus(Long afterSaleId);
-
+    void verifyBeforeOrderCancellation(String orderId);
 }

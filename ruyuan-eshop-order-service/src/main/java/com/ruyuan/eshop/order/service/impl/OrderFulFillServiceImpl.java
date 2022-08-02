@@ -1,31 +1,28 @@
 package com.ruyuan.eshop.order.service.impl;
 
-import com.ruyuan.eshop.common.bean.SpringApplicationContext;
 import com.ruyuan.eshop.common.enums.AmountTypeEnum;
 import com.ruyuan.eshop.common.enums.OrderStatusChangeEnum;
-import com.ruyuan.eshop.common.enums.OrderStatusEnum;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveOrderItemRequest;
-import com.ruyuan.eshop.order.dao.*;
-import com.ruyuan.eshop.order.domain.dto.WmsShipDTO;
+import com.ruyuan.eshop.order.dao.OrderAmountDAO;
+import com.ruyuan.eshop.order.dao.OrderDeliveryDetailDAO;
+import com.ruyuan.eshop.order.dao.OrderItemDAO;
+import com.ruyuan.eshop.order.domain.dto.AfterFulfillDTO;
 import com.ruyuan.eshop.order.domain.entity.OrderAmountDO;
 import com.ruyuan.eshop.order.domain.entity.OrderDeliveryDetailDO;
 import com.ruyuan.eshop.order.domain.entity.OrderInfoDO;
 import com.ruyuan.eshop.order.domain.entity.OrderItemDO;
 import com.ruyuan.eshop.order.exception.OrderBizException;
 import com.ruyuan.eshop.order.service.OrderFulFillService;
-import com.ruyuan.eshop.order.wms.OrderDeliveredProcessor;
-import com.ruyuan.eshop.order.wms.OrderOutStockedProcessor;
-import com.ruyuan.eshop.order.wms.OrderSignedProcessor;
-import com.ruyuan.eshop.order.wms.OrderWmsShipResultProcessor;
+import com.ruyuan.eshop.order.statemachine.StateMachineFactory;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * <p>
@@ -38,74 +35,45 @@ import java.util.Objects;
 @Service
 public class OrderFulFillServiceImpl implements OrderFulFillService {
 
-    @Autowired
-    private OrderInfoDAO orderInfoDAO;
 
     @Autowired
     private OrderItemDAO orderItemDAO;
-
     @Autowired
     private OrderAmountDAO orderAmountDAO;
 
     @Autowired
     private OrderDeliveryDetailDAO orderDeliveryDetailDAO;
 
-    @Autowired
-    private OrderOperateLogFactory orderOperateLogFactory;
-
-    @Autowired
-    private OrderOperateLogDAO orderOperateLogDAO;
-
-    @Autowired
-    private SpringApplicationContext springApplicationContext;
+    @Resource
+    private StateMachineFactory stateMachineFactory;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void triggerOrderFulFill(String orderId) throws OrderBizException {
-        //1、查询订单
-        OrderInfoDO order = orderInfoDAO.getByOrderId(orderId);
-        if (Objects.isNull(order)) {
-            return;
-        }
-
-        //2、校验订单是否已支付
-        OrderStatusEnum orderStatus = OrderStatusEnum.getByCode(order.getOrderStatus());
-        if (!OrderStatusEnum.PAID.equals(orderStatus)) {
-            log.info("order has not been paid，cannot fulfill, orderId={}", order.getOrderId());
-            return;
-        }
-
-        //3、更新订单状态为：“已履约”
-        orderInfoDAO.updateOrderStatus(orderId, OrderStatusEnum.PAID.getCode(), OrderStatusEnum.FULFILL.getCode());
-
-        //4、并插入一条订单变更记录
-        orderOperateLogDAO.save(orderOperateLogFactory.get(order, OrderStatusChangeEnum.ORDER_FULFILLED));
-
+        // 状态机流转
+        OrderStatusChangeEnum event = OrderStatusChangeEnum.ORDER_FULFILLED;
+        StateMachineFactory.OrderStateMachine orderStateMachine = stateMachineFactory.getOrderStateMachine(event.getFromStatus());
+        AfterFulfillDTO afterFulfillDTO = new AfterFulfillDTO();
+        afterFulfillDTO.setOrderId(orderId);
+        afterFulfillDTO.setStatusChange(event);
+        orderStateMachine.fire(event, afterFulfillDTO);
     }
 
     @Override
-    public void informOrderWmsShipResult(WmsShipDTO wmsShipDTO) throws OrderBizException {
-        //1、获取对应的订单物流结果处理器
-        OrderWmsShipResultProcessor processor = getProcessor(wmsShipDTO.getStatusChange());
-
-        //2、执行
-        if (null != processor) {
-            processor.execute(wmsShipDTO);
-        }
+    public void informOrderAfterFulfillResult(AfterFulfillDTO afterFulfillDTO) throws OrderBizException {
+        // 状态机流转
+        OrderStatusChangeEnum event = afterFulfillDTO.getStatusChange();
+        StateMachineFactory.OrderStateMachine orderStateMachine = stateMachineFactory.getOrderStateMachine(event.getFromStatus());
+        orderStateMachine.fire(event, afterFulfillDTO);
     }
 
     /**
      * 构建接受订单履约请求
-     *
-     * @param orderInfo
-     * @return
      */
     @Override
     public ReceiveFulfillRequest buildReceiveFulFillRequest(OrderInfoDO orderInfo) {
-
         OrderDeliveryDetailDO orderDeliveryDetail = orderDeliveryDetailDAO.getByOrderId(orderInfo.getOrderId());
         List<OrderItemDO> orderItems = orderItemDAO.listByOrderId(orderInfo.getOrderId());
-
         OrderAmountDO deliveryAmount = orderAmountDAO.getOne(orderInfo.getOrderId()
                 , AmountTypeEnum.SHIPPING_AMOUNT.getCode());
 
@@ -113,6 +81,7 @@ public class OrderFulFillServiceImpl implements OrderFulFillService {
         ReceiveFulfillRequest request = ReceiveFulfillRequest.builder()
                 .businessIdentifier(orderInfo.getBusinessIdentifier())
                 .orderId(orderInfo.getOrderId())
+                .orderType(orderInfo.getOrderType())
                 .sellerId(orderInfo.getSellerId())
                 .userId(orderInfo.getUserId())
                 .deliveryType(orderDeliveryDetail.getDeliveryType())
@@ -128,7 +97,7 @@ public class OrderFulFillServiceImpl implements OrderFulFillService {
                 .payType(orderInfo.getPayType())
                 .payAmount(orderInfo.getPayAmount())
                 .totalAmount(orderInfo.getTotalAmount())
-                .receiveOrderItems(buildReceiveOrderItemRequest(orderInfo, orderItems))
+                .receiveOrderItems(buildReceiveOrderItemRequest(orderItems))
                 .build();
 
         //运费
@@ -139,42 +108,23 @@ public class OrderFulFillServiceImpl implements OrderFulFillService {
     }
 
 
-    private List<ReceiveOrderItemRequest> buildReceiveOrderItemRequest(OrderInfoDO orderInfo, List<OrderItemDO> items) {
-
+    private List<ReceiveOrderItemRequest> buildReceiveOrderItemRequest(List<OrderItemDO> items) {
         List<ReceiveOrderItemRequest> itemRequests = new ArrayList<>();
-
         items.forEach(item -> {
             ReceiveOrderItemRequest request = ReceiveOrderItemRequest.builder()
                     .skuCode(item.getSkuCode())
+                    .productType(item.getProductType())
                     .productName(item.getProductName())
                     .salePrice(item.getSalePrice())
                     .saleQuantity(item.getSaleQuantity())
                     .productUnit(item.getProductUnit())
                     .payAmount(item.getPayAmount())
                     .originAmount(item.getOriginAmount())
+                    .extJson(item.getExtJson())
                     .build();
             itemRequests.add(request);
         });
 
         return itemRequests;
-    }
-
-    /**
-     * 获取对应的订单物流结果处理器
-     *
-     * @param orderStatusChange
-     * @return
-     */
-    private OrderWmsShipResultProcessor getProcessor(OrderStatusChangeEnum orderStatusChange) {
-
-        if (OrderStatusChangeEnum.ORDER_OUT_STOCKED.equals(orderStatusChange)) {
-            return springApplicationContext.getBean(OrderOutStockedProcessor.class);
-        } else if (OrderStatusChangeEnum.ORDER_DELIVERED.equals(orderStatusChange)) {
-            return springApplicationContext.getBean(OrderDeliveredProcessor.class);
-        } else if (OrderStatusChangeEnum.ORDER_SIGNED.equals(orderStatusChange)) {
-            return springApplicationContext.getBean(OrderSignedProcessor.class);
-        }
-
-        return null;
     }
 }

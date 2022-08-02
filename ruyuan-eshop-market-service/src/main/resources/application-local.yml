@@ -116,11 +116,11 @@ mybatis-plus:
 rocketmq:
   name-server: localhost:9876
 
-#seata配置
-seata:
-  tx-service-group: ruyuan-eshop-market-group
-  service:
-    grouplist:
-      ruyuan-eshop-seata: 127.0.0.1:8091
-    vgroup-mapping:
-      ruyuan-eshop-market-group: ruyuan-eshop-seata
+##seata配置
+#seata:
+#  tx-service-group: ruyuan-eshop-market-group
+#  service:
+#    grouplist:
+#      ruyuan-eshop-seata: 127.0.0.1:8091
+#    vgroup-mapping:
+#      ruyuan-eshop-market-group: ruyuan-eshop-seata

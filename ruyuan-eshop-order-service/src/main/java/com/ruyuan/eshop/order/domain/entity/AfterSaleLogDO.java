@@ -51,4 +51,8 @@ public class AfterSaleLogDO implements Serializable {
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private Date gmtModified;
 
+    /**
+     * 订单号
+     */
+    private String orderId;
 }

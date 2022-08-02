@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 地址服务远程接口
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -23,6 +24,7 @@ public class AddressRemote {
 
     /**
      * 查询行政地址
+     *
      * @param query
      * @return
      */

@@ -36,7 +36,6 @@
         set sale_stock_quantity = sale_stock_quantity - #{saleQuantity}
         where sku_code = #{skuCode}
           and sale_stock_quantity >= #{saleQuantity}
-          and sale_stock_quantity = #{originSaleStock}
 
     </update>
 
@@ -46,7 +45,6 @@
         update inventory_product_stock
         set saled_stock_quantity = saled_stock_quantity + #{saleQuantity}
         where sku_code = #{skuCode}
-          and saled_stock_quantity = #{originSaledStock}
 
     </update>
 
@@ -56,7 +54,6 @@
         update inventory_product_stock
         set sale_stock_quantity = sale_stock_quantity + #{saleQuantity}
         where sku_code = #{skuCode}
-          and sale_stock_quantity = #{originSaleStock}
 
     </update>
 

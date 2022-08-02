@@ -43,7 +43,7 @@ public class PagingInfo<T> {
         this.list = list;
     }
 
-    public static <T> PagingInfo toResponse(List<T> data, Long total, Integer currentPageNo, Integer currentPageSize) {
+    public static <T> PagingInfo<T> toResponse(List<T> data, Long total, Integer currentPageNo, Integer currentPageSize) {
         PagingInfo<T> pagingObj = new PagingInfo<>();
         pagingObj.setTotal(total);
         pagingObj.setList(data);

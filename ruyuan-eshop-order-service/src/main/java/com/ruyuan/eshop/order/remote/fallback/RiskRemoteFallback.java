@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 风控远程服务降级处理组件
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -16,6 +17,7 @@ public class RiskRemoteFallback {
 
     /**
      * 订单风控检查降级处理
+     *
      * @param checkOrderRiskRequest
      * @param e
      * @return

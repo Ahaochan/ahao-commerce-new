@@ -20,7 +20,7 @@ import java.util.List;
  * @author zhonghuashishan
  * @version 1.0
  */
-@DubboService(version = "1.0.0", interfaceClass = InventoryApi.class, retries = 0)
+@DubboService(version = "1.0.0", interfaceClass = InventoryApi.class, retries = 0, timeout = 3500)
 @Slf4j
 public class InventoryApiImpl implements InventoryApi {
 
@@ -54,7 +54,7 @@ public class InventoryApiImpl implements InventoryApi {
      * 回滚库存
      */
     @Override
-    public JsonResult<Boolean> cancelOrderReleaseProductStock(ReleaseProductStockRequest releaseProductStockRequest) {
+    public JsonResult<Boolean> releaseProductStock(ReleaseProductStockRequest releaseProductStockRequest) {
         log.info("开始执行回滚库存,orderId:{}", releaseProductStockRequest.getOrderId());
         List<String> redisKeyList = Lists.newArrayList();
         //  分布式锁
@@ -63,6 +63,7 @@ public class InventoryApiImpl implements InventoryApi {
             String lockKey = RedisLockKeyConstants.MODIFY_PRODUCT_STOCK_KEY + orderItemRequest.getSkuCode();
             redisKeyList.add(lockKey);
         }
+        // multi lock，一次性会全部都必须进行加锁，此时再进行库存释放
         boolean lock = redisLock.multiLock(redisKeyList);
         if (!lock) {
             throw new InventoryBizException(InventoryErrorCodeEnum.RELEASE_PRODUCT_SKU_STOCK_ERROR);

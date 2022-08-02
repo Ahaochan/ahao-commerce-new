@@ -74,4 +74,9 @@ public class ProductSkuDO implements Serializable {
      * 商品采购价格
      */
     private Integer purchasePrice;
+
+    /**
+     * 扩展信息
+     */
+    private String extJson;
 }

@@ -8,8 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static com.ruyuan.eshop.common.constants.RocketMqConstant.AFTER_SALE_CUSTOMER_AUDIT_GROUP;
-import static com.ruyuan.eshop.common.constants.RocketMqConstant.AFTER_SALE_CUSTOMER_AUDIT_TOPIC;
+import static com.ruyuan.eshop.common.constants.RocketMqConstant.*;
 
 /**
  * @author zhonghuashishan
@@ -19,7 +18,7 @@ import static com.ruyuan.eshop.common.constants.RocketMqConstant.AFTER_SALE_CUST
 public class ConsumerConfig {
 
     @Autowired
-    private RocketMQProperties rocketMQProperties;
+    private RocketMQProperties rocketMqProperties;
 
     /**
      * 客服接收售后申请消费者
@@ -28,7 +27,7 @@ public class ConsumerConfig {
     public DefaultMQPushConsumer afterSaleCustomerAudit(AfterSaleCustomerAuditTopicListener afterSaleCustomerAuditTopicListener)
             throws MQClientException {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(AFTER_SALE_CUSTOMER_AUDIT_GROUP);
-        consumer.setNamesrvAddr(rocketMQProperties.getNameServer());
+        consumer.setNamesrvAddr(rocketMqProperties.getNameServer());
         consumer.subscribe(AFTER_SALE_CUSTOMER_AUDIT_TOPIC, "*");
         consumer.registerMessageListener(afterSaleCustomerAuditTopicListener);
         consumer.start();

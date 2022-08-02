@@ -2,7 +2,7 @@ package com.ruyuan.eshop.order.service;
 
 
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
-import com.ruyuan.eshop.order.domain.dto.WmsShipDTO;
+import com.ruyuan.eshop.order.domain.dto.AfterFulfillDTO;
 import com.ruyuan.eshop.order.domain.entity.OrderInfoDO;
 import com.ruyuan.eshop.order.exception.OrderBizException;
 
@@ -16,19 +16,16 @@ import com.ruyuan.eshop.order.exception.OrderBizException;
 public interface OrderFulFillService {
 
     /**
-     * 触发订单进行履约流程
+     * 将订单已履约
      *
-     * @param orderId
-     * @return
+     * @param orderId 订单id
      */
     void triggerOrderFulFill(String orderId) throws OrderBizException;
 
     /**
      * 通知订单物流配送结果接口
-     *
-     * @return
      */
-    void informOrderWmsShipResult(WmsShipDTO wmsShipDTO) throws OrderBizException;
+    void informOrderAfterFulfillResult(AfterFulfillDTO afterFulfillDTO) throws OrderBizException;
 
 
     ReceiveFulfillRequest buildReceiveFulFillRequest(OrderInfoDO orderInfo);

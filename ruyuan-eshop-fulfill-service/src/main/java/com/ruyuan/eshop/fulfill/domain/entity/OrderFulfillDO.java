@@ -1,7 +1,9 @@
 package com.ruyuan.eshop.fulfill.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Tolerate;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -16,6 +18,7 @@ import java.util.Date;
  */
 @Data
 @TableName("order_fulfill")
+@Builder
 public class OrderFulfillDO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -62,6 +65,16 @@ public class OrderFulfillDO implements Serializable {
      * 用户id
      */
     private String userId;
+
+    /**
+     * 履约单状态
+     */
+    private Integer status;
+
+    /**
+     * 履约单类型
+     */
+    private Integer orderFulfillType;
 
     /**
      * 配送类型，默认是自配送
@@ -155,4 +168,13 @@ public class OrderFulfillDO implements Serializable {
      * 运费
      */
     private Integer deliveryAmount;
+
+    /**
+     * 扩展字段
+     */
+    private String extJson;
+
+    @Tolerate
+    public OrderFulfillDO() {
+    }
 }

@@ -106,32 +106,18 @@ dubbo:
   cloud:
     subscribed-services: ruyuan-eshop-fulfill,ruyuan-eshop-order,ruyuan-eshop-wms,ruyuan-eshop-tms
 
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath:mapper/*.xml
+
 rocketmq:
   name-server: localhost:9876
 
-#seata配置
-seata:
-  enable-auto-data-source-proxy: false # 如果引入的是seata-spring-boot-starter 请关闭自动代理，需要关闭自动代理
-  application-id: seata-server # Seata应用的名称
-  tx-service-group: default_tx_group # 事务组
-  service:
-    vgroup-mapping:
-      default_tx_group: default
-  config:
-    type: nacos
-    nacos:
-      server-addr: 127.0.0.1:8848 # Nacos服务地址
-      namespace: seata # Seata的NameSpace ID
-      group: SEATA_GROUP
-      username: nacos
-      password: nacos
-  registry:
-    type: nacos # 基于Nacos实现分布式事务管理
-    nacos:
-      server-addr: 127.0.0.1:8848 # Nacos服务地址
-      namespace: seata # Seata的NameSpace ID
-      group: SEATA_GROUP
-      username: nacos
-      password: nacos
-      cluster: default
-      application: seata-server
+xxl:
+  job:
+    admin:
+      addresses: http://localhost:8080/xxl-job-admin
+    executor:
+      appname: ruyuan-fulfill-service

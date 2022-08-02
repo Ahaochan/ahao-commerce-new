@@ -5,11 +5,13 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruyuan.eshop.common.dao.BaseDAO;
 import com.ruyuan.eshop.order.domain.dto.AfterSaleListQueryDTO;
 import com.ruyuan.eshop.order.domain.dto.AfterSaleOrderListDTO;
 import com.ruyuan.eshop.order.domain.entity.AfterSaleInfoDO;
+import com.ruyuan.eshop.order.domain.entity.OrderInfoDO;
 import com.ruyuan.eshop.order.domain.request.CustomerAuditAssembleRequest;
 import com.ruyuan.eshop.order.mapper.AfterSaleInfoMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -51,10 +53,22 @@ public class AfterSaleInfoDAO extends BaseDAO<AfterSaleInfoMapper, AfterSaleInfo
      * @param afterSaleId
      * @return
      */
-    public AfterSaleInfoDO getOneByAfterSaleId(Long afterSaleId) {
+    public AfterSaleInfoDO getOneByAfterSaleId(String afterSaleId) {
         LambdaQueryWrapper<AfterSaleInfoDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AfterSaleInfoDO::getAfterSaleId, afterSaleId);
         return baseMapper.selectOne(queryWrapper);
+    }
+
+    /**
+     * 查询售后单
+     *
+     * @param afterSaleIds
+     * @return
+     */
+    public List<AfterSaleInfoDO> listByAfterSaleIds(List<String> afterSaleIds) {
+        LambdaQueryWrapper<AfterSaleInfoDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(AfterSaleInfoDO::getAfterSaleId, afterSaleIds);
+        return list(queryWrapper);
     }
 
     /**
@@ -80,7 +94,7 @@ public class AfterSaleInfoDAO extends BaseDAO<AfterSaleInfoMapper, AfterSaleInfo
     }
 
     public boolean updateCustomerAuditAfterSaleResult(Integer afterSaleStatus, CustomerAuditAssembleRequest customerAuditAssembleRequest) {
-        Long afterSaleId = customerAuditAssembleRequest.getAfterSaleId();
+        String afterSaleId = customerAuditAssembleRequest.getAfterSaleId();
         String reviewReason = customerAuditAssembleRequest.getReviewReason();
         Integer reviewReasonCode = customerAuditAssembleRequest.getReviewReasonCode();
         Integer reviewSource = customerAuditAssembleRequest.getReviewSource();
@@ -105,11 +119,25 @@ public class AfterSaleInfoDAO extends BaseDAO<AfterSaleInfoMapper, AfterSaleInfo
      * @param toStatus
      * @return
      */
-    public boolean updateStatus(Long afterSaleId, Integer fromStatus, Integer toStatus) {
+    public boolean updateStatus(String afterSaleId, Integer fromStatus, Integer toStatus) {
         LambdaUpdateWrapper<AfterSaleInfoDO> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper.set(AfterSaleInfoDO::getAfterSaleStatus, toStatus)
                 .eq(AfterSaleInfoDO::getAfterSaleId, afterSaleId)
                 .eq(AfterSaleInfoDO::getAfterSaleStatus, fromStatus);
         return update(updateWrapper);
+    }
+
+    /**
+     * 分页查询售后单
+     *
+     * 仅适用于单库单表，且主键id连续的情况，解决深分页的问题
+     *
+     * @param offset 偏移量，从0开始
+     * @param limit limit
+     * @return 结果
+     */
+    public List<AfterSaleInfoDO> getPageBy(long offset, long limit) {
+        return new LambdaQueryChainWrapper<>(afterSaleInfoMapper)
+                .ge(AfterSaleInfoDO::getId, offset+1).le(AfterSaleInfoDO::getId, offset+limit).list();
     }
 }

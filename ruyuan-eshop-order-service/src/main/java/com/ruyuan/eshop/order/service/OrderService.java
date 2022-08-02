@@ -32,31 +32,29 @@ public interface OrderService {
     /**
      * 预支付订单
      *
-     * @param prePayOrderRequest
-     * @return
+     * @param prePayOrderRequest 预支付请求
+     * @return 结果
      */
     PrePayOrderDTO prePayOrder(PrePayOrderRequest prePayOrderRequest);
 
     /**
      * 支付回调
      *
-     * @param payCallbackRequest
-     * @return
+     * @param payCallbackRequest 请求
      */
     void payCallback(PayCallbackRequest payCallbackRequest);
 
     /**
      * 移除订单
      *
-     * @param orderIds
-     * @return
+     * @param orderIds 订单id
      */
-    boolean removeOrders(List<String> orderIds);
+    void removeOrders(List<String> orderIds);
 
     /**
      * 调整订单配送地址
      *
-     * @param request
+     * @param request 请求
      */
-    boolean adjustDeliveryAddress(AdjustDeliveryAddressRequest request);
+    void adjustDeliveryAddress(AdjustDeliveryAddressRequest request);
 }

@@ -33,7 +33,7 @@ public interface OrderApi {
      * 预支付订单接口
      *
      * @param prePayOrderRequest 预支付订单请求入参
-     * @return
+     * @return 预支付信息
      */
     JsonResult<PrePayOrderDTO> prePayOrder(PrePayOrderRequest prePayOrderRequest);
 
@@ -41,7 +41,7 @@ public interface OrderApi {
      * 支付回调接口
      *
      * @param payCallbackRequest 支付系统回调入参
-     * @return
+     * @return 结果
      */
     JsonResult<Boolean> payCallback(PayCallbackRequest payCallbackRequest);
 
@@ -50,7 +50,7 @@ public interface OrderApi {
      * 移除订单
      *
      * @param removeOrderRequest 移除订单请求入参
-     * @return
+     * @return 移除订单结果
      */
     JsonResult<RemoveOrderDTO> removeOrders(RemoveOrderRequest removeOrderRequest);
 
@@ -59,7 +59,7 @@ public interface OrderApi {
      * 修改地址
      *
      * @param adjustDeliveryAddressRequest 修改地址请求入参
-     * @return
+     * @return 修改地址结果
      */
     JsonResult<AdjustDeliveryAddressDTO> adjustDeliveryAddress(AdjustDeliveryAddressRequest adjustDeliveryAddressRequest);
 

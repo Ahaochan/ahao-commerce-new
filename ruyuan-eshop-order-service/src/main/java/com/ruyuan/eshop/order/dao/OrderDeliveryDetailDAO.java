@@ -10,6 +10,7 @@ import com.ruyuan.eshop.order.mapper.OrderDeliveryDetailMapper;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -32,6 +33,18 @@ public class OrderDeliveryDetailDAO extends BaseDAO<OrderDeliveryDetailMapper, O
         LambdaQueryWrapper<OrderDeliveryDetailDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(OrderDeliveryDetailDO::getOrderId, orderId);
         return baseMapper.selectOne(queryWrapper);
+    }
+
+    /**
+     * 根据订单号查询订单配送信息
+     *
+     * @param orderIds
+     * @return
+     */
+    public List<OrderDeliveryDetailDO> listByOrderIds(List<String> orderIds) {
+        LambdaQueryWrapper<OrderDeliveryDetailDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(OrderDeliveryDetailDO::getOrderId, orderIds);
+        return list(queryWrapper);
     }
 
     /**

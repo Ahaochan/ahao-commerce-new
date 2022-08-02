@@ -90,6 +90,11 @@ public class OrderInfoDTO {
     private String couponId;
 
     /**
+     * 创建时间
+     */
+    private Date createdTime;
+
+    /**
      * 支付时间
      */
     private Date payTime;
@@ -123,4 +128,5 @@ public class OrderInfoDTO {
      * 订单评论状态 0:未发表评论  1:已发表评论
      */
     private Integer commentStatus;
+
 }

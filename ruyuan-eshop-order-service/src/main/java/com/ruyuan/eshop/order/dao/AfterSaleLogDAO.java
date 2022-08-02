@@ -25,7 +25,7 @@ public class AfterSaleLogDAO extends BaseDAO<AfterSaleLogMapper, AfterSaleLogDO>
      * @param afterSaleId
      * @return
      */
-    public List<AfterSaleLogDO> listByAfterSaleId(Long afterSaleId) {
+    public List<AfterSaleLogDO> listByAfterSaleId(String afterSaleId) {
         LambdaQueryWrapper<AfterSaleLogDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AfterSaleLogDO::getAfterSaleId, afterSaleId);
         return list(queryWrapper);
@@ -37,7 +37,7 @@ public class AfterSaleLogDAO extends BaseDAO<AfterSaleLogMapper, AfterSaleLogDO>
      * @param afterSaleId
      * @return
      */
-    public AfterSaleLogDO getOneByAfterSaleId(Long afterSaleId) {
+    public AfterSaleLogDO getOneByAfterSaleId(String afterSaleId) {
         LambdaQueryWrapper<AfterSaleLogDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AfterSaleLogDO::getAfterSaleId, afterSaleId);
         return getOne(queryWrapper);

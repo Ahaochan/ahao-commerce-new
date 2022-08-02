@@ -32,6 +32,6 @@ public class ReleaseUserCouponRequest implements Serializable {
     /**
      * 售后单ID
      */
-    private Long afterSaleId;
+    private String afterSaleId;
 
 }

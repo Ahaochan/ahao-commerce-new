@@ -1,7 +1,10 @@
 package com.ruyuan.eshop.market.mq.consumer;
 
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
-import com.ruyuan.eshop.market.mq.consumer.listener.ReleasePropertyListener;
+import com.ruyuan.eshop.common.enums.OrderStatusChangeEnum;
+import com.ruyuan.eshop.market.mq.consumer.listener.AfterSaleReleasePropertyListener;
+import com.ruyuan.eshop.market.mq.consumer.listener.CancelOrderReleasePropertyListener;
+import com.ruyuan.eshop.market.mq.consumer.listener.MemberPointAddListener;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.spring.autoconfigure.RocketMQProperties;
@@ -20,20 +23,47 @@ public class ConsumerConfig {
     private RocketMQProperties rocketMQProperties;
 
     /**
-     * 释放资产权益消息消费者
-     *
-     * @param releasePropertyListener
-     * @return
+     * 取消订单释放优惠券消费者
      */
-    @Bean("releaseInventoryConsumer")
-    public DefaultMQPushConsumer releaseInventoryConsumer(ReleasePropertyListener releasePropertyListener)
+    @Bean("releaseCouponConsumer")
+    public DefaultMQPushConsumer releaseCouponConsumer(CancelOrderReleasePropertyListener cancelOrderReleasePropertyListener)
             throws MQClientException {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(RocketMqConstant.RELEASE_PROPERTY_CONSUMER_GROUP);
         consumer.setNamesrvAddr(rocketMQProperties.getNameServer());
-        consumer.subscribe(RocketMqConstant.CANCEL_RELEASE_PROPERTY_TOPIC, "*");
-        consumer.registerMessageListener(releasePropertyListener);
+        consumer.subscribe(RocketMqConstant.RELEASE_ASSETS_TOPIC, "*");
+        consumer.registerMessageListener(cancelOrderReleasePropertyListener);
         consumer.start();
         return consumer;
     }
+
+    /**
+     * 手动售后释放优惠券费者
+     */
+    @Bean("afterSaleReleaseCouponConsumer")
+    public DefaultMQPushConsumer afterSaleReleaseCouponConsumer(AfterSaleReleasePropertyListener afterSaleReleasePropertyListener)
+            throws MQClientException {
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(RocketMqConstant.AFTER_SALE_RELEASE_PROPERTY_CONSUMER_GROUP);
+        consumer.setNamesrvAddr(rocketMQProperties.getNameServer());
+        consumer.subscribe(RocketMqConstant.AFTER_SALE_RELEASE_PROPERTY_TOPIC, "*");
+        consumer.registerMessageListener(afterSaleReleasePropertyListener);
+        consumer.start();
+        return consumer;
+    }
+
+    /**
+     * 会员积分增加消费者
+     */
+    @Bean("memberPointAddConsumer")
+    public DefaultMQPushConsumer memberPointAddConsumer(MemberPointAddListener memberPointAddListener)
+            throws MQClientException {
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(RocketMqConstant.MARKET_ORDER_STD_CHANGE_EVENT_CONSUMER_GROUP);
+        consumer.setNamesrvAddr(rocketMQProperties.getNameServer());
+        consumer.subscribe(RocketMqConstant.ORDER_STD_CHANGE_EVENT_TOPIC, OrderStatusChangeEnum.ORDER_PAID.getTags() + " || " +
+                OrderStatusChangeEnum.SUB_ORDER_PAID.getTags());
+        consumer.registerMessageListener(memberPointAddListener);
+        consumer.start();
+        return consumer;
+    }
+
 
 }

@@ -9,7 +9,6 @@ import com.ruyuan.eshop.market.domain.request.CalculateOrderAmountRequest;
 import com.ruyuan.eshop.market.domain.request.LockUserCouponRequest;
 import com.ruyuan.eshop.order.domain.dto.*;
 import com.ruyuan.eshop.order.domain.entity.*;
-import com.ruyuan.eshop.order.domain.query.AcceptOrderQuery;
 import com.ruyuan.eshop.order.domain.query.OrderQuery;
 import com.ruyuan.eshop.order.domain.request.*;
 import com.ruyuan.eshop.pay.domain.dto.PayOrderDTO;
@@ -33,6 +32,15 @@ public interface OrderConverter {
      * @return 对象
      */
     OrderInfoDTO orderInfoDO2DTO(OrderInfoDO orderInfo);
+
+
+    /**
+     * 对象转换
+     *
+     * @param orderInfoList 对象
+     * @return 对象
+     */
+    List<OrderInfoDTO> orderInfoDO2DTOList(List<OrderInfoDO> orderInfoList);
 
     /**
      * 对象转换
@@ -168,7 +176,7 @@ public interface OrderConverter {
      * @param releaseProductOrderItemRequest 对象
      * @return 对象
      */
-    ReleaseProductStockRequest.OrderItemRequest convertOrderItemRequest(ReleaseProductStockDTO.OrderItemRequest releaseProductOrderItemRequest);
+    ReleaseProductStockRequest.OrderItemRequest convertReleaseStockOrderItemRequest(ReleaseProductStockDTO.OrderItemRequest releaseProductOrderItemRequest);
 
     /**
      * 对象转换
@@ -269,6 +277,14 @@ public interface OrderConverter {
     /**
      * 对象转换
      *
+     * @param orderInfoDTO 对象
+     * @return 对象
+     */
+    List<OrderInfoDO> orderInfoDTO2DOList(List<OrderInfoDTO> orderInfoDTO);
+
+    /**
+     * 对象转换
+     *
      * @param cancelOrderRequest 对象
      * @return 对象
      */
@@ -277,26 +293,10 @@ public interface OrderConverter {
     /**
      * 对象转换
      *
-     * @param returnGoodsAssembleRequest 对象
+     * @param manualAfterSaleDTO 对象
      * @return 对象
      */
-    CustomerReceiveAfterSaleRequest convertReturnGoodsAssembleRequest(ReturnGoodsAssembleRequest returnGoodsAssembleRequest);
-
-    /**
-     * 对象转换
-     *
-     * @param returnGoodsOrderRequest 对象
-     * @return 对象
-     */
-    ReturnGoodsAssembleRequest returnGoodRequest2AssembleRequest(ReturnGoodsOrderRequest returnGoodsOrderRequest);
-
-    /**
-     * 对象转换
-     *
-     * @param orderItemRequest 对象
-     * @return 对象
-     */
-    DeductProductStockRequest.OrderItemRequest convertOrderItemRequest(CreateOrderRequest.OrderItemRequest orderItemRequest);
+    CustomerReceiveAfterSaleRequest convertReturnGoodsAssembleRequest(ManualAfterSaleDTO manualAfterSaleDTO);
 
     /**
      * 对象转换
@@ -304,7 +304,23 @@ public interface OrderConverter {
      * @param orderItemRequestList 对象
      * @return 对象
      */
-    List<DeductProductStockRequest.OrderItemRequest> convertOrderItemRequest(List<CreateOrderRequest.OrderItemRequest> orderItemRequestList);
+    List<DeductProductStockRequest.OrderItemRequest> convertDeductStockOrderItemRequests(List<CreateOrderRequest.OrderItemRequest> orderItemRequestList);
+
+    /**
+     * 对象转换
+     *
+     * @param orderItemRequest 对象
+     * @return 对象
+     */
+    ReleaseProductStockRequest.OrderItemRequest convertReleaseStockOrderItemRequest(CreateOrderRequest.OrderItemRequest orderItemRequest);
+
+    /**
+     * 对象转换
+     *
+     * @param orderItemRequestList 对象
+     * @return 对象
+     */
+    List<ReleaseProductStockRequest.OrderItemRequest> convertReleaseStockOrderItemRequests(List<CreateOrderRequest.OrderItemRequest> orderItemRequestList);
 
     /**
      * 对象转换
@@ -320,7 +336,7 @@ public interface OrderConverter {
      * @param createOrderRequest 对象
      * @return 对象
      */
-    CalculateOrderAmountRequest convertCalculateOrderAmountRequest(CreateOrderRequest createOrderRequest);
+    CalculateOrderAmountRequest convertToCalculateOrderAmountRequest(CreateOrderRequest createOrderRequest);
 
     /**
      * 对象转换
@@ -341,9 +357,32 @@ public interface OrderConverter {
     /**
      * 对象转换
      *
-     * @param acceptOrderQuery 对象
+     * @param orderItemDTO 对象
      * @return 对象
      */
-    OrderQuery convertAcceptOrderQuery(AcceptOrderQuery acceptOrderQuery);
+    AfterSaleItemDTO orderItemDTO2AfterSaleItemDTO(OrderItemDTO orderItemDTO);
 
+    /**
+     * 对象转换
+     *
+     * @param afterSaleItemDTO 对象
+     * @return 对象
+     */
+    AfterSaleItemDO convertAfterSaleItemDO(AfterSaleItemDTO afterSaleItemDTO);
+
+    /**
+     * 对象转换
+     *
+     * @param afterSaleItemDO 对象
+     * @return 对象
+     */
+    AfterSaleItemDTO convertAfterSaleItemDTO(AfterSaleItemDO afterSaleItemDO);
+
+    /**
+     * 对象转换
+     *
+     * @param orderItemDTO 对象
+     * @return 对象
+     */
+    AfterSaleItemDO orderItemDO2AfterSaleItemDO(OrderItemDTO orderItemDTO);
 }

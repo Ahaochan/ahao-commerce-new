@@ -12,6 +12,7 @@ import java.util.Map;
 
 /**
  * 抽象的消费者MessageListener组件
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -20,13 +21,13 @@ public abstract class AbstractMessageListenerConcurrently implements MessageList
     @Override
     public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
         try {
-            if(msgs != null && !msgs.isEmpty()) {
+            if (msgs != null && !msgs.isEmpty()) {
                 Map<String, String> map = msgs.get(0).getProperties();
                 String traceId = "";
-                if(map != null) {
+                if (map != null) {
                     traceId = map.get(CoreConstant.TRACE_ID);
                 }
-                if(traceId != null && !"".equals(traceId)) {
+                if (traceId != null && !"".equals(traceId)) {
                     MdcUtil.setTraceId(traceId);
                 }
             }

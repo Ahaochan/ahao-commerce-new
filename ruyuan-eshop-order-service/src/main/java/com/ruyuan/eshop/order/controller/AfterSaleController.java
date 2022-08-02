@@ -1,21 +1,14 @@
 package com.ruyuan.eshop.order.controller;
 
-import com.ruyuan.eshop.common.constants.RedisLockKeyConstants;
 import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.common.page.PagingInfo;
-import com.ruyuan.eshop.common.redis.RedisLock;
 import com.ruyuan.eshop.order.api.AfterSaleApi;
 import com.ruyuan.eshop.order.api.AfterSaleQueryApi;
 import com.ruyuan.eshop.order.domain.dto.AfterSaleOrderDetailDTO;
 import com.ruyuan.eshop.order.domain.dto.AfterSaleOrderListDTO;
 import com.ruyuan.eshop.order.domain.dto.LackDTO;
 import com.ruyuan.eshop.order.domain.query.AfterSaleQuery;
-import com.ruyuan.eshop.order.domain.request.CancelOrderRequest;
-import com.ruyuan.eshop.order.domain.request.LackRequest;
-import com.ruyuan.eshop.order.domain.request.ReturnGoodsOrderRequest;
-import com.ruyuan.eshop.order.domain.request.RevokeAfterSaleRequest;
-import com.ruyuan.eshop.order.exception.OrderBizException;
-import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
+import com.ruyuan.eshop.order.domain.request.*;
 import com.ruyuan.eshop.order.service.OrderAfterSaleService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -42,9 +35,6 @@ public class AfterSaleController {
     @DubboReference(version = "1.0.0")
     private AfterSaleQueryApi afterSaleQueryApi;
 
-    @Autowired
-    private RedisLock redisLock;
-
     /**
      * 用户手动取消订单
      */
@@ -58,18 +48,7 @@ public class AfterSaleController {
      */
     @PostMapping("/applyAfterSale")
     public JsonResult<Boolean> applyAfterSale(@RequestBody ReturnGoodsOrderRequest returnGoodsOrderRequest) {
-        //  分布式锁
-        String orderId = returnGoodsOrderRequest.getOrderId();
-        String key = RedisLockKeyConstants.REFUND_KEY + orderId;
-        boolean lock = redisLock.tryLock(key);
-        if (!lock) {
-            throw new OrderBizException(OrderErrorCodeEnum.PROCESS_AFTER_SALE_RETURN_GOODS);
-        }
-        try {
-            return orderAfterSaleService.processApplyAfterSale(returnGoodsOrderRequest);
-        } finally {
-            redisLock.unlock(key);
-        }
+        return orderAfterSaleService.processApplyAfterSale(returnGoodsOrderRequest);
     }
 
     /**
@@ -77,8 +56,7 @@ public class AfterSaleController {
      */
     @PostMapping("/lackItem")
     public JsonResult<LackDTO> lackItem(@RequestBody LackRequest request) {
-        JsonResult<LackDTO> result = afterSaleApi.lackItem(request);
-        return result;
+        return afterSaleApi.lackItem(request);
     }
 
     /**
@@ -86,25 +64,46 @@ public class AfterSaleController {
      */
     @PostMapping("/revokeAfterSale")
     public JsonResult<Boolean> revokeAfterSale(@RequestBody RevokeAfterSaleRequest request) {
-        JsonResult<Boolean> result = afterSaleApi.revokeAfterSale(request);
-        return result;
+        return afterSaleApi.revokeAfterSale(request);
     }
 
     /**
-     * 查询售后列表
+     * 查询售后列表 v1
      */
-    @PostMapping("/listAfterSales")
-    public JsonResult<PagingInfo<AfterSaleOrderListDTO>> listAfterSales(@RequestBody AfterSaleQuery query) {
-        JsonResult<PagingInfo<AfterSaleOrderListDTO>> result = afterSaleQueryApi.listAfterSales(query);
-        return result;
+    @PostMapping("/v1/listAfterSales")
+    public JsonResult<PagingInfo<AfterSaleOrderListDTO>> listAfterSalesV1(@RequestBody AfterSaleQuery query) {
+        return afterSaleQueryApi.listAfterSalesV1(query);
     }
 
     /**
-     * 查询售后单详情
+     * 查询售后列表 v2 toC
      */
-    @GetMapping("/afterSaleDetail")
-    public JsonResult<AfterSaleOrderDetailDTO> afterSaleDetail(Long afterSaleId) {
-        JsonResult<AfterSaleOrderDetailDTO> result = afterSaleQueryApi.afterSaleDetail(afterSaleId);
-        return result;
+    @PostMapping("/v2/toC/listAfterSales")
+    public JsonResult<PagingInfo<AfterSaleOrderDetailDTO>> listAfterSalesV2ToC(@RequestBody AfterSaleQuery query) {
+        return afterSaleQueryApi.listAfterSalesV2(query, false);
+    }
+
+    /**
+     * 查询售后列表 v2 toB
+     */
+    @PostMapping("/v2/toB/listAfterSales")
+    public JsonResult<PagingInfo<AfterSaleOrderDetailDTO>> listAfterSalesV2ToB(@RequestBody AfterSaleQuery query) {
+        return afterSaleQueryApi.listAfterSalesV2(query, true);
+    }
+
+    /**
+     * 查询售后单详情 v1
+     */
+    @GetMapping("/v1/afterSaleDetail")
+    public JsonResult<AfterSaleOrderDetailDTO> afterSaleDetail(String afterSaleId) {
+        return afterSaleQueryApi.afterSaleDetailV1(afterSaleId);
+    }
+
+    /**
+     * 查询售后单详情 v2
+     */
+    @PostMapping("/v2/afterSaleDetail")
+    public JsonResult<AfterSaleOrderDetailDTO> afterSaleDetailV2(@RequestBody AfterSaleDetailRequest request) {
+        return afterSaleQueryApi.afterSaleDetailV2(request);
     }
 }

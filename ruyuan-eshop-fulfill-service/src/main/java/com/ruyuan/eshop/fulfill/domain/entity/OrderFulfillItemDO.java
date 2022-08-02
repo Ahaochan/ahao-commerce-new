@@ -46,6 +46,11 @@ public class OrderFulfillItemDO implements Serializable {
     private String skuCode;
 
     /**
+     * 商品类型
+     */
+    private String productType;
+
+    /**
      * 商品名称
      */
     private String productName;

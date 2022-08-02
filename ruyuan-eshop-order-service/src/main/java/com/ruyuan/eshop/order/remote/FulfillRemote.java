@@ -3,6 +3,7 @@ package com.ruyuan.eshop.order.remote;
 import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.fulfill.api.FulfillApi;
 import com.ruyuan.eshop.fulfill.domain.request.CancelFulfillRequest;
+import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
 import com.ruyuan.eshop.order.exception.OrderBizException;
 import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 履约服务远程接口
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -21,7 +23,6 @@ public class FulfillRemote {
 
     /**
      * 取消订单履约
-     * @param cancelFulfillRequest
      */
     public void cancelFulfill(CancelFulfillRequest cancelFulfillRequest) {
         JsonResult<Boolean> jsonResult = fulfillApi.cancelFulfill(cancelFulfillRequest);
@@ -29,4 +30,15 @@ public class FulfillRemote {
             throw new OrderBizException(OrderErrorCodeEnum.CANCEL_ORDER_FULFILL_ERROR);
         }
     }
+
+    /**
+     * 接收订单履约
+     */
+    public void receiveOrderFulFill(ReceiveFulfillRequest request) {
+        JsonResult<Boolean> jsonResult = fulfillApi.receiveOrderFulFill(request);
+        if (!jsonResult.getSuccess()) {
+            throw new OrderBizException(OrderErrorCodeEnum.ORDER_FULFILL_ERROR);
+        }
+    }
+
 }

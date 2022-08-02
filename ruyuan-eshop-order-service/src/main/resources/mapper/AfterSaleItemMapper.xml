@@ -16,12 +16,14 @@
         <result column="real_refund_amount" property="realRefundAmount"/>
         <result column="gmt_create" property="gmtCreate"/>
         <result column="gmt_modified" property="gmtModified"/>
+        <result column="return_completion_mark" property="returnCompletionMark"/>
+        <result column="after_sale_item_type" property="afterSaleItemType"/>
     </resultMap>
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
         id
-        , after_sale_id, order_id, sku_code, product_name, return_quantity, product_img, origin_amount, apply_refund_amount, real_refund_amount, gmt_create, gmt_modified
+        , after_sale_id, order_id, sku_code, product_name, return_quantity, product_img, origin_amount, apply_refund_amount, real_refund_amount, gmt_create, gmt_modified, return_completion_mark, after_sale_item_type
     </sql>
 
 </mapper>

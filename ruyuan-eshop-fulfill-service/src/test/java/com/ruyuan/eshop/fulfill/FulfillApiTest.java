@@ -3,12 +3,12 @@ package com.ruyuan.eshop.fulfill;
 import com.alibaba.fastjson.JSONObject;
 import com.ruyuan.eshop.common.enums.OrderStatusChangeEnum;
 import com.ruyuan.eshop.fulfill.api.FulfillApi;
-import com.ruyuan.eshop.fulfill.domain.event.OrderDeliveredWmsEvent;
-import com.ruyuan.eshop.fulfill.domain.event.OrderOutStockWmsEvent;
-import com.ruyuan.eshop.fulfill.domain.event.OrderSignedWmsEvent;
+import com.ruyuan.eshop.fulfill.domain.event.OrderDeliveredEvent;
+import com.ruyuan.eshop.fulfill.domain.event.OrderOutStockEvent;
+import com.ruyuan.eshop.fulfill.domain.event.OrderSignedEvent;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveOrderItemRequest;
-import com.ruyuan.eshop.fulfill.domain.request.TriggerOrderWmsShipEventRequest;
+import com.ruyuan.eshop.fulfill.domain.request.TriggerOrderAfterFulfillEventRequest;
 import com.ruyuan.eshop.fulfill.service.FulfillService;
 import com.ruyuan.eshop.tms.api.TmsApi;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -42,24 +42,24 @@ public class FulfillApiTest {
 
         String orderId = "1011250000000010000";
         OrderStatusChangeEnum orderStatusChange = OrderStatusChangeEnum.ORDER_OUT_STOCKED;
-        OrderOutStockWmsEvent wmsEvent1 = new OrderOutStockWmsEvent();
+        OrderOutStockEvent wmsEvent1 = new OrderOutStockEvent();
         wmsEvent1.setOrderId(orderId);
         wmsEvent1.setOutStockTime(new Date());
 
-        TriggerOrderWmsShipEventRequest request = new TriggerOrderWmsShipEventRequest(
+        TriggerOrderAfterFulfillEventRequest request = new TriggerOrderAfterFulfillEventRequest(
                 orderId, "11", orderStatusChange, wmsEvent1
         );
         fulfillApi.triggerOrderWmsShipEvent(request);
 
 
         orderStatusChange = OrderStatusChangeEnum.ORDER_DELIVERED;
-        OrderDeliveredWmsEvent wmsEvent2 = new OrderDeliveredWmsEvent();
+        OrderDeliveredEvent wmsEvent2 = new OrderDeliveredEvent();
         wmsEvent2.setOrderId(orderId);
         wmsEvent2.setDelivererNo("rc2019");
         wmsEvent2.setDelivererName("张三");
         wmsEvent2.setDelivererPhone("19100012112");
 
-        request = new TriggerOrderWmsShipEventRequest(
+        request = new TriggerOrderAfterFulfillEventRequest(
                 orderId, "11", orderStatusChange, wmsEvent2
         );
 
@@ -67,11 +67,11 @@ public class FulfillApiTest {
 
 
         orderStatusChange = OrderStatusChangeEnum.ORDER_SIGNED;
-        OrderSignedWmsEvent wmsEvent3 = new OrderSignedWmsEvent();
+        OrderSignedEvent wmsEvent3 = new OrderSignedEvent();
         wmsEvent3.setOrderId(orderId);
         wmsEvent3.setSignedTime(new Date());
 
-        request = new TriggerOrderWmsShipEventRequest(
+        request = new TriggerOrderAfterFulfillEventRequest(
                 orderId, "11", orderStatusChange, wmsEvent3
         );
 
@@ -85,10 +85,10 @@ public class FulfillApiTest {
     @Test
     public void triggerReceiveOrderFulFill() throws Exception {
         String str = "{\"businessIdentifier\":1,\"deliveryAmount\":0,\"deliveryType\":1,\"orderId\":\"1021121945762025110\",\"payAmount\":10000,\"payType\":10,\"receiveOrderItems\":[{\"originAmount\":10000,\"payAmount\":10000,\"productName\":\"压测数据411\",\"productUnit\":\"个\",\"salePrice\":1000,\"saleQuantity\":10,\"skuCode\":\"skuCode411\"}],\"receiverArea\":\"110105\",\"receiverCity\":\"110100\",\"receiverDetailAddress\":\"北京北京市东城区朝阳门街道???10?\",\"receiverLat\":1010.2010100000,\"receiverLon\":100.1000000000,\"receiverName\":\"??\",\"receiverPhone\":\"13434545545\",\"receiverProvince\":\"110000\",\"receiverStreet\":\"110101007\",\"sellerId\":\"101\",\"totalAmount\":10000,\"userId\":\"110\"}";
-        ReceiveFulfillRequest request = JSONObject.parseObject(str,ReceiveFulfillRequest.class);
+        ReceiveFulfillRequest request = JSONObject.parseObject(str, ReceiveFulfillRequest.class);
 
 
-        fulfillService.createFulfillOrder(request);
+        fulfillService.createFulfillOrders(request);
     }
 
     public ReceiveFulfillRequest buildReceiveFulFillRequest(String orderId) {

@@ -5,19 +5,22 @@ import com.ruyuan.eshop.common.page.PagingInfo;
 import com.ruyuan.eshop.common.utils.ParamCheckUtil;
 import com.ruyuan.eshop.order.api.OrderQueryApi;
 import com.ruyuan.eshop.order.converter.OrderConverter;
+import com.ruyuan.eshop.order.dao.OrderItemDAO;
 import com.ruyuan.eshop.order.domain.dto.OrderDetailDTO;
+import com.ruyuan.eshop.order.domain.dto.OrderItemDTO;
 import com.ruyuan.eshop.order.domain.dto.OrderListDTO;
-import com.ruyuan.eshop.order.domain.query.AcceptOrderQuery;
+import com.ruyuan.eshop.order.domain.entity.OrderItemDO;
 import com.ruyuan.eshop.order.domain.query.OrderQuery;
+import com.ruyuan.eshop.order.domain.request.OrderDetailRequest;
 import com.ruyuan.eshop.order.exception.OrderBizException;
 import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
 import com.ruyuan.eshop.order.service.OrderQueryService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -35,23 +38,38 @@ public class OrderQueryApiImpl implements OrderQueryApi {
     @Autowired
     private OrderConverter orderConverter;
 
+    @Autowired
+    private OrderItemDAO orderItemDAO;
+
     /**
      * 查询订单列表
-     *
-     * @param acceptOrderQuery
-     * @return
      */
     @Override
-    public JsonResult<PagingInfo<OrderListDTO>> listOrders(AcceptOrderQuery acceptOrderQuery) {
+    public JsonResult<PagingInfo<OrderListDTO>> listOrdersV1(OrderQuery query) {
         try {
             // 1、参数校验
-            orderQueryService.checkQueryParam(acceptOrderQuery);
+            orderQueryService.checkQueryParam(query);
 
-            // 2、组装查询参数
-            OrderQuery query = buildQueryParam(acceptOrderQuery);
+            // 2、查询
+            return JsonResult.buildSuccess(orderQueryService.executeListQueryV1(query));
 
-            // 3、查询
-            return JsonResult.buildSuccess(orderQueryService.executeListQuery(query));
+        } catch (OrderBizException e) {
+            log.error("biz error", e);
+            return JsonResult.buildError(e.getErrorCode(), e.getErrorMsg());
+        } catch (Exception e) {
+            log.error("error", e);
+            return JsonResult.buildError(e.getMessage());
+        }
+    }
+
+    @Override
+    public JsonResult<PagingInfo<OrderDetailDTO>> listOrdersV2(OrderQuery query, Boolean downgrade) {
+        try {
+            // 1、参数校验
+            orderQueryService.checkQueryParam(query);
+
+            // 2、查询
+            return JsonResult.buildSuccess(orderQueryService.executeListQueryV2(query, downgrade, query.getQueryDataTypes()));
 
         } catch (OrderBizException e) {
             log.error("biz error", e);
@@ -64,46 +82,16 @@ public class OrderQueryApiImpl implements OrderQueryApi {
 
 
     /**
-     * 组装查询参数
-     */
-    private OrderQuery buildQueryParam(AcceptOrderQuery acceptOrderQuery) {
-        OrderQuery query = orderConverter.convertAcceptOrderQuery(acceptOrderQuery);
-
-        //  查询创建时间的区间范围
-        Date queryStartCreatedTime = acceptOrderQuery.getQueryStartCreatedTime();
-        Date queryEndCreatedTime = acceptOrderQuery.getQueryEndCreatedTime();
-        Pair<Date, Date> createdTimeInterval = Pair.of(queryStartCreatedTime, queryEndCreatedTime);
-        query.setCreatedTimeInterval(createdTimeInterval);
-
-        //  查询支付时间的区间范围
-        Date queryStartPayTime = acceptOrderQuery.getQueryStartPayTime();
-        Date queryEndPayTime = acceptOrderQuery.getQueryEndPayTime();
-        Pair<Date, Date> payTimeInterval = Pair.of(queryStartPayTime, queryEndPayTime);
-        query.setPayTimeInterval(payTimeInterval);
-
-        //  查询支付金额的区间范围
-        Integer queryStartPayAmount = acceptOrderQuery.getQueryStartPayAmount();
-        Integer queryEndPayAmount = acceptOrderQuery.getQueryEndPayAmount();
-        Pair<Integer, Integer> payAmountInterval = Pair.of(queryStartPayAmount, queryEndPayAmount);
-        query.setPayAmountInterval(payAmountInterval);
-
-        return query;
-    }
-
-    /**
      * 查询订单详情
-     *
-     * @param orderId
-     * @return
      */
     @Override
-    public JsonResult<OrderDetailDTO> orderDetail(String orderId) {
+    public JsonResult<OrderDetailDTO> orderDetailV1(String orderId) {
         try {
             //1、参数校验
             ParamCheckUtil.checkStringNonEmpty(orderId, OrderErrorCodeEnum.ORDER_ID_IS_NULL);
 
             //2、查询
-            return JsonResult.buildSuccess(orderQueryService.orderDetail(orderId));
+            return JsonResult.buildSuccess(orderQueryService.orderDetailV1(orderId));
 
         } catch (OrderBizException e) {
             log.error("biz error", e);
@@ -112,5 +100,35 @@ public class OrderQueryApiImpl implements OrderQueryApi {
             log.error("error", e);
             return JsonResult.buildError(e.getMessage());
         }
+    }
+
+    @Override
+    public JsonResult<OrderDetailDTO> orderDetailV2(OrderDetailRequest request) {
+        try {
+            //1、参数校验
+            ParamCheckUtil.checkStringNonEmpty(request.getOrderId(), OrderErrorCodeEnum.ORDER_ID_IS_NULL);
+
+            //2、查询
+            return JsonResult.buildSuccess(orderQueryService.orderDetailV2(request));
+
+        } catch (OrderBizException e) {
+            log.error("biz error", e);
+            return JsonResult.buildError(e.getErrorCode(), e.getErrorMsg());
+        } catch (Exception e) {
+            log.error("error", e);
+            return JsonResult.buildError(e.getMessage());
+        }
+    }
+
+    @Override
+    public List<OrderItemDTO> getOrderItemByOrderId(String orderId) {
+        List<OrderItemDTO> orderItemDTOList = new ArrayList<>();
+
+        List<OrderItemDO> orderItemDOList = orderItemDAO.listByOrderId(orderId);
+        for (OrderItemDO orderItemDO : orderItemDOList) {
+            OrderItemDTO orderItemDTO = orderConverter.orderItemDO2DTO(orderItemDO);
+            orderItemDTOList.add(orderItemDTO);
+        }
+        return orderItemDTOList;
     }
 }

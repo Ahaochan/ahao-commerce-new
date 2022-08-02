@@ -1,6 +1,6 @@
 package com.ruyuan.eshop.order.domain.request;
 
-import com.ruyuan.eshop.common.message.ActualRefundMessage;
+import com.ruyuan.eshop.common.message.RefundMessage;
 import com.ruyuan.eshop.order.domain.dto.ReleaseProductStockDTO;
 import lombok.Data;
 
@@ -22,5 +22,5 @@ public class AuditPassReleaseAssetsRequest implements Serializable {
     /**
      * 实际退款message数据
      */
-    private ActualRefundMessage actualRefundMessage;
+    private RefundMessage refundMessage;
 }

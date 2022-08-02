@@ -3,7 +3,6 @@ package com.ruyuan.eshop.order.domain.dto;
 import com.ruyuan.eshop.order.domain.entity.AfterSaleInfoDO;
 import com.ruyuan.eshop.order.domain.entity.AfterSaleItemDO;
 import com.ruyuan.eshop.order.domain.entity.AfterSaleRefundDO;
-import com.ruyuan.eshop.order.domain.entity.OrderInfoDO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,6 +12,7 @@ import java.util.List;
 
 /**
  * 缺品数据
+ *
  * @author zhonghuashishan
  * @version 1.0
  */

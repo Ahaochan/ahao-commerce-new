@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * 释放商品库存入参
+ * 取消订单(全部条目退)和手动售后(单笔条目退)共用的释放商品库存入参
  *
  * @author zhonghuashishan
  * @version 1.0
@@ -26,6 +26,14 @@ public class ReleaseProductStockRequest implements Serializable {
      */
     private List<OrderItemRequest> orderItemRequestList;
 
+    /**
+     * skuCode 用于 手动售后
+     */
+    private String skuCode;
+
+    /**
+     * 用于 取消订单
+     */
     @Data
     public static class OrderItemRequest implements Serializable {
 

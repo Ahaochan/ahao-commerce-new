@@ -17,7 +17,7 @@ public class AfterSaleItemDTO implements Serializable {
     /**
      * 售后id
      */
-    private Long afterSaleId;
+    private String afterSaleId;
 
     /**
      * 订单id
@@ -57,20 +57,20 @@ public class AfterSaleItemDTO implements Serializable {
     /**
      * 商品名
      */
-    private String itemName;
+    private String productName;
 
     /**
      * 商品类型
      */
-    private Integer itemType;
+    private Integer productType;
 
     /**
-     * 商品退货数量
+     * 本条目退货完成标记 10:购买的sku未全部退货 20:购买的sku已全部退货
      */
-    private Integer itemNum;
+    private Integer returnCompletionMark;
 
     /**
-     * 商品图片地址
+     * 售后条目类型 10:售后订单条目 20:尾笔条目退优惠券 30:尾笔条目退运费
      */
-    private String itemImg;
+    private Integer afterSaleItemType;
 }

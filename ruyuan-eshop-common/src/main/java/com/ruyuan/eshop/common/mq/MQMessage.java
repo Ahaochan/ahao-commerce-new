@@ -6,6 +6,7 @@ import org.apache.rocketmq.common.message.Message;
 
 /**
  * 自定义扩展的mq消息对象
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -39,7 +40,7 @@ public class MQMessage extends Message {
 
     private void putTraceId() {
         String traceId = MdcUtil.getTraceId();
-        if(traceId != null && !"".equals(traceId)) {
+        if (traceId != null && !"".equals(traceId)) {
             super.putUserProperty(CoreConstant.TRACE_ID, traceId);
         }
     }

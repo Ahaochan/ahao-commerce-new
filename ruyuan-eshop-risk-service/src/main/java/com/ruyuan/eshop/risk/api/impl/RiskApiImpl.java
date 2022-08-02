@@ -22,7 +22,7 @@ public class RiskApiImpl implements RiskApi {
                 .remark("checkOrderRisk->request")
                 .data("request", checkOrderRiskRequest)
                 .finish());
-        // 执行风控检查 TODO
+        // 执行风控检查
         CheckOrderRiskDTO checkOrderRiskDTO = new CheckOrderRiskDTO();
         checkOrderRiskDTO.setResult(true);
         // 默认风控检查通过

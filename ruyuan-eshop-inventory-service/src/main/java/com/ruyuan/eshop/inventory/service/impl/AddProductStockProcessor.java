@@ -41,8 +41,8 @@ public class AddProductStockProcessor {
         //2、保存商品库存到mysql
         productStockDAO.save(productStock);
 
-        //3、保存商品库存到redis
-        addStockToRedis(productStock);
+//        //3、保存商品库存到redis
+//        addStockToRedis(productStock);
     }
 
     /**

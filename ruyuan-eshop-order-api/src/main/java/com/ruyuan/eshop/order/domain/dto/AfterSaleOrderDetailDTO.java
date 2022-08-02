@@ -28,9 +28,9 @@ public class AfterSaleOrderDetailDTO implements Serializable {
     private List<AfterSaleItemDTO> afterSaleItems;
 
     /**
-     * 售后支付信息
+     * 售后退款信息
      */
-    private List<AfterSalePayDTO> afterSalePays;
+    private List<AfterSaleRefundDTO> afterSaleRefunds;
 
     /**
      * 售后单日志

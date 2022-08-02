@@ -22,14 +22,14 @@ public class XxlJobConfig {
     private String adminAddresses;
 
     @Value("${xxl.job.executor.appname}")
-    private String appname;
+    private String appName;
 
     @Bean
     public XxlJobSpringExecutor xxlJobExecutor() {
         log.info(">>>>>>>>>>> xxl-job config init.");
         XxlJobSpringExecutor xxlJobSpringExecutor = new XxlJobSpringExecutor();
         xxlJobSpringExecutor.setAdminAddresses(adminAddresses);
-        xxlJobSpringExecutor.setAppname(appname);
+        xxlJobSpringExecutor.setAppname(appName);
         return xxlJobSpringExecutor;
     }
 }

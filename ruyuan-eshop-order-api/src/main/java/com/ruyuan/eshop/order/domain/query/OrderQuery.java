@@ -1,7 +1,9 @@
 package com.ruyuan.eshop.order.domain.query;
 
+import com.ruyuan.eshop.common.tuple.Pair;
+import com.ruyuan.eshop.order.enums.OrderQueryDataTypeEnums;
+import com.ruyuan.eshop.order.enums.OrderQuerySortField;
 import lombok.Data;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -80,6 +82,16 @@ public class OrderQuery implements Serializable {
      * 支付金额-查询区间
      */
     private Pair<Integer, Integer> payAmountInterval;
+
+    /**
+     * 排序
+     */
+    private OrderQuerySortField sort = OrderQuerySortField.CREATE_TIME_DESC;
+
+    /**
+     * 订单项查询枚举
+     */
+    private OrderQueryDataTypeEnums[] queryDataTypes;
 
     /**
      * 页码

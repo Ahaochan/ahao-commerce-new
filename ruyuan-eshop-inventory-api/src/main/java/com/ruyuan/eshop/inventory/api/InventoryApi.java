@@ -21,5 +21,5 @@ public interface InventoryApi {
     /**
      * 取消订单 释放商品库存
      */
-    JsonResult<Boolean> cancelOrderReleaseProductStock(ReleaseProductStockRequest releaseProductStockRequest);
+    JsonResult<Boolean> releaseProductStock(ReleaseProductStockRequest releaseProductStockRequest);
 }

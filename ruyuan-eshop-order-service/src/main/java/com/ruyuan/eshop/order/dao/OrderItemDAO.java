@@ -31,6 +31,18 @@ public class OrderItemDAO extends BaseDAO<OrderItemMapper, OrderItemDO> {
     }
 
     /**
+     * 根据订单号查询订单条目
+     *
+     * @param orderIds
+     * @return
+     */
+    public List<OrderItemDO> listByOrderIds(List<String> orderIds) {
+        LambdaQueryWrapper<OrderItemDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(OrderItemDO::getOrderId, orderIds);
+        return list(queryWrapper);
+    }
+
+    /**
      * 按订单号与产品类型查询订单条目
      *
      * @param orderId
@@ -49,7 +61,7 @@ public class OrderItemDAO extends BaseDAO<OrderItemMapper, OrderItemDO> {
      *
      * @return
      */
-    public OrderItemDO getOrderItemBySkuIdAndOrderId(String orderId, String skuId) {
+    public OrderItemDO getOrderIdAndSkuCode(String orderId, String skuId) {
         LambdaQueryWrapper<OrderItemDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(OrderItemDO::getOrderId, orderId)
                 .eq(OrderItemDO::getSkuCode, skuId);

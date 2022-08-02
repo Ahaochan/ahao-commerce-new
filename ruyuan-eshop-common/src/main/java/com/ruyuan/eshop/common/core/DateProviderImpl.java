@@ -38,6 +38,9 @@ public class DateProviderImpl implements DateProvider {
      */
     @Override
     public String formatDatetime(Date date) {
+        if (null == date) {
+            return "";
+        }
         SimpleDateFormat dateFormatter = new SimpleDateFormat(CoreConstant.DATE_TIME_FORMAT_PATTERN);
         return dateFormatter.format(date);
     }

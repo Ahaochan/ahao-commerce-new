@@ -9,7 +9,10 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -32,7 +35,16 @@ public class LogAopConfig {
     public Object aroundApi(ProceedingJoinPoint point) throws Throwable {
         String declaringTypeName = point.getSignature().getDeclaringTypeName();
         String signatureName = point.getSignature().getName();
-        String argStr = argsToString(point.getArgs());
+        Object[] args = point.getArgs();
+        Object[] arguments = new Object[args.length];
+        for (int i = 0; i < args.length; i++) {
+            Object arg = args[i];
+            if (arg instanceof ServletRequest || arg instanceof ServletResponse || arg instanceof MultipartFile) {
+                continue;
+            }
+            arguments[i] = arg;
+        }
+        String argStr = argsToString(arguments);
         logger.info(LoggerFormat.build()
                 .remark("开始调用")
                 .data("declaringTypeName", declaringTypeName)

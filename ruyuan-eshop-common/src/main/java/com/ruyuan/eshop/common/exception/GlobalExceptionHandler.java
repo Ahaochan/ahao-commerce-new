@@ -1,5 +1,10 @@
 package com.ruyuan.eshop.common.exception;
 
+import com.alibaba.csp.sentinel.slots.block.BlockException;
+import com.alibaba.csp.sentinel.slots.block.authority.AuthorityException;
+import com.alibaba.csp.sentinel.slots.block.degrade.DegradeException;
+import com.alibaba.csp.sentinel.slots.block.flow.FlowException;
+import com.alibaba.fastjson.JSON;
 import com.ruyuan.eshop.common.core.JsonResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
@@ -30,12 +35,29 @@ public class GlobalExceptionHandler {
 
     // =========== 系统级别未知异常 =========
 
-    // 演示sentinel错误熔断降级，临时注释
-//    @ExceptionHandler(value = Exception.class)
-//    public JsonResult<Object> handle(Exception e) {
-//        log.error("[ 系统未知错误 ]", e);
-//        return JsonResult.buildError(CommonErrorCodeEnum.SYSTEM_UNKNOWN_ERROR);
-//    }
+    @ExceptionHandler(value = Exception.class)
+    public JsonResult<Object> handle(Exception e) {
+        log.error("[ 系统未知错误 ]", e);
+        return JsonResult.buildError(CommonErrorCodeEnum.SYSTEM_UNKNOWN_ERROR);
+    }
+
+    @ExceptionHandler(value = BlockException.class)
+    public JsonResult<Object> handle(BlockException e) {
+        if (e instanceof FlowException) {
+            log.error("限流控制:{}", JSON.toJSONString(e));
+            return JsonResult.buildError("2002", "限流控制");
+        }
+        if (e instanceof DegradeException) {
+            log.error("降级控制:{}", JSON.toJSONString(e));
+            return JsonResult.buildError("2003", "降级控制");
+        }
+        if (e instanceof AuthorityException) {
+            log.error("授权控制:{}", JSON.toJSONString(e));
+            return JsonResult.buildError("2004", "授权控制");
+        }
+        log.error("流控异常:{}", JSON.toJSONString(e));
+        return JsonResult.buildError("2005", "流控异常");
+    }
 
     // =========== 客户端异常 =========
 

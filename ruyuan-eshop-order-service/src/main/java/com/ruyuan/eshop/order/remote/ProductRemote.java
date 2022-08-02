@@ -14,6 +14,7 @@ import java.util.List;
 
 /**
  * 商品服务远程接口
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -28,6 +29,7 @@ public class ProductRemote {
 
     /**
      * 查询商品信息
+     *
      * @param skuCode
      * @param sellerId
      * @return
@@ -46,6 +48,7 @@ public class ProductRemote {
 
     /**
      * 批量查询商品信息
+     *
      * @param skuCodeList
      * @param sellerId
      * @return

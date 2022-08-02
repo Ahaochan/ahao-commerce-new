@@ -1,5 +1,8 @@
 package com.ruyuan.eshop.common.enums;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,10 +12,18 @@ import java.util.Map;
  * @author zhonghuashishan
  * @version 1.0
  */
+@Getter
+@AllArgsConstructor
 public enum OrderOperateTypeEnum {
+
 
     // 新增订单
     NEW_ORDER(10, "新建订单"),
+
+    PRE_PAY_ORDER(11, "订单预支付"),
+
+    // 取消订单
+    CANCEL_ORDER(19, "取消订单"),
 
     // 手工取消订单
     MANUAL_CANCEL_ORDER(20, "手工取消订单"),
@@ -26,30 +37,30 @@ public enum OrderOperateTypeEnum {
     // 推送订单至履约
     PUSH_ORDER_FULFILL(50, "推送订单至履约"),
 
-
     // 订单已出库
     ORDER_OUT_STOCK(60, "订单已出库"),
 
     ORDER_DELIVERED(70, "订单已配送"),
 
-    ORDER_SIGNED(80, "订单已签收");
+    ORDER_SIGNED(80, "订单已签收"),
+
+    ORDER_REJECTED(90, "订单已拒收"),
+
+    ORDER_PAID_INVALID(100, "主单完成支付无效"),
+
+    // 新增子订单
+    NEW_SUB_ORDER(200, "新建子订单"),
+
+    // 子订单支付
+    PAID_SUB_ORDER(240, "完成子订单支付"),
+
+    // 签收虚拟订单
+    SIGN_VIRTUAL_ORDER(300, "签收虚拟订单"),
+    ;
 
     private Integer code;
-
     private String msg;
 
-    OrderOperateTypeEnum(Integer code, String msg) {
-        this.code = code;
-        this.msg = msg;
-    }
-
-    public Integer getCode() {
-        return code;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
 
     public static Map<Integer, String> toMap() {
         Map<Integer, String> map = new HashMap<>(16);

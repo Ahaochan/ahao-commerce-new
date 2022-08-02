@@ -46,16 +46,24 @@ public class TmsApiImpl implements TmsApi {
             throw new TmsBizException("发货异常！");
         }
 
-        //1、调用三方物流系统，下物流单子单
+        // 1、调用三方物流系统，下物流单子单
         PlaceLogisticOrderDTO result = thirdPartyLogisticApi(request);
 
-        //2、生成物流单
+        // 2、生成物流单
         LogisticOrderDO logisticOrder = tmsConverter.convertLogisticOrderDO(request);
         logisticOrder.setLogisticCode(result.getLogisticCode());
         logisticOrder.setContent(result.getContent());
         logisticOrderDAO.save(logisticOrder);
 
-        return JsonResult.buildSuccess(new SendOutDTO(request.getOrderId(), result.getLogisticCode()));
+        // 3、mock申请配送员
+        SendOutDTO sendOutDTO = new SendOutDTO();
+        sendOutDTO.setOrderId(request.getOrderId());
+        sendOutDTO.setLogisticsCode(logisticOrder.getLogisticCode());
+        sendOutDTO.setDelivererName("test-delivererName");
+        sendOutDTO.setDelivererNo("test-delivererNo");
+        sendOutDTO.setDelivererPhone("13711111111");
+
+        return JsonResult.buildSuccess(sendOutDTO);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -66,7 +74,7 @@ public class TmsApiImpl implements TmsApi {
         List<LogisticOrderDO> logisticOrders = logisticOrderDAO.listByOrderId(orderId);
 
         //2、移除物流单
-        if(CollectionUtils.isNotEmpty(logisticOrders)) {
+        if (CollectionUtils.isNotEmpty(logisticOrders)) {
             List<Long> ids = logisticOrders.stream().map(LogisticOrderDO::getId).collect(Collectors.toList());
             logisticOrderDAO.removeByIds(ids);
         }

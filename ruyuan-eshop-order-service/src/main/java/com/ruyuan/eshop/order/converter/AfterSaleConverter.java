@@ -1,11 +1,12 @@
 package com.ruyuan.eshop.order.converter;
 
+import com.ruyuan.eshop.customer.domain.request.CustomerReviewReturnGoodsRequest;
 import com.ruyuan.eshop.order.domain.dto.*;
-import com.ruyuan.eshop.order.domain.entity.AfterSaleInfoDO;
-import com.ruyuan.eshop.order.domain.entity.AfterSaleItemDO;
-import com.ruyuan.eshop.order.domain.entity.AfterSaleLogDO;
-import com.ruyuan.eshop.order.domain.entity.AfterSaleRefundDO;
+import com.ruyuan.eshop.order.domain.entity.*;
 import com.ruyuan.eshop.order.domain.query.AfterSaleQuery;
+import com.ruyuan.eshop.order.domain.request.CustomerAuditAssembleRequest;
+import com.ruyuan.eshop.order.domain.request.ManualAfterSaleDTO;
+import com.ruyuan.eshop.order.domain.request.ReturnGoodsOrderRequest;
 import org.mapstruct.Mapper;
 
 import java.util.List;
@@ -45,18 +46,18 @@ public interface AfterSaleConverter {
     /**
      * 对象转换
      *
-     * @param afterSalePay 对象
+     * @param afterSaleRefund 对象
      * @return 对象
      */
-    AfterSalePayDTO afterSalePayDO2DTO(AfterSaleRefundDO afterSalePay);
+    AfterSaleRefundDTO afterSaleRefundDO2DTO(AfterSaleRefundDO afterSaleRefund);
 
     /**
      * 对象转换
      *
-     * @param afterSalePays 对象
+     * @param afterSaleRefunds 对象
      * @return 对象
      */
-    List<AfterSalePayDTO> afterSalePayDO2DTO(List<AfterSaleRefundDO> afterSalePays);
+    List<AfterSaleRefundDTO> afterSaleRefundDO2DTO(List<AfterSaleRefundDO> afterSaleRefunds);
 
 
     /**
@@ -86,16 +87,32 @@ public interface AfterSaleConverter {
     /**
      * 对象转换
      *
-     * @param afterSaleItemDOList 对象
+     * @param customerReviewReturnGoodsRequest 对象
      * @return 对象
      */
-    AfterSaleOrderItemDTO afterSaleOrderItemDO2DTO(AfterSaleItemDO afterSaleItemDOList);
+    CustomerAuditAssembleRequest review2AuditPass(CustomerReviewReturnGoodsRequest customerReviewReturnGoodsRequest);
 
     /**
      * 对象转换
      *
-     * @param afterSaleItemDOList 对象
+     * @param returnGoodsOrderRequest 对象
      * @return 对象
      */
-    List<AfterSaleOrderItemDTO> afterSaleOrderItemDO2DTO(List<AfterSaleItemDO> afterSaleItemDOList);
+    ManualAfterSaleDTO returnGoodRequest2AssembleRequest(ReturnGoodsOrderRequest returnGoodsOrderRequest);
+
+    /**
+     * 对象转换
+     *
+     * @param orderItemDO 对象
+     * @return 对象
+     */
+    AfterSaleItemDTO orderItemDO2AfterSaleItemDTO(OrderItemDO orderItemDO);
+
+    /**
+     * 对象转换
+     *
+     * @param afterSaleInfoDTO 对象
+     * @return 对象
+     */
+    AfterSaleInfoDO afterSaleInfoDTO2DO(AfterSaleInfoDTO afterSaleInfoDTO);
 }

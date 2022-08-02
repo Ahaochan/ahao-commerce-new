@@ -1,9 +1,8 @@
 package com.ruyuan.eshop.order.builder;
 
-import com.ruyuan.eshop.common.enums.AmountTypeEnum;
-import com.ruyuan.eshop.common.enums.DeleteStatusEnum;
-import com.ruyuan.eshop.common.enums.OrderOperateTypeEnum;
-import com.ruyuan.eshop.common.enums.OrderStatusEnum;
+import com.alibaba.fastjson.JSONObject;
+import com.ruyuan.eshop.common.enums.*;
+import com.ruyuan.eshop.common.utils.ExtJsonUtil;
 import com.ruyuan.eshop.market.domain.dto.CalculateOrderAmountDTO;
 import com.ruyuan.eshop.order.config.OrderProperties;
 import com.ruyuan.eshop.order.converter.OrderConverter;
@@ -12,10 +11,11 @@ import com.ruyuan.eshop.order.domain.dto.OrderAmountDetailDTO;
 import com.ruyuan.eshop.order.domain.entity.*;
 import com.ruyuan.eshop.order.domain.request.CreateOrderRequest;
 import com.ruyuan.eshop.order.enums.CommentStatusEnum;
-import com.ruyuan.eshop.order.enums.OrderTypeEnum;
 import com.ruyuan.eshop.order.enums.PayStatusEnum;
 import com.ruyuan.eshop.order.enums.SnapshotTypeEnum;
+import com.ruyuan.eshop.order.utils.OrderTypeUtils;
 import com.ruyuan.eshop.product.domain.dto.ProductSkuDTO;
+import com.ruyuan.eshop.product.enums.ProductTypeEnum;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -38,6 +38,10 @@ public class NewOrderBuilder {
 
     private List<ProductSkuDTO> productSkuList;
 
+    private Map<String, ProductSkuDTO> productSkuMap;
+
+    private Map<Integer, List<ProductSkuDTO>> productTypeMap;
+
     private CalculateOrderAmountDTO calculateOrderAmountDTO;
 
     private OrderProperties orderProperties;
@@ -46,15 +50,18 @@ public class NewOrderBuilder {
 
     public NewOrderBuilder(CreateOrderRequest createOrderRequest,
                            List<ProductSkuDTO> productSkuList,
+                           Map<Integer, List<ProductSkuDTO>> productTypeMap,
                            CalculateOrderAmountDTO calculateOrderAmountDTO,
                            OrderProperties orderProperties,
                            OrderConverter orderConverter) {
         this.createOrderRequest = createOrderRequest;
         this.productSkuList = productSkuList;
+        this.productTypeMap = productTypeMap;
         this.calculateOrderAmountDTO = calculateOrderAmountDTO;
         this.fullOrderData = new FullOrderData();
         this.orderProperties = orderProperties;
         this.orderConverter = orderConverter;
+        this.productSkuMap = productSkuList.stream().collect(Collectors.toMap(ProductSkuDTO::getSkuCode, sku -> sku));
     }
 
     /**
@@ -94,6 +101,20 @@ public class NewOrderBuilder {
         orderInfoDO.setDeleteStatus(DeleteStatusEnum.NO.getCode());
         orderInfoDO.setCommentStatus(CommentStatusEnum.NO.getCode());
         fullOrderData.setOrderInfoDO(orderInfoDO);
+        return this;
+    }
+
+    /**
+     * 设置订单类型
+     *
+     * @return
+     */
+    public NewOrderBuilder setOrderType() {
+        //不需要拆单
+        if (productTypeMap.keySet().size() <= 1) {
+            Integer productType = productSkuList.get(0).getProductType();
+            OrderTypeUtils.setOrderType(productType, fullOrderData.getOrderInfoDO());
+        }
         return this;
     }
 
@@ -157,6 +178,22 @@ public class NewOrderBuilder {
     }
 
     /**
+     * 将预售商品信息添加至orderItem的extJson里面
+     *
+     * @return
+     */
+    public NewOrderBuilder addPreSaleInfoToOrderItems() {
+        for (OrderItemDO item : fullOrderData.getOrderItemDOList()) {
+            if (ProductTypeEnum.PRE_SALE.getCode().equals(item.getProductType())) {
+                ProductSkuDTO productSku = productSkuMap.get(item.getSkuCode());
+                //将预售商品信息放入orderItem的extJson里面
+                item.setExtJson(ExtJsonUtil.mergeExtJson(item.getExtJson(), JSONObject.toJSONString(productSku.getPreSaleInfo())));
+            }
+        }
+        return this;
+    }
+
+    /**
      * 获取orderItemId后缀值
      *
      * @param orderId
@@ -210,11 +247,7 @@ public class NewOrderBuilder {
             orderPaymentDetailDO.setAccountType(paymentRequest.getAccountType());
             orderPaymentDetailDO.setPayType(paymentRequest.getPayType());
             orderPaymentDetailDO.setPayStatus(PayStatusEnum.UNPAID.getCode());
-            List<CreateOrderRequest.OrderAmountRequest> orderAmountRequestList = createOrderRequest.getOrderAmountRequestList();
-            Map<Integer, Integer> orderAmountMap = orderAmountRequestList.stream()
-                    .collect(Collectors.toMap(CreateOrderRequest.OrderAmountRequest::getAmountType,
-                            CreateOrderRequest.OrderAmountRequest::getAmount));
-            orderPaymentDetailDO.setPayAmount(orderAmountMap.get(AmountTypeEnum.REAL_PAY_AMOUNT.getCode()));
+            orderPaymentDetailDO.setPayAmount(paymentRequest.getPayAmount());
             orderPaymentDetailDO.setPayTime(null);
             orderPaymentDetailDO.setOutTradeNo(null);
             orderPaymentDetailDO.setPayRemark(null);
@@ -295,19 +328,18 @@ public class NewOrderBuilder {
      * @return
      */
     public NewOrderBuilder buildOrderSnapshot() {
-        // 在生单的时候，把订单自己的、优惠券的、费用的、商品的，核心数据生成一个订单快照就可以了
-        // 主要是怕你关联的一些数据后续可能会有变化，做快照，后续可以查看
-
         String orderId = createOrderRequest.getOrderId();
         String couponId = createOrderRequest.getCouponId();
+        Date currentDate = new Date();
         List<OrderSnapshotDO> orderOperateLogDOList = new ArrayList<>();
-
         if (StringUtils.isNotEmpty(couponId)) {
             // 优惠券信息
             OrderSnapshotDO orderCouponSnapshotDO = new OrderSnapshotDO();
             orderCouponSnapshotDO.setOrderId(orderId);
             orderCouponSnapshotDO.setSnapshotType(SnapshotTypeEnum.ORDER_COUPON.getCode());
             orderCouponSnapshotDO.setSnapshotJson(null);
+            orderCouponSnapshotDO.setGmtCreate(currentDate);
+            orderCouponSnapshotDO.setGmtModified(currentDate);
             orderOperateLogDOList.add(orderCouponSnapshotDO);
         }
 
@@ -316,6 +348,8 @@ public class NewOrderBuilder {
         orderAmountSnapshotDO.setOrderId(orderId);
         orderAmountSnapshotDO.setSnapshotType(SnapshotTypeEnum.ORDER_AMOUNT.getCode());
         orderAmountSnapshotDO.setSnapshotJson(null);
+        orderAmountSnapshotDO.setGmtCreate(currentDate);
+        orderAmountSnapshotDO.setGmtModified(currentDate);
         orderOperateLogDOList.add(orderAmountSnapshotDO);
 
         // 商品条目信息
@@ -323,6 +357,8 @@ public class NewOrderBuilder {
         orderItemSnapshotDO.setOrderId(orderId);
         orderItemSnapshotDO.setSnapshotType(SnapshotTypeEnum.ORDER_ITEM.getCode());
         orderItemSnapshotDO.setSnapshotJson(null);
+        orderItemSnapshotDO.setGmtCreate(currentDate);
+        orderItemSnapshotDO.setGmtModified(currentDate);
         orderOperateLogDOList.add(orderItemSnapshotDO);
 
         fullOrderData.setOrderSnapshotDOList(orderOperateLogDOList);

@@ -5,20 +5,14 @@ import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.inventory.dao.ProductStockDAO;
 import com.ruyuan.eshop.inventory.dao.ProductStockLogDAO;
-import com.ruyuan.eshop.inventory.domain.entity.ProductStockDO;
-import com.ruyuan.eshop.inventory.domain.request.AddProductStockRequest;
-import com.ruyuan.eshop.inventory.domain.request.InitMeasureDataRequest;
-import com.ruyuan.eshop.inventory.domain.request.ModifyProductStockRequest;
-import com.ruyuan.eshop.inventory.domain.request.SyncStockToCacheRequest;
+import com.ruyuan.eshop.inventory.domain.request.*;
 import com.ruyuan.eshop.inventory.service.InventoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 正向下单流程接口冒烟测试
@@ -75,19 +69,42 @@ public class InventoryController {
 
 
     /**
+     * 新增商品库存
+     *
+     * @return
+     */
+    @PostMapping("/deductProductStock")
+    public JsonResult<Boolean> deductProductStock(@RequestBody DeductProductStockRequest request) {
+        inventoryService.deductProductStock(request);
+        return JsonResult.buildSuccess(true);
+    }
+
+    /**
+     * 查询商品库存
+     *
+     * @return
+     */
+    @GetMapping("/getStockInfo")
+    public JsonResult<Map> getStockInfo(String skuCode) {
+        return JsonResult.buildSuccess(inventoryService.getStockInfo(skuCode));
+    }
+
+
+    /**
      * 初始化压测数据
+     *
      * @return
      */
     @PostMapping("/initMeasureData")
     public JsonResult<Boolean> initMeasureData(@RequestBody InitMeasureDataRequest request) {
         List<String> skuCodes = request.getSkuCodes();
 
-        if(CollectionUtils.isNotEmpty(skuCodes)) {
+        if (CollectionUtils.isNotEmpty(skuCodes)) {
 
             // 初始化压测库存数据数据
             productStockDAO.initMeasureInventoryData(skuCodes);
 
-            for(String skuCode : skuCodes) {
+            for (String skuCode : skuCodes) {
                 SyncStockToCacheRequest syncStockToCacheRequest = new SyncStockToCacheRequest();
                 syncStockToCacheRequest.setSkuCode(skuCode);
                 // 同步缓存
@@ -98,6 +115,4 @@ public class InventoryController {
 
         return JsonResult.buildSuccess(true);
     }
-
-
 }

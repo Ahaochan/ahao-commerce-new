@@ -32,7 +32,7 @@ public class TriggerOrderFulfillTopicListener extends AbstractMessageListenerCon
 
     @Override
     public ConsumeConcurrentlyStatus onMessage(List<MessageExt> list,
-                                                    ConsumeConcurrentlyContext consumeConcurrentlyContext) {
+                                               ConsumeConcurrentlyContext consumeConcurrentlyContext) {
         try {
             for (MessageExt messageExt : list) {
                 String message = new String(messageExt.getBody());
@@ -41,7 +41,7 @@ public class TriggerOrderFulfillTopicListener extends AbstractMessageListenerCon
 
                 log.info("接受订单履约成功，request={}", JSONObject.toJSONString(request));
 
-                //fulfillService.receiveOrderFulFill(request);
+                fulfillService.receiveOrderFulFill(request);
             }
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
         } catch (Exception e) {

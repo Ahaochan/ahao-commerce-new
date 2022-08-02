@@ -51,6 +51,9 @@ public class ExtJsonUtil {
     }
 
     public static JSONObject parseExtJson(String extJson) {
+        if (StringUtils.isEmpty(extJson)) {
+            return null;
+        }
         try {
             return JSONObject.parseObject(extJson);
         } catch (Exception e) {

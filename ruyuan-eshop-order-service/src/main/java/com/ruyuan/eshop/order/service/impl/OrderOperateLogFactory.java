@@ -23,8 +23,8 @@ public class OrderOperateLogFactory {
      */
     public OrderOperateLogDO get(OrderInfoDO order, OrderStatusChangeEnum statusChange) {
         OrderOperateTypeEnum operateType = statusChange.getOperateType();
-        Integer preStatus = statusChange.getPreStatus().getCode();
-        Integer currentStatus = statusChange.getCurrentStatus().getCode();
+        Integer preStatus = statusChange.getFromStatus().getCode();
+        Integer currentStatus = statusChange.getToStatus().getCode();
         return create(order, operateType, preStatus, currentStatus, operateType.getMsg());
     }
 

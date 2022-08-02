@@ -32,6 +32,11 @@ public class ReceiveFulfillRequest implements Serializable {
     private String orderId;
 
     /**
+     * 订单类型
+     */
+    private Integer orderType;
+
+    /**
      * 商家id
      */
     private String sellerId;

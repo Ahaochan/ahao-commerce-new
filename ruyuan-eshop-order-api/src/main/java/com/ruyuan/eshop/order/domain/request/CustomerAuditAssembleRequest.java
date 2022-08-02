@@ -1,5 +1,6 @@
 package com.ruyuan.eshop.order.domain.request;
 
+import com.ruyuan.eshop.order.domain.dto.AfterSaleInfoDTO;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,10 +12,11 @@ import java.util.Date;
  */
 @Data
 public class CustomerAuditAssembleRequest implements Serializable {
+    private static final long serialVersionUID = -2641506633636395602L;
     /**
      * 售后id
      */
-    private Long afterSaleId;
+    private String afterSaleId;
     /**
      * 订单id
      */
@@ -45,12 +47,17 @@ public class CustomerAuditAssembleRequest implements Serializable {
     private String reviewReason;
 
     /**
-     * 当前订单是否是退最后一笔
-     */
-    private boolean lastReturnGoods = false;
-
-    /**
      * 客服审核结果描述信息
      */
     private String auditResultDesc;
+
+    /**
+     * 售后的skuCode
+     */
+    private String skuCode;
+
+    /**
+     * 售后单DTO
+     */
+    private AfterSaleInfoDTO afterSaleInfoDTO;
 }

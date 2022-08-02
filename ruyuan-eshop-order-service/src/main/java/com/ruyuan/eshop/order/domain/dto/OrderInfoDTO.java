@@ -1,9 +1,15 @@
 package com.ruyuan.eshop.order.domain.dto;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.ruyuan.eshop.common.enums.OrderTypeEnum;
+import com.ruyuan.eshop.order.builder.FullOrderData;
+import com.ruyuan.eshop.order.domain.entity.OrderInfoDO;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * 订单信息DTO
@@ -13,7 +19,9 @@ import java.util.Date;
  */
 @Data
 public class OrderInfoDTO implements Serializable {
+
     private static final long serialVersionUID = 1L;
+
     /**
      * 接入方业务线标识  1, "自营商城"
      */
@@ -48,6 +56,11 @@ public class OrderInfoDTO implements Serializable {
      * 订单取消类型
      */
     private String cancelType;
+
+    /**
+     * 创建时间
+     */
+    private Date createdTime;
 
     /**
      * 订单取消时间
@@ -110,12 +123,35 @@ public class OrderInfoDTO implements Serializable {
     private Integer commentStatus;
 
     /**
-     * 缺品标识，0:未缺品，1:缺品
-     */
-    private Integer lackFlag;
-
-    /**
      * 原订单状态
      */
     private Integer oldOrderStatus;
+
+    /**
+     * 扩展信息
+     */
+    private String extJson;
+
+    /**
+     * 子订单信息
+     */
+    private List<OrderInfoDO> subOrders;
+
+    /**
+     * 该订单包含的商品类型列表
+     */
+    private Set<Integer> productTypeSet;
+
+    /**
+     * 订单详细信息
+     */
+    private FullOrderData fullOrderData;
+
+    public boolean hasChild() {
+        return CollectionUtils.isNotEmpty(subOrders);
+    }
+
+    public boolean isVirtual() {
+        return OrderTypeEnum.VIRTUAL.getCode().equals(orderType);
+    }
 }

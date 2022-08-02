@@ -63,12 +63,10 @@ public class ProductStockDAO extends BaseDAO<ProductStockMapper, ProductStockDO>
      *
      * @param skuCode
      * @param saleQuantity
-     * @param originSaleStock
      * @return
      */
-    public int deductSaleStock(String skuCode, Integer saleQuantity
-            , Integer originSaleStock) {
-        return productStockMapper.deductSaleStock(skuCode, saleQuantity, originSaleStock);
+    public int deductSaleStock(String skuCode, Integer saleQuantity) {
+        return productStockMapper.deductSaleStock(skuCode, saleQuantity);
     }
 
     /**
@@ -76,12 +74,10 @@ public class ProductStockDAO extends BaseDAO<ProductStockMapper, ProductStockDO>
      *
      * @param skuCode
      * @param saleQuantity
-     * @param originSaledStock
      * @return
      */
-    public int increaseSaledStock(String skuCode, Integer saleQuantity
-            , Integer originSaledStock) {
-        return productStockMapper.increaseSaledStock(skuCode, saleQuantity, originSaledStock);
+    public int increaseSaledStock(String skuCode, Integer saleQuantity) {
+        return productStockMapper.increaseSaledStock(skuCode, saleQuantity);
     }
 
     /**
@@ -89,12 +85,10 @@ public class ProductStockDAO extends BaseDAO<ProductStockMapper, ProductStockDO>
      *
      * @param skuCode
      * @param saleQuantity
-     * @param originSaleStock
      * @return
      */
-    public int restoreSaleStock(String skuCode, Integer saleQuantity,
-                                Integer originSaleStock) {
-        return productStockMapper.restoreSaleStock(skuCode, saleQuantity, originSaleStock);
+    public int restoreSaleStock(String skuCode, Integer saleQuantity) {
+        return productStockMapper.restoreSaleStock(skuCode, saleQuantity);
     }
 
     /**
@@ -122,13 +116,14 @@ public class ProductStockDAO extends BaseDAO<ProductStockMapper, ProductStockDO>
 
     /**
      * 初始化压测库存数据数据
+     *
      * @param skuCodes
      */
     public void initMeasureInventoryData(List<String> skuCodes) {
         LambdaUpdateWrapper<ProductStockDO> updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.set(ProductStockDO::getSaleStockQuantity,1000000000)
-                .set(ProductStockDO::getSaledStockQuantity,0)
-                .in(ProductStockDO::getSkuCode,skuCodes);
+        updateWrapper.set(ProductStockDO::getSaleStockQuantity, 1000000000)
+                .set(ProductStockDO::getSaledStockQuantity, 0)
+                .in(ProductStockDO::getSkuCode, skuCodes);
         update(updateWrapper);
     }
 

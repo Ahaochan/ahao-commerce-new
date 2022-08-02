@@ -19,7 +19,7 @@ public class RequestOriginParserImpl implements RequestOriginParser {
     public String parseOrigin(HttpServletRequest request) {
         String userId = request.getHeader("user_id");
         log.warn("RequestOriginParserImpl:user_id:" + userId);
-        if(StringUtils.isEmpty(userId)) {
+        if (StringUtils.isEmpty(userId)) {
             log.warn("user_id is not empty");
         }
         return userId;

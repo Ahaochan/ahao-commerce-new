@@ -1,7 +1,9 @@
 package com.ruyuan.eshop.order.domain.query;
 
+import com.ruyuan.eshop.common.tuple.Pair;
+import com.ruyuan.eshop.order.enums.AfterSaleQueryDataTypeEnums;
+import com.ruyuan.eshop.order.enums.AfterSaleQuerySortField;
 import lombok.Data;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -78,6 +80,17 @@ public class AfterSaleQuery implements Serializable {
      * 退款金额-查询区间
      */
     private Pair<Integer, Integer> refundAmountInterval;
+
+    /**
+     * 排序
+     */
+    private AfterSaleQuerySortField sort = AfterSaleQuerySortField.CREATE_TIME_DESC;
+
+    /**
+     * 售后单项查询枚举
+     */
+    private AfterSaleQueryDataTypeEnums[] queryDataTypes;
+
     /**
      * 页码；默认为1；
      */

@@ -1,7 +1,7 @@
 package com.ruyuan.eshop.order.domain.dto;
 
+import com.ruyuan.eshop.common.tuple.Pair;
 import lombok.Data;
-import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.Date;
 import java.util.Set;

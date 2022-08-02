@@ -94,7 +94,7 @@ public class MarketServiceImpl implements MarketService {
             discountAmount = couponDO.getAmount();
         }
 
-        // 原订单费用信息，仅仅是做了一个数据的处理
+        // 原订单费用信息
         List<CalculateOrderAmountDTO.OrderAmountDTO> orderAmountList = marketConverter.convertOrderAmountRequest(calculateOrderAmountRequest.getOrderAmountRequestList());
         for (CalculateOrderAmountDTO.OrderAmountDTO orderAmountDTO : orderAmountList) {
             orderAmountDTO.setOrderId(orderId);
@@ -126,9 +126,9 @@ public class MarketServiceImpl implements MarketService {
 
             // 优惠券抵扣金额
             CalculateOrderAmountDTO.OrderAmountDetailDTO couponDiscountAmountDetail = null;
-            if(discountAmount > 0) { // 优惠分摊规则，优惠金额是要分摊到各个商品条目里去
+            if (discountAmount > 0) {
                 if (++index < totalNum) {
-                    // 订单条目分摊的优惠金额，首先就是把你的优惠金额，均匀平摊到各个商品条目上去
+                    // 订单条目分摊的优惠金额
                     double partDiscountAmount = Integer.valueOf(discountAmount
                             * orderItemRequest.getSalePrice() * orderItemRequest.getSaleQuantity()).doubleValue()
                             / Integer.valueOf(totalProductAmount).doubleValue();
@@ -144,9 +144,6 @@ public class MarketServiceImpl implements MarketService {
 
                     notLastItemTotalDiscountAmount += couponDiscountAmountDetail.getAmount();
                 } else {
-                    // 优惠券一共抵扣了100块
-                    // 3个商品条目，33 + 33 + 34
-
                     // 最后一条item的优惠金额等于总优惠金额-前面所有item分摊的优惠总额
                     couponDiscountAmountDetail =
                             createOrderAmountDetailDTO(orderId,
@@ -160,7 +157,7 @@ public class MarketServiceImpl implements MarketService {
 
             // 实付金额
             Integer realPayAmount = originPayAmountDetail.getAmount();
-            if(couponDiscountAmountDetail != null) {
+            if (couponDiscountAmountDetail != null) {
                 realPayAmount = realPayAmount - couponDiscountAmountDetail.getAmount();
             }
             CalculateOrderAmountDTO.OrderAmountDetailDTO realPayAmountDetail =
@@ -308,8 +305,7 @@ public class MarketServiceImpl implements MarketService {
         // 满多少免运费
         Integer conditionAmount;
 
-        // 查找运费模板，根据你所在的不同区域，找到运费规则模板
-        // 在哪些哪些省市里，你就可以享受到一个运费规则，多重商品，是多少钱，超重了如何加钱
+        // 查找运费模板
         FreightTemplateDO freightTemplateDO = freightTemplateDAO.getByRegionId(regionId);
         if (freightTemplateDO != null) {
             shippingAmount = freightTemplateDO.getShippingAmount();

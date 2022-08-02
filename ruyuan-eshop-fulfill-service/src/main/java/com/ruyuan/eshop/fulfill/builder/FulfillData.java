@@ -2,10 +2,10 @@ package com.ruyuan.eshop.fulfill.builder;
 
 import com.ruyuan.eshop.fulfill.domain.entity.OrderFulfillDO;
 import com.ruyuan.eshop.fulfill.domain.entity.OrderFulfillItemDO;
-import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
-import lombok.Builder;
+import com.ruyuan.eshop.fulfill.domain.entity.OrderFulfillLogDO;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,21 +15,33 @@ import java.util.List;
  * @version 1.0
  */
 @Data
-@Builder
 public class FulfillData {
 
     /**
-     * 订单履约
+     * 履约单
      */
-    private OrderFulfillDO orderFulFill;
+    private List<OrderFulfillDO> orderFulFills = new ArrayList<>();
 
     /**
      * 订单履约条目
      */
-    private List<OrderFulfillItemDO> orderFulFillItems;
+    private List<OrderFulfillItemDO> orderFulFillItems = new ArrayList<>();
 
-    /**
-     * 接受订单履约请求
-     */
-    private ReceiveFulfillRequest receiveFulFillRequest;
+    private List<OrderFulfillLogDO> orderFulfillLogs = new ArrayList<>();
+
+    public void addOrderFulfill(OrderFulfillDO orderFulfill) {
+        this.orderFulFills.add(orderFulfill);
+    }
+
+    public void addOrderFulFillItem(OrderFulfillItemDO orderFulfillItem) {
+        this.orderFulFillItems.add(orderFulfillItem);
+    }
+
+    public void addOrderFulFillItems(List<OrderFulfillItemDO> orderFulFillItems) {
+        this.orderFulFillItems.addAll(orderFulFillItems);
+    }
+
+    public void addOrderFulFillLog(OrderFulfillLogDO orderFulFillLog) {
+        this.orderFulfillLogs.add(orderFulFillLog);
+    }
 }

@@ -1,46 +1,33 @@
 package com.ruyuan.eshop.order.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.ruyuan.eshop.common.enums.AfterSaleTypeDetailEnum;
-import com.ruyuan.eshop.common.enums.AfterSaleTypeEnum;
-import com.ruyuan.eshop.common.enums.OrderStatusEnum;
-import com.ruyuan.eshop.common.exception.BaseBizException;
-import com.ruyuan.eshop.common.message.ActualRefundMessage;
-import com.ruyuan.eshop.common.mq.MQMessage;
+import com.ruyuan.eshop.common.enums.*;
 import com.ruyuan.eshop.common.utils.ExtJsonUtil;
 import com.ruyuan.eshop.common.utils.ParamCheckUtil;
-import com.ruyuan.eshop.order.dao.AfterSaleInfoDAO;
-import com.ruyuan.eshop.order.dao.OrderInfoDAO;
-import com.ruyuan.eshop.order.dao.OrderItemDAO;
+import com.ruyuan.eshop.order.dao.*;
 import com.ruyuan.eshop.order.domain.dto.*;
 import com.ruyuan.eshop.order.domain.entity.*;
 import com.ruyuan.eshop.order.domain.request.LackItemRequest;
 import com.ruyuan.eshop.order.domain.request.LackRequest;
-import com.ruyuan.eshop.order.enums.*;
+import com.ruyuan.eshop.order.enums.AccountTypeEnum;
+import com.ruyuan.eshop.order.enums.OrderNoTypeEnum;
+import com.ruyuan.eshop.order.enums.RefundStatusEnum;
 import com.ruyuan.eshop.order.exception.OrderBizException;
 import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
+import com.ruyuan.eshop.order.manager.AfterSaleAmountManager;
 import com.ruyuan.eshop.order.manager.OrderNoManager;
-import com.ruyuan.eshop.order.mq.producer.LackItemProducer;
+import com.ruyuan.eshop.order.mq.producer.DefaultProducer;
 import com.ruyuan.eshop.order.remote.ProductRemote;
 import com.ruyuan.eshop.order.service.OrderLackService;
-import com.ruyuan.eshop.order.service.amount.AfterSaleAmountService;
+import com.ruyuan.eshop.order.service.RocketMqService;
 import com.ruyuan.eshop.product.domain.dto.ProductSkuDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.client.producer.LocalTransactionState;
-import org.apache.rocketmq.client.producer.TransactionListener;
-import org.apache.rocketmq.client.producer.TransactionMQProducer;
-import org.apache.rocketmq.common.message.Message;
-import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static com.ruyuan.eshop.common.constants.RocketMqConstant.ACTUAL_REFUND_TOPIC;
 
 @Service
 @Slf4j
@@ -56,19 +43,31 @@ public class OrderLackServiceImpl implements OrderLackService {
     private OrderNoManager orderNoManager;
 
     @Autowired
-    private AfterSaleAmountService afterSaleAmountService;
+    private AfterSaleAmountManager afterSaleAmountService;
 
     @Autowired
     private ProductRemote productRemote;
 
     @Autowired
-    private LackItemProducer lackItemProducer;
+    private DefaultProducer defaultProducer;
 
     @Autowired
-    private OrderLackProcessor orderLackProcessor;
+    private RocketMqService rocketMqService;
 
     @Autowired
     private AfterSaleInfoDAO afterSaleInfoDAO;
+
+    @Autowired
+    private AfterSaleItemDAO afterSaleItemDAO;
+
+    @Autowired
+    private AfterSaleRefundDAO afterSaleRefundDAO;
+
+    @Autowired
+    private AfterSaleLogDAO afterSaleLogDAO;
+
+    @Autowired
+    private AfterSaleOperateLogFactory afterSaleOperateLogFactory;
 
 
     @Override
@@ -82,14 +81,16 @@ public class OrderLackServiceImpl implements OrderLackService {
         // 可以发起缺品的前置条件：
         // （1) 订单的状态为："已出库"
         //  (2) 订单未发起过缺品
+        //  (3) 普通订单类型
 
         // 解释一下为啥是"已库存"状态才能发起缺品：
         // 缺品的业务逻辑是这样的，当订单支付后，进入履约流程，仓库人员捡货当时候发现现有商品无法满足下单所需，即"缺品"了
         // 仓库人员首先会将通知订单系统将订单的状态变为"已出库"，然后会再来调用这个缺品的接口
-        if (!OrderStatusEnum.canLack().contains(order.getOrderStatus()) || isOrderLacked(order)) {
+        if (!OrderStatusEnum.canLack().contains(order.getOrderStatus())
+                || isOrderLacked(order)
+                || !OrderTypeEnum.canLack().contains(order.getOrderType())) {
             throw new OrderBizException(OrderErrorCodeEnum.ORDER_NOT_ALLOW_TO_LACK);
         }
-
         //3、查询订单item
         List<OrderItemDO> orderItems = orderItemDAO.listByOrderId(request.getOrderId());
 
@@ -118,111 +119,45 @@ public class OrderLackServiceImpl implements OrderLackService {
         OrderInfoDO order = checkLackItemDTO.getOrder();
         List<LackItemDTO> lackItems = checkLackItemDTO.getLackItems();
 
-        //1、生成缺品售后单
+        // 1、生成缺品售后单
         AfterSaleInfoDO lackAfterSaleOrder = buildLackAfterSaleInfo(order);
 
-        //2、生成缺品售后单item
+        // 2、生成缺品售后单item
         List<AfterSaleItemDO> afterSaleItems = new ArrayList<>();
         lackItems.forEach(item -> {
             afterSaleItems.add(buildLackAfterSaleItem(order, lackAfterSaleOrder, item));
         });
 
-        //3、计算订单缺品退款总金额
+        // 3、计算订单缺品退款总金额
         Integer lackApplyRefundAmount = afterSaleAmountService.calculateOrderLackApplyRefundAmount(afterSaleItems);
         Integer lackRealRefundAmount = afterSaleAmountService.calculateOrderLackRealRefundAmount(afterSaleItems);
         lackAfterSaleOrder.setApplyRefundAmount(lackApplyRefundAmount);
         lackAfterSaleOrder.setRealRefundAmount(lackRealRefundAmount);
 
-        //4、构造售后退款单
+        // 4、构造售后退款单
         AfterSaleRefundDO afterSaleRefund = buildLackAfterSaleRefundDO(order, lackAfterSaleOrder);
 
-        //5、构造订单缺品扩展信息
+        // 5、构造订单缺品扩展信息
         OrderExtJsonDTO lackExtJson = buildOrderLackExtJson(request, order, lackAfterSaleOrder);
 
-        //6、构造订单缺品信息
-        OrderLackInfo orderLackInfo = OrderLackInfo.builder()
-                .lackAfterSaleOrder(lackAfterSaleOrder)
-                .afterSaleItems(afterSaleItems)
-                .afterSaleRefund(afterSaleRefund)
-                .lackExtJson(lackExtJson)
-                .orderId(order.getOrderId())
-                .build();
+        // 6、存储售后单,item和退款单，日志
+        afterSaleInfoDAO.save(lackAfterSaleOrder);
+        afterSaleItemDAO.saveBatch(afterSaleItems);
+        afterSaleRefundDAO.save(afterSaleRefund);
+        afterSaleLogDAO.save(afterSaleOperateLogFactory.get(lackAfterSaleOrder, AfterSaleStatusChangeEnum.LACK_AFTER_SALE_CREATED));
 
+        // 7、更新订单扩展信息
+        orderInfoDAO.updateOrderExtJson(order.getOrderId(), lackExtJson);
 
-        //7、获取缺品处理的生产者组件
-        TransactionMQProducer producer = lackItemProducer.getProducer();
-        setLackItemTransactionListener(producer);
-
-        //8、发送缺品退款的消息
-        sendLackItemMessage(order.getOrderId(), lackAfterSaleOrder.getAfterSaleId(), orderLackInfo, producer);
+        // 8、发送缺品退款的消息
+        rocketMqService.sendLackItemRefundMessage(new SendLackItemRefundEventDTO(order.getOrderId(), lackAfterSaleOrder.getAfterSaleId()));
 
         return new LackDTO(order.getOrderId(), lackAfterSaleOrder.getAfterSaleId());
     }
 
-    /**
-     * 设置缺品mq事务监听器
-     *
-     * @param producer
-     */
-    private void setLackItemTransactionListener(TransactionMQProducer producer) {
-        producer.setTransactionListener(new TransactionListener() {
-            @Override
-            public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
-                try {
-                    OrderLackInfo orderLackInfo = (OrderLackInfo) arg;
-
-                    //保存缺品数据
-                    orderLackProcessor.saveLackInfo(orderLackInfo);
-                    return LocalTransactionState.COMMIT_MESSAGE;
-                } catch (BaseBizException e) {
-                    throw e;
-                } catch (Exception e) {
-                    log.error("system error", e);
-                    return LocalTransactionState.ROLLBACK_MESSAGE;
-                }
-            }
-
-            @Override
-            public LocalTransactionState checkLocalTransaction(MessageExt msg) {
-                // 检查缺品售后单是否已经创建
-
-                String body = new String(msg.getBody(), StandardCharsets.UTF_8);
-                ActualRefundMessage refundMessage = JSON.parseObject(body, ActualRefundMessage.class);
-
-                Long afterSaleId = refundMessage.getAfterSaleId();
-                AfterSaleInfoDO afterSaleInfoDO = afterSaleInfoDAO.getOneByAfterSaleId(afterSaleId);
-                if (afterSaleInfoDO != null) {
-                    return LocalTransactionState.COMMIT_MESSAGE;
-                }
-                return LocalTransactionState.ROLLBACK_MESSAGE;
-            }
-        });
-    }
-
-    /**
-     * 发送缺品退款的消息
-     *
-     * @param orderId
-     * @param afterSaleId
-     * @param orderLackInfo
-     * @param producer
-     * @throws Exception
-     */
-    private void sendLackItemMessage(String orderId, Long afterSaleId
-            , OrderLackInfo orderLackInfo, TransactionMQProducer producer) throws Exception {
-        ActualRefundMessage actualRefundMessage = new ActualRefundMessage();
-        actualRefundMessage.setOrderId(orderId);
-        actualRefundMessage.setAfterSaleId(afterSaleId);
-        String topic = ACTUAL_REFUND_TOPIC;
-        byte[] body = JSON.toJSONString(actualRefundMessage).getBytes(StandardCharsets.UTF_8);
-        Message mq = new MQMessage(topic, null, orderId, body);
-        producer.sendMessageInTransaction(mq, orderLackInfo);
-    }
 
     /**
      * 构造订单缺品扩展信息
-     *
-     * @return
      */
     private OrderExtJsonDTO buildOrderLackExtJson(LackRequest request, OrderInfoDO order
             , AfterSaleInfoDO lackAfterSaleOrder) {
@@ -242,9 +177,6 @@ public class OrderLackServiceImpl implements OrderLackService {
 
     /**
      * 构造缺品售后单
-     *
-     * @param order
-     * @return
      */
     private AfterSaleInfoDO buildLackAfterSaleInfo(OrderInfoDO order) {
 
@@ -252,7 +184,7 @@ public class OrderLackServiceImpl implements OrderLackService {
         String userId = order.getUserId();
         AfterSaleInfoDO afterSaleInfoDO = new AfterSaleInfoDO();
         String afterSaleId = orderNoManager.genOrderId(OrderNoTypeEnum.AFTER_SALE.getCode(), userId);
-        afterSaleInfoDO.setAfterSaleId(Long.valueOf(afterSaleId));
+        afterSaleInfoDO.setAfterSaleId(afterSaleId);
         afterSaleInfoDO.setOrderId(order.getOrderId());
         afterSaleInfoDO.setOrderSourceChannel(BusinessIdentifierEnum.SELF_MALL.getCode());
         afterSaleInfoDO.setUserId(userId);
@@ -270,9 +202,6 @@ public class OrderLackServiceImpl implements OrderLackService {
 
     /**
      * 构造缺品售后单item
-     *
-     * @param order
-     * @return
      */
     private AfterSaleItemDO buildLackAfterSaleItem(OrderInfoDO order, AfterSaleInfoDO lackAfterSale
             , LackItemDTO lackItemDTO) {
@@ -296,9 +225,6 @@ public class OrderLackServiceImpl implements OrderLackService {
 
     /**
      * 构造缺品售后支付单
-     *
-     * @param order
-     * @return
      */
     private AfterSaleRefundDO buildLackAfterSaleRefundDO(OrderInfoDO order, AfterSaleInfoDO afterSaleInfo) {
 
@@ -317,8 +243,6 @@ public class OrderLackServiceImpl implements OrderLackService {
 
     /**
      * 校验缺品项
-     *
-     * @return
      */
     private LackItemDTO checkLackItem(OrderInfoDO order, List<OrderItemDO> orderItems, LackItemRequest request) {
         String skuCode = request.getSkuCode();

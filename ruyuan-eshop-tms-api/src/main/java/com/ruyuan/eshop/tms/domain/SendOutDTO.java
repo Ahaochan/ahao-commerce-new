@@ -21,4 +21,17 @@ public class SendOutDTO implements Serializable {
      * 物流单号
      */
     private String logisticsCode;
+
+    /**
+     * 配送员code
+     */
+    private String delivererNo;
+    /**
+     * 配送员姓名
+     */
+    private String delivererName;
+    /**
+     * 配送员手机号
+     */
+    private String delivererPhone;
 }

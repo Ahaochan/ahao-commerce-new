@@ -4,7 +4,6 @@ import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.customer.domain.request.CustomerReceiveAfterSaleRequest;
 import com.ruyuan.eshop.customer.domain.request.CustomerReviewReturnGoodsRequest;
 import com.ruyuan.eshop.order.domain.dto.LackDTO;
-import com.ruyuan.eshop.order.domain.request.CancelOrderRequest;
 import com.ruyuan.eshop.order.domain.request.LackRequest;
 import com.ruyuan.eshop.order.domain.request.RefundCallbackRequest;
 import com.ruyuan.eshop.order.domain.request.RevokeAfterSaleRequest;
@@ -18,11 +17,6 @@ import com.ruyuan.eshop.order.domain.request.RevokeAfterSaleRequest;
 public interface AfterSaleApi {
 
     /**
-     * 取消订单/超时未支付取消
-     */
-    JsonResult<Boolean> cancelOrder(CancelOrderRequest cancelOrderRequest);
-
-    /**
      * 缺品
      */
     JsonResult<LackDTO> lackItem(LackRequest request);
@@ -33,7 +27,7 @@ public interface AfterSaleApi {
     JsonResult<Boolean> refundCallback(RefundCallbackRequest payRefundCallbackRequest);
 
     /**
-     * 接收客服的审核结果
+     * 接收客服的审核结果 入口
      */
     JsonResult<Boolean> receiveCustomerAuditResult(CustomerReviewReturnGoodsRequest customerReviewReturnGoodsRequest);
 

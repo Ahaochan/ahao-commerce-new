@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * 支付服务远程接口
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -26,6 +27,7 @@ public class PayRemote {
 
     /**
      * 调用支付系统进行预支付下单
+     *
      * @param payOrderRequest
      */
     public PayOrderDTO payOrder(PayOrderRequest payOrderRequest) {
@@ -38,6 +40,7 @@ public class PayRemote {
 
     /**
      * 调用支付系统执行退款
+     *
      * @param payRefundRequest
      */
     public void executeRefund(PayRefundRequest payRefundRequest) {

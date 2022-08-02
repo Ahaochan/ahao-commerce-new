@@ -39,7 +39,7 @@ public class OrderAmountDetailDTO implements Serializable {
     /**
      * 销售单价
      */
-    private Integer salePrice; // 商品原价
+    private Integer salePrice;
 
     /**
      * 收费类型
@@ -49,5 +49,5 @@ public class OrderAmountDetailDTO implements Serializable {
     /**
      * 收费金额
      */
-    private Integer amount; // 商品条目分摊优惠之后，他的一个收费价格
+    private Integer amount;
 }

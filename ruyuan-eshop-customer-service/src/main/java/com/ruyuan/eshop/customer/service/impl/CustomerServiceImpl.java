@@ -58,6 +58,7 @@ public class CustomerServiceImpl implements CustomerService {
             CustomerReceivesAfterSaleInfoDO customerReceivesAfterSaleInfoDO =
                     customerConverter.convertCustomerReceivesAfterSalInfoDO(customerReceiveAfterSaleRequest);
             customerReceivesAfterSaleInfoDAO.save(customerReceivesAfterSaleInfoDO);
+
             log.info("客服保存售后申请信息成功,afterSaleId:{}", customerReceiveAfterSaleRequest.getAfterSaleId());
             return JsonResult.buildSuccess(true);
         } catch (Exception e) {
@@ -74,11 +75,17 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     private void checkCustomerReceiveAfterSaleRequest(CustomerReceiveAfterSaleRequest customerReceiveAfterSaleRequest) {
+
         ParamCheckUtil.checkStringNonEmpty(customerReceiveAfterSaleRequest.getUserId(), CustomerErrorCodeEnum.USER_ID_IS_NULL);
+
         ParamCheckUtil.checkStringNonEmpty(customerReceiveAfterSaleRequest.getOrderId(), CustomerErrorCodeEnum.ORDER_ID_IS_NULL);
+
         ParamCheckUtil.checkStringNonEmpty(customerReceiveAfterSaleRequest.getAfterSaleId(), CustomerErrorCodeEnum.AFTER_SALE_ID_IS_NULL);
+
         ParamCheckUtil.checkObjectNonNull(customerReceiveAfterSaleRequest.getAfterSaleType(), CustomerErrorCodeEnum.AFTER_SALE_TYPE_IS_NULL);
+
         ParamCheckUtil.checkObjectNonNull(customerReceiveAfterSaleRequest.getReturnGoodAmount(), CustomerErrorCodeEnum.RETURN_GOOD_AMOUNT_IS_NULL);
+
         ParamCheckUtil.checkObjectNonNull(customerReceiveAfterSaleRequest.getApplyRefundAmount(), CustomerErrorCodeEnum.APPLY_REFUND_AMOUNT_IS_NULL);
     }
 }

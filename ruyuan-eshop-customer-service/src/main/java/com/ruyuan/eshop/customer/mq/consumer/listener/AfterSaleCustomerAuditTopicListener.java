@@ -31,7 +31,7 @@ public class AfterSaleCustomerAuditTopicListener extends AbstractMessageListener
 
     @Override
     public ConsumeConcurrentlyStatus onMessage(List<MessageExt> list,
-                                                    ConsumeConcurrentlyContext consumeConcurrentlyContext) {
+                                               ConsumeConcurrentlyContext consumeConcurrentlyContext) {
         try {
             for (MessageExt messageExt : list) {
                 String message = new String(messageExt.getBody());

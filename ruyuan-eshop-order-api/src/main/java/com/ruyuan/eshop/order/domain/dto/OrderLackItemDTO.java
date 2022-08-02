@@ -22,7 +22,7 @@ public class OrderLackItemDTO implements Serializable {
     private List<AfterSaleItemDTO> afterSaleItems;
 
     /**
-     * 售后支付信息
+     * 售后退款信息
      */
-    private List<AfterSalePayDTO> afterSalePays;
+    private List<AfterSaleRefundDTO> afterSaleRefunds;
 }

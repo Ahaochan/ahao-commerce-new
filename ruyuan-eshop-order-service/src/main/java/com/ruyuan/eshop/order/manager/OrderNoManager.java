@@ -13,7 +13,7 @@ public interface OrderNoManager {
      *
      * @param orderNoType 订单号类型
      * @param userId      用户ID
-     * @return
+     * @return 订单ID
      */
     String genOrderId(Integer orderNoType, String userId);
 

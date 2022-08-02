@@ -29,33 +29,27 @@ public interface ProductStockMapper extends BaseMapper<ProductStockDO> {
      *
      * @param skuCode
      * @param saleQuantity
-     * @param originSaleStock
      * @return
      */
-    int deductSaleStock(@Param("skuCode") String skuCode, @Param("saleQuantity") Integer saleQuantity
-            , @Param("originSaleStock") Integer originSaleStock);
+    int deductSaleStock(@Param("skuCode") String skuCode, @Param("saleQuantity") Integer saleQuantity);
 
     /**
      * 增加销售库存
      *
      * @param skuCode
      * @param saleQuantity
-     * @param originSaledStock
      * @return
      */
-    int increaseSaledStock(@Param("skuCode") String skuCode, @Param("saleQuantity") Integer saleQuantity
-            , @Param("originSaledStock") Integer originSaledStock);
+    int increaseSaledStock(@Param("skuCode") String skuCode, @Param("saleQuantity") Integer saleQuantity);
 
     /**
      * 还原销售库存
      *
      * @param skuCode
      * @param saleQuantity
-     * @param originSaleStock
      * @return
      */
-    int restoreSaleStock(@Param("skuCode") String skuCode, @Param("saleQuantity") Integer saleQuantity,
-                         @Param("originSaleStock") Integer originSaleStock);
+    int restoreSaleStock(@Param("skuCode") String skuCode, @Param("saleQuantity") Integer saleQuantity);
 
     /**
      * 释放商品库存

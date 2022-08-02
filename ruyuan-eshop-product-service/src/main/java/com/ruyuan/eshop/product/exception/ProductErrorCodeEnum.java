@@ -12,6 +12,7 @@ import com.ruyuan.eshop.common.exception.BaseErrorCodeEnum;
 public enum ProductErrorCodeEnum implements BaseErrorCodeEnum {
 
     SKU_CODE_IS_NULL("200001", "sku编号不能为空"),
+    PRE_SALE_INFO_IS_NULL("200002", "预售商品信息不能为空"),
     ;
 
     private String errorCode;

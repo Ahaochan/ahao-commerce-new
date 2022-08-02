@@ -11,12 +11,12 @@ import java.util.Map;
  */
 public enum AmountTypeEnum {
 
-    ORIGIN_PAY_AMOUNT(10, "订单支付原价"), // SUM(每个商品*单价)
-    COUPON_DISCOUNT_AMOUNT(20, "优惠券抵扣金额"), // 券可以抵扣多少钱
-    SHIPPING_AMOUNT(30, "运费"), // 运费是根据你的配送地址和发货仓库（配送区域）计算出来的
-    BOX_AMOUNT(40, "包装费"), // 针对你的商品可能存在一个包装费
-    REAL_PAY_AMOUNT(50, "实付金额"), // 订单支付原价 - 优惠券抵扣金额 + 运费 + 包装费 = 实付金额
-    OTHER_AMOUNT(127, "其他费用"); // 可能存在其他费用
+    ORIGIN_PAY_AMOUNT(10, "订单支付原价"),
+    COUPON_DISCOUNT_AMOUNT(20, "优惠券抵扣金额"),
+    SHIPPING_AMOUNT(30, "运费"),
+    BOX_AMOUNT(40, "包装费"),
+    REAL_PAY_AMOUNT(50, "实付金额"),
+    OTHER_AMOUNT(127, "其他费用");
 
     private Integer code;
 

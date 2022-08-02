@@ -13,7 +13,7 @@ public enum OrderCancelTypeEnum {
 
     USER_CANCELED(0, "用户手动取消"),
     TIMEOUT_CANCELED(1, "超时未支付自动取消"),
-    CUSTOMER_CANCELED(2, "用户授权客服取消");
+    ;
 
     private Integer code;
 

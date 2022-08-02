@@ -9,24 +9,26 @@ import com.ruyuan.eshop.common.enums.OrderStatusChangeEnum;
 import com.ruyuan.eshop.common.message.PaidOrderSuccessMessage;
 import com.ruyuan.eshop.common.page.PagingInfo;
 import com.ruyuan.eshop.fulfill.api.FulfillApi;
-import com.ruyuan.eshop.fulfill.domain.event.OrderDeliveredWmsEvent;
-import com.ruyuan.eshop.fulfill.domain.event.OrderOutStockWmsEvent;
-import com.ruyuan.eshop.fulfill.domain.event.OrderSignedWmsEvent;
+import com.ruyuan.eshop.fulfill.domain.event.OrderSignedEvent;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
-import com.ruyuan.eshop.fulfill.domain.request.TriggerOrderWmsShipEventRequest;
+import com.ruyuan.eshop.fulfill.domain.request.TriggerOrderAfterFulfillEventRequest;
+import com.ruyuan.eshop.fulfill.dto.OrderFulfillDTO;
 import com.ruyuan.eshop.order.api.OrderApi;
 import com.ruyuan.eshop.order.api.OrderQueryApi;
 import com.ruyuan.eshop.order.dao.OrderInfoDAO;
 import com.ruyuan.eshop.order.domain.dto.*;
 import com.ruyuan.eshop.order.domain.entity.OrderInfoDO;
-import com.ruyuan.eshop.order.domain.query.AcceptOrderQuery;
+import com.ruyuan.eshop.order.domain.query.OrderQuery;
 import com.ruyuan.eshop.order.domain.request.*;
 import com.ruyuan.eshop.order.mq.producer.DefaultProducer;
 import com.ruyuan.eshop.order.service.impl.OrderFulFillServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 /**
@@ -63,164 +65,114 @@ public class OrderTestController {
 
     /**
      * 测试生成新的订单号
-     *
-     * @param genOrderIdRequest
-     * @return
      */
     @SentinelResource("OrderTestController:genOrderId")
     @PostMapping("/genOrderId")
     public JsonResult<GenOrderIdDTO> genOrderId(@RequestBody GenOrderIdRequest genOrderIdRequest) {
-        JsonResult<GenOrderIdDTO> genOrderIdDTO = orderApi.genOrderId(genOrderIdRequest);
-        return genOrderIdDTO;
+        return orderApi.genOrderId(genOrderIdRequest);
     }
 
     /**
      * 测试提交订单
-     *
-     * @param createOrderRequest
-     * @return
      */
     @SentinelResource("OrderTestController:createOrder")
     @PostMapping("/createOrder")
     public JsonResult<CreateOrderDTO> createOrder(@RequestBody CreateOrderRequest createOrderRequest) {
-        JsonResult<CreateOrderDTO> createOrderDTO = orderApi.createOrder(createOrderRequest);
-        return createOrderDTO;
+        return orderApi.createOrder(createOrderRequest);
     }
 
     /**
      * 测试预支付订单
-     *
-     * @param prePayOrderRequest
-     * @return
      */
     @SentinelResource("OrderTestController:prePayOrder")
     @PostMapping("/prePayOrder")
     public JsonResult<PrePayOrderDTO> prePayOrder(@RequestBody PrePayOrderRequest prePayOrderRequest) {
-        JsonResult<PrePayOrderDTO> prePayOrderDTO = orderApi.prePayOrder(prePayOrderRequest);
-        return prePayOrderDTO;
+        return orderApi.prePayOrder(prePayOrderRequest);
     }
 
     /**
      * 测试支付回调
-     *
-     * @param payCallbackRequest
-     * @return
      */
     @SentinelResource("OrderTestController:payCallback")
     @PostMapping("/payCallback")
     public JsonResult<Boolean> payCallback(@RequestBody PayCallbackRequest payCallbackRequest) {
-        JsonResult<Boolean> result = orderApi.payCallback(payCallbackRequest);
-        return result;
+        return orderApi.payCallback(payCallbackRequest);
     }
 
     /**
      * 移除订单
-     *
-     * @param request
-     * @return
      */
     @PostMapping("/removeOrders")
     public JsonResult<RemoveOrderDTO> removeOrders(@RequestBody RemoveOrderRequest request) {
-        JsonResult<RemoveOrderDTO> result = orderApi.removeOrders(request);
-        return result;
+        return orderApi.removeOrders(request);
     }
 
     /**
      * 调整订单配置地址
-     *
-     * @param request
-     * @return
      */
     @PostMapping("/adjustDeliveryAddress")
     public JsonResult<AdjustDeliveryAddressDTO> adjustDeliveryAddress(@RequestBody AdjustDeliveryAddressRequest request) {
-        JsonResult<AdjustDeliveryAddressDTO> result = orderApi.adjustDeliveryAddress(request);
-        return result;
+        return orderApi.adjustDeliveryAddress(request);
     }
 
     /**
-     * 订单列表查询
-     *
-     * @param acceptOrderQuery
-     * @return
+     * 订单列表查询 v1
      */
-    @PostMapping("/listOrders")
-    public JsonResult<PagingInfo<OrderListDTO>> listOrders(@RequestBody AcceptOrderQuery acceptOrderQuery) {
-        JsonResult<PagingInfo<OrderListDTO>> result = queryApi.listOrders(acceptOrderQuery);
-        return result;
+    @PostMapping("/v1/listOrders")
+    public JsonResult<PagingInfo<OrderListDTO>> listOrdersV1(@RequestBody OrderQuery query) {
+        return queryApi.listOrdersV1(query);
     }
 
     /**
-     * 订单详情
-     *
-     * @param orderId
-     * @return
+     * 订单列表查询 v2 toC
      */
-    @GetMapping("/orderDetail")
-    public JsonResult<OrderDetailDTO> orderDetail(String orderId) {
-        JsonResult<OrderDetailDTO> result = queryApi.orderDetail(orderId);
-        return result;
+    @PostMapping("/v2/toC/listOrders")
+    public JsonResult<PagingInfo<OrderDetailDTO>> listOrdersV2toC(@RequestBody OrderQuery query) {
+        return queryApi.listOrdersV2(query, false);
     }
 
     /**
-     * 触发订单发货出库事件
-     *
-     * @param event
-     * @return
+     * 订单列表查询 v2 toB
      */
-    @PostMapping("/triggerOutStockEvent")
-    public JsonResult<Boolean> triggerOrderOutStockWmsEvent(@RequestParam("orderId") String orderId
-            , @RequestParam("fulfillId") String fulfillId, @RequestBody OrderOutStockWmsEvent event) {
-        log.info("orderId={},fulfillId={},event={}", orderId, fulfillId, JSONObject.toJSONString(event));
-
-        TriggerOrderWmsShipEventRequest request = new TriggerOrderWmsShipEventRequest(orderId
-                , fulfillId, OrderStatusChangeEnum.ORDER_OUT_STOCKED, event);
-
-        JsonResult<Boolean> result = fulfillApi.triggerOrderWmsShipEvent(request);
-        return result;
+    @PostMapping("/v2/toB/listOrders")
+    public JsonResult<PagingInfo<OrderDetailDTO>> listOrdersV2ToB(@RequestBody OrderQuery query) {
+        return queryApi.listOrdersV2(query, true);
     }
 
     /**
-     * 触发订单配送事件
-     *
-     * @param event
-     * @return
+     * 订单详情 v1
      */
-    @PostMapping("/triggerDeliveredWmsEvent")
-    public JsonResult<Boolean> triggerOrderDeliveredWmsEvent(@RequestParam("orderId") String orderId
-            , @RequestParam("fulfillId") String fulfillId, @RequestBody OrderDeliveredWmsEvent event) {
-        log.info("orderId={},fulfillId={},event={}", orderId, fulfillId, JSONObject.toJSONString(event));
+    @GetMapping("/v1/orderDetail")
+    public JsonResult<OrderDetailDTO> orderDetailV1(String orderId) {
+        return queryApi.orderDetailV1(orderId);
+    }
 
-        TriggerOrderWmsShipEventRequest request = new TriggerOrderWmsShipEventRequest(orderId
-                , fulfillId, OrderStatusChangeEnum.ORDER_DELIVERED, event);
-
-        JsonResult<Boolean> result = fulfillApi.triggerOrderWmsShipEvent(request);
-        return result;
+    /**
+     * 订单详情 v2
+     */
+    @PostMapping("/v2/orderDetail")
+    public JsonResult<OrderDetailDTO> orderDetailV2(@RequestBody OrderDetailRequest request) {
+        return queryApi.orderDetailV2(request);
     }
 
     /**
      * 触发订单签收事件
-     *
-     * @param event
-     * @return
      */
     @PostMapping("/triggerSignedWmsEvent")
-    public JsonResult<Boolean> triggerOrderSignedWmsEvent(@RequestParam("orderId") String orderId
-            , @RequestParam("fulfillId") String fulfillId, @RequestBody OrderSignedWmsEvent event) {
+    public JsonResult<Boolean> triggerOrderSignedWmsEvent(@RequestBody OrderSignedEvent event) {
+        String orderId = event.getOrderId();
+        String fulfillId = event.getFulfillId();
         log.info("orderId={},fulfillId={},event={}", orderId, fulfillId, JSONObject.toJSONString(event));
 
-        TriggerOrderWmsShipEventRequest request = new TriggerOrderWmsShipEventRequest(orderId
+        TriggerOrderAfterFulfillEventRequest request = new TriggerOrderAfterFulfillEventRequest(orderId
                 , fulfillId, OrderStatusChangeEnum.ORDER_SIGNED, event);
 
-        JsonResult<Boolean> result = fulfillApi.triggerOrderWmsShipEvent(request);
-        return result;
+        return fulfillApi.triggerOrderWmsShipEvent(request);
     }
 
 
     /**
      * 触发订单已支付事件
-     *
-     * @param orderId
-     * @return
      */
     @GetMapping("/triggerPaidEvent")
     public JsonResult<Boolean> triggerOrderPaidEvent(@RequestParam("orderId") String orderId) {
@@ -235,9 +187,6 @@ public class OrderTestController {
 
     /**
      * 触发接收订单履约
-     *
-     * @param orderId
-     * @return
      */
     @GetMapping("/triggerReceiveOrderFulFill")
     public JsonResult<Boolean> triggerReceiveOrderFulFill(@RequestParam("orderId") String orderId,
@@ -253,5 +202,14 @@ public class OrderTestController {
         request.setTmsException(tmsException);
 
         return fulfillApi.receiveOrderFulFill(request);
+    }
+
+    /**
+     * 查询履约单
+     */
+    @GetMapping("/orderFulfill/list")
+    public JsonResult<List<OrderFulfillDTO>> listOrderFulfills(@RequestParam("orderId") String orderId) {
+        log.info("orderId={}", orderId);
+        return  fulfillApi.listOrderFulfills(orderId);
     }
 }

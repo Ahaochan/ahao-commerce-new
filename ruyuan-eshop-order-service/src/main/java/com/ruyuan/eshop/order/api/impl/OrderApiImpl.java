@@ -83,7 +83,6 @@ public class OrderApiImpl implements OrderApi {
      * 预支付订单接口
      *
      * @param prePayOrderRequest 预支付订单请求入参
-     * @return
      */
     @Override
     public JsonResult<PrePayOrderDTO> prePayOrder(PrePayOrderRequest prePayOrderRequest) {
@@ -104,7 +103,6 @@ public class OrderApiImpl implements OrderApi {
      * 支付回调接口
      *
      * @param payCallbackRequest 支付系统回调入参
-     * @return
      */
     @Override
     public JsonResult<Boolean> payCallback(PayCallbackRequest payCallbackRequest) {
@@ -124,7 +122,6 @@ public class OrderApiImpl implements OrderApi {
      * 移除订单
      *
      * @param removeOrderRequest 移除订单请求入参
-     * @return
      */
     @Override
     public JsonResult<RemoveOrderDTO> removeOrders(RemoveOrderRequest removeOrderRequest) {
@@ -155,7 +152,6 @@ public class OrderApiImpl implements OrderApi {
      * 修改地址
      *
      * @param adjustDeliveryAddressRequest 修改地址请求入参
-     * @return
      */
     @Override
     public JsonResult<AdjustDeliveryAddressDTO> adjustDeliveryAddress(AdjustDeliveryAddressRequest adjustDeliveryAddressRequest) {

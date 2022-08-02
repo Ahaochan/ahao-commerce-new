@@ -55,4 +55,9 @@ public class ProductSkuDTO implements Serializable {
      */
     private Integer purchasePrice;
 
+    /**
+     * 预售商品信息
+     */
+    private PreSaleInfoDTO preSaleInfo;
+
 }

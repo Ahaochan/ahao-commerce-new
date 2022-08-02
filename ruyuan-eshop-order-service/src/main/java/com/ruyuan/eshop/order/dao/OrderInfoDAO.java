@@ -4,7 +4,7 @@ package com.ruyuan.eshop.order.dao;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.conditions.query.LambdaQueryChainWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruyuan.eshop.common.dao.BaseDAO;
 import com.ruyuan.eshop.common.enums.DeleteStatusEnum;
@@ -32,14 +32,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class OrderInfoDAO extends BaseDAO<OrderInfoMapper, OrderInfoDO> {
 
-    @Autowired
+    @Autowired(required = false)
     private OrderInfoMapper orderInfoMapper;
 
     /**
      * 根据订单号查询订单号
-     *
-     * @param orderIds
-     * @return
      */
     public List<OrderInfoDO> listByOrderIds(List<String> orderIds) {
         LambdaQueryWrapper<OrderInfoDO> queryWrapper = new LambdaQueryWrapper<>();
@@ -61,9 +58,6 @@ public class OrderInfoDAO extends BaseDAO<OrderInfoMapper, OrderInfoDO> {
 
     /**
      * 根据订单号查询订单
-     *
-     * @param orderId
-     * @return
      */
     public OrderInfoDO getByOrderId(String orderId) {
         LambdaQueryWrapper<OrderInfoDO> queryWrapper = new LambdaQueryWrapper<>();
@@ -73,10 +67,6 @@ public class OrderInfoDAO extends BaseDAO<OrderInfoMapper, OrderInfoDO> {
 
     /**
      * 根据订单号更新订单
-     *
-     * @param orderInfoDO
-     * @param orderId
-     * @return
      */
     public boolean updateByOrderId(OrderInfoDO orderInfoDO, String orderId) {
         LambdaUpdateWrapper<OrderInfoDO> updateWrapper = new LambdaUpdateWrapper<>();
@@ -87,10 +77,6 @@ public class OrderInfoDAO extends BaseDAO<OrderInfoMapper, OrderInfoDO> {
 
     /**
      * 根据父订单号更新订单
-     *
-     * @param orderInfoDO
-     * @param orderIds
-     * @return
      */
     public boolean updateBatchByOrderIds(OrderInfoDO orderInfoDO, List<String> orderIds) {
         LambdaUpdateWrapper<OrderInfoDO> updateWrapper = new LambdaUpdateWrapper<>();
@@ -100,8 +86,6 @@ public class OrderInfoDAO extends BaseDAO<OrderInfoMapper, OrderInfoDO> {
 
     /**
      * 统计子订单数量
-     * @param orderId
-     * @return
      */
     public List<String> listSubOrderIds(String orderId) {
         LambdaQueryWrapper<OrderInfoDO> queryWrapper = new LambdaQueryWrapper<>();
@@ -112,9 +96,6 @@ public class OrderInfoDAO extends BaseDAO<OrderInfoMapper, OrderInfoDO> {
 
     /**
      * 根据父订单号查询子订单号
-     *
-     * @param orderId
-     * @return
      */
     public List<OrderInfoDO> listByParentOrderId(String orderId) {
         LambdaQueryWrapper<OrderInfoDO> queryWrapper = new LambdaQueryWrapper<>();
@@ -124,9 +105,6 @@ public class OrderInfoDAO extends BaseDAO<OrderInfoMapper, OrderInfoDO> {
 
     /**
      * 根据条件分页查询订单列表
-     *
-     * @param query
-     * @return
      */
     public Page<OrderListDTO> listByPage(OrderListQueryDTO query) {
         Page<OrderListDTO> page = new Page<>(query.getPageNo(), query.getPageSize());
@@ -135,9 +113,6 @@ public class OrderInfoDAO extends BaseDAO<OrderInfoMapper, OrderInfoDO> {
 
     /**
      * 更新订单扩展信息
-     *
-     * @param orderId
-     * @return
      */
     public boolean updateOrderExtJson(String orderId, OrderExtJsonDTO extJson) {
         String extJsonStr = JSONObject.toJSONString(extJson);
@@ -147,11 +122,6 @@ public class OrderInfoDAO extends BaseDAO<OrderInfoMapper, OrderInfoDO> {
         return this.update(updateWrapper);
     }
 
-    public boolean updateOrderInfo(OrderInfoDO orderInfoDO) {
-        UpdateWrapper<OrderInfoDO> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("order_id", orderInfoDO.getOrderId());
-        return update(orderInfoDO, updateWrapper);
-    }
 
     public boolean updateOrderStatus(String orderId, Integer fromStatus, Integer toStatus) {
         LambdaUpdateWrapper<OrderInfoDO> updateWrapper = new LambdaUpdateWrapper<>();
@@ -165,12 +135,35 @@ public class OrderInfoDAO extends BaseDAO<OrderInfoMapper, OrderInfoDO> {
 
     /**
      * 扫描所有未支付订单
-     *
-     * @return
      */
     public List<OrderInfoDO> listAllUnPaid() {
         LambdaQueryWrapper<OrderInfoDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.in(OrderInfoDO::getOrderStatus, OrderStatusEnum.unPaidStatus());
         return list(queryWrapper);
+    }
+
+    /**
+     * 根据orderId查询全部主单和子单
+     */
+    public List<OrderInfoDO> getAllByOrderId(String orderId) {
+        LambdaQueryWrapper<OrderInfoDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(OrderInfoDO::getOrderId, orderId)
+                .or()
+                .eq(OrderInfoDO::getParentOrderId, orderId);
+        return list(queryWrapper);
+    }
+
+    /**
+     * 分页查询订单
+     *
+     * 仅适用于单库单表，且主键id连续的情况，解决深分页的问题
+     *
+     * @param offset 偏移量，从0开始
+     * @param limit limit
+     * @return 结果
+     */
+    public List<OrderInfoDO> getPageBy(long offset, long limit) {
+        return new LambdaQueryChainWrapper<>(orderInfoMapper)
+                .ge(OrderInfoDO::getId, offset+1).le(OrderInfoDO::getId, offset+limit).list();
     }
 }

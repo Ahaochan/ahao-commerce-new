@@ -2,10 +2,15 @@ package com.ruyuan.eshop.order.service.impl;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.ruyuan.eshop.common.bean.SpringApplicationContext;
+import com.ruyuan.eshop.common.enums.BusinessIdentifierEnum;
 import com.ruyuan.eshop.common.enums.OrderStatusEnum;
+import com.ruyuan.eshop.common.enums.OrderTypeEnum;
 import com.ruyuan.eshop.common.page.PagingInfo;
+import com.ruyuan.eshop.common.tuple.Pair;
 import com.ruyuan.eshop.common.utils.LoggerFormat;
 import com.ruyuan.eshop.common.utils.ParamCheckUtil;
+import com.ruyuan.eshop.order.constants.OrderQueryFiledNameConstant;
 import com.ruyuan.eshop.order.converter.OrderConverter;
 import com.ruyuan.eshop.order.dao.*;
 import com.ruyuan.eshop.order.domain.dto.OrderDetailDTO;
@@ -13,20 +18,27 @@ import com.ruyuan.eshop.order.domain.dto.OrderLackItemDTO;
 import com.ruyuan.eshop.order.domain.dto.OrderListDTO;
 import com.ruyuan.eshop.order.domain.dto.OrderListQueryDTO;
 import com.ruyuan.eshop.order.domain.entity.*;
-import com.ruyuan.eshop.order.domain.query.AcceptOrderQuery;
 import com.ruyuan.eshop.order.domain.query.OrderQuery;
-import com.ruyuan.eshop.order.enums.BusinessIdentifierEnum;
-import com.ruyuan.eshop.order.enums.OrderTypeEnum;
+import com.ruyuan.eshop.order.domain.request.OrderDetailRequest;
+import com.ruyuan.eshop.order.elasticsearch.EsClientService;
+import com.ruyuan.eshop.order.elasticsearch.dto.EsResponseDTO;
+import com.ruyuan.eshop.order.elasticsearch.enums.EsIndexNameEnum;
+import com.ruyuan.eshop.order.elasticsearch.query.OrderListQueryIndex;
+import com.ruyuan.eshop.order.enums.OrderQueryDataTypeEnums;
+import com.ruyuan.eshop.order.enums.OrderQuerySortField;
 import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
 import com.ruyuan.eshop.order.service.AfterSaleQueryService;
 import com.ruyuan.eshop.order.service.OrderLackService;
 import com.ruyuan.eshop.order.service.OrderQueryService;
 import lombok.extern.slf4j.Slf4j;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -49,13 +61,7 @@ public class OrderQueryServiceImpl implements OrderQueryService {
     private OrderPaymentDetailDAO orderPaymentDetailDAO;
 
     @Autowired
-    private OrderSnapshotDAO orderSnapshotDAO;
-
-    @Autowired
     private OrderAmountDAO orderAmountDAO;
-
-    @Autowired
-    private OrderOperateLogDAO orderOperateLogDAO;
 
     @Autowired
     private AfterSaleQueryService afterSaleQueryService;
@@ -65,31 +71,47 @@ public class OrderQueryServiceImpl implements OrderQueryService {
 
     @Autowired
     private OrderConverter orderConverter;
+    /**
+     * 订单快照数据存储的DAO组件
+     */
+    @Autowired
+    private OrderSnapshotDAO orderSnapshotDAO;
+    /**
+     * 订单操作日志存储的DAO组件
+     */
+    @Autowired
+    private OrderOperateLogDAO orderOperateLogDAO;
+
+    @Autowired
+    private EsClientService esClientService;
+
+    @Autowired
+    private SpringApplicationContext springApplicationContext;
 
 
     @Override
-    public void checkQueryParam(AcceptOrderQuery acceptOrderQuery) {
+    public void checkQueryParam(OrderQuery query) {
 
-        ParamCheckUtil.checkObjectNonNull(acceptOrderQuery.getBusinessIdentifier(), OrderErrorCodeEnum.BUSINESS_IDENTIFIER_IS_NULL);
-        checkIntAllowableValues(acceptOrderQuery.getBusinessIdentifier(), BusinessIdentifierEnum.allowableValues(), "businessIdentifier");
-        checkIntSetAllowableValues(acceptOrderQuery.getOrderTypes(), OrderTypeEnum.allowableValues(), "orderTypes");
-        checkIntSetAllowableValues(acceptOrderQuery.getOrderStatus(), OrderStatusEnum.allowableValues(), "orderStatus");
+        ParamCheckUtil.checkObjectNonNull(query.getBusinessIdentifier(), OrderErrorCodeEnum.BUSINESS_IDENTIFIER_IS_NULL);
+        checkIntAllowableValues(query.getBusinessIdentifier(), BusinessIdentifierEnum.allowableValues(), "businessIdentifier");
+        checkIntSetAllowableValues(query.getOrderTypes(), OrderTypeEnum.allowableValues(), "orderTypes");
+        checkIntSetAllowableValues(query.getOrderStatus(), OrderStatusEnum.allowableValues(), "orderStatus");
 
 
         Integer maxSize = OrderQuery.MAX_PAGE_SIZE;
-        checkSetMaxSize(acceptOrderQuery.getOrderIds(), maxSize, "orderIds");
-        checkSetMaxSize(acceptOrderQuery.getSellerIds(), maxSize, "sellerIds");
-        checkSetMaxSize(acceptOrderQuery.getParentOrderIds(), maxSize, "parentOrderIds");
-        checkSetMaxSize(acceptOrderQuery.getReceiverNames(), maxSize, "receiverNames");
-        checkSetMaxSize(acceptOrderQuery.getReceiverPhones(), maxSize, "receiverPhones");
-        checkSetMaxSize(acceptOrderQuery.getTradeNos(), maxSize, "tradeNos");
-        checkSetMaxSize(acceptOrderQuery.getUserIds(), maxSize, "userIds");
-        checkSetMaxSize(acceptOrderQuery.getSkuCodes(), maxSize, "skuCodes");
-        checkSetMaxSize(acceptOrderQuery.getProductNames(), maxSize, "productNames");
+        checkSetMaxSize(query.getOrderIds(), maxSize, "orderIds");
+        checkSetMaxSize(query.getSellerIds(), maxSize, "sellerIds");
+        checkSetMaxSize(query.getParentOrderIds(), maxSize, "parentOrderIds");
+        checkSetMaxSize(query.getReceiverNames(), maxSize, "receiverNames");
+        checkSetMaxSize(query.getReceiverPhones(), maxSize, "receiverPhones");
+        checkSetMaxSize(query.getTradeNos(), maxSize, "tradeNos");
+        checkSetMaxSize(query.getUserIds(), maxSize, "userIds");
+        checkSetMaxSize(query.getSkuCodes(), maxSize, "skuCodes");
+        checkSetMaxSize(query.getProductNames(), maxSize, "productNames");
     }
 
     @Override
-    public PagingInfo<OrderListDTO> executeListQuery(OrderQuery query) {
+    public PagingInfo<OrderListDTO> executeListQueryV1(OrderQuery query) {
 
         //第一阶段采用很low的连表查询，连接5张表，即使加索引，只要数据量稍微大一点查询性能就很低了
         //第二阶段会接入es，优化这块的查询性能
@@ -112,32 +134,61 @@ public class OrderQueryServiceImpl implements OrderQueryService {
                 , page.getTotal(), (int) page.getCurrent(), (int) page.getSize());
     }
 
-    private void checkIntAllowableValues(Integer i, Set<Integer> allowableValues, String paramName) {
-        OrderErrorCodeEnum orderErrorCodeEnum = OrderErrorCodeEnum.ENUM_PARAM_MUST_BE_IN_ALLOWABLE_VALUE;
-        ParamCheckUtil.checkIntAllowableValues(i
-                , allowableValues,
-                orderErrorCodeEnum, paramName, allowableValues);
-    }
+    @Override
+    public PagingInfo<OrderDetailDTO> executeListQueryV2(OrderQuery query, Boolean downgrade
+            , OrderQueryDataTypeEnums... queryDataTypes) throws Exception {
 
-    private void checkIntSetAllowableValues(Set<Integer> set, Set<Integer> allowableValues, String paramName) {
-        OrderErrorCodeEnum orderErrorCodeEnum = OrderErrorCodeEnum.ENUM_PARAM_MUST_BE_IN_ALLOWABLE_VALUE;
-        ParamCheckUtil.checkIntSetAllowableValues(set
-                , allowableValues,
-                orderErrorCodeEnum, paramName, allowableValues);
-    }
+        log.info(LoggerFormat.build()
+                .remark("order:executeListQuery_v2->request")
+                .data("downgrade", downgrade)
+                .finish());
 
-    private void checkSetMaxSize(Set setParam, Integer maxSize, String paramName) {
-        OrderErrorCodeEnum orderErrorCodeEnum = OrderErrorCodeEnum.COLLECTION_PARAM_CANNOT_BEYOND_MAX_SIZE;
-        ParamCheckUtil.checkSetMaxSize(setParam, maxSize,
-                orderErrorCodeEnum, paramName
-                , maxSize);
+        //1、组装业务查询规则
+        if (CollectionUtils.isEmpty(query.getOrderStatus())) {
+            //不展示无效订单
+            query.setOrderStatus(OrderStatusEnum.validStatus());
+        }
 
+        SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder();
+
+        // 构建条件查询
+        BoolQueryBuilder boolQueryBuilder = buildBoolQueryBuilder(query);
+        searchSourceBuilder.query(boolQueryBuilder);
+
+        // 设置排序
+        setSort(searchSourceBuilder, query);
+
+        // 设置分页
+        setPage(searchSourceBuilder, query);
+
+        // 查询es
+        EsResponseDTO esResponseDTO = esClientService.search(EsIndexNameEnum.ORDER_LIST_QUERY_INDEX, searchSourceBuilder);
+
+        log.info(LoggerFormat.build()
+                .remark("order:executeListQuery_v2->es->response")
+                .data("esResponseDTO", esResponseDTO)
+                .data("downgrade", downgrade)
+                .finish());
+        Long total = esResponseDTO.getTotal();
+
+        List<OrderDetailDTO> orderDetailDTOs = new ArrayList<>(total.intValue());
+        if (total > 0) {
+            List<OrderListQueryIndex> queryIndices = esResponseDTO.getData().toJavaList(OrderListQueryIndex.class);
+            // 从数据库/es查询订单详情DTO
+            queryIndices.forEach(index -> {
+                orderDetailDTOs.add(buildOrderDetail(index.getOrderId(), downgrade, queryDataTypes));
+            });
+        }
+
+        // 转化
+        return PagingInfo.toResponse(orderDetailDTOs
+                , total, query.getPageNo(), query.getPageSize());
     }
 
     @Override
-    public OrderDetailDTO orderDetail(String orderId) {
+    public OrderDetailDTO orderDetailV1(String orderId) {
         log.info(LoggerFormat.build()
-                .remark("orderDetail->request")
+                .remark("orderDetail_v1->request")
                 .data("orderId", orderId)
                 .finish());
 
@@ -166,7 +217,7 @@ public class OrderQueryServiceImpl implements OrderQueryService {
         List<OrderOperateLogDO> orderOperateLogs = orderOperateLogDAO.listByOrderId(orderId);
 
         //8、查询订单快照
-        List<OrderSnapshotDO> orderSnapshots = orderSnapshotDAO.listByOrderId(orderId);
+        List<OrderSnapshotDO> orderSnapshots = orderSnapshotDAO.queryOrderSnapshotByOrderId(orderId);
 
         //9、查询缺品退款信息
         List<OrderLackItemDTO> lackItems = null;
@@ -189,4 +240,160 @@ public class OrderQueryServiceImpl implements OrderQueryService {
                 .build();
     }
 
+    @Override
+    public OrderDetailDTO orderDetailV2(OrderDetailRequest request) {
+        log.info(LoggerFormat.build()
+                .remark("orderDetail_v2->request")
+                .data("orderId", request.getOrderId())
+                .data("queryDataTypes", request.getQueryDataTypes())
+                .finish());
+        try {
+            // 构建订单详情DTO
+            return buildOrderDetail(request.getOrderId(), false, request.getQueryDataTypes());
+        } catch (Exception e) {
+            log.error("查询订单详情异常，err={}", e);
+            log.info("进行降级，查询es");
+            return buildOrderDetail(request.getOrderId(), true, request.getQueryDataTypes());
+        }
+    }
+
+    /**
+     * 构建订单详情DTO
+     *
+     * @param orderId        订单id
+     * @param downgrade      降级开关
+     * @param queryDataTypes 查询项
+     */
+    private OrderDetailDTO buildOrderDetail(String orderId, boolean downgrade, OrderQueryDataTypeEnums... queryDataTypes) {
+        if (Objects.isNull(queryDataTypes) || queryDataTypes.length == 0) {
+            queryDataTypes = new OrderQueryDataTypeEnums[]{OrderQueryDataTypeEnums.ORDER};
+        }
+        OrderDetailBuilder orderDetailBuilder =
+                springApplicationContext.getBean(OrderDetailBuilder.class);
+        if (downgrade) {
+            orderDetailBuilder.setDowngrade();
+        }
+        for (OrderQueryDataTypeEnums dataType : queryDataTypes) {
+            orderDetailBuilder.buildOrderInfo(dataType, orderId)
+                    .buildOrderItems(dataType, orderId)
+                    .buildOrderAmountDetails(dataType, orderId)
+                    .buildOrderDeliveryDetail(dataType, orderId)
+                    .buildOrderPaymentDetails(dataType, orderId)
+                    .buildOrderAmounts(dataType, orderId)
+                    .buildOrderOperateLogs(dataType, orderId)
+                    .buildOrderSnapshots(dataType, orderId)
+                    .buildOrderLackItems(dataType, orderId);
+        }
+
+        if (orderDetailBuilder.allNull()) {
+            return null;
+        }
+
+        return orderDetailBuilder.build();
+    }
+
+    /**
+     * 设置es排序
+     */
+    private void setSort(SearchSourceBuilder searchSourceBuilder, OrderQuery query) {
+        if (query.getSort().equals(OrderQuerySortField.PAY_TIME_DESC)) {
+            searchSourceBuilder.sort(OrderQueryFiledNameConstant.PAY_TIME, SortOrder.DESC);
+        } else {
+            searchSourceBuilder.sort(OrderQueryFiledNameConstant.CREATED_TIME, SortOrder.DESC);
+        }
+    }
+
+    /**
+     * 设置es分页
+     */
+    private void setPage(SearchSourceBuilder searchSourceBuilder, OrderQuery query) {
+        searchSourceBuilder.from((query.getPageNo() - 1) * query.getPageSize())
+                .size(query.getPageSize());
+    }
+
+    /**
+     * 构造订单列表查询es bool查询条件
+     */
+    private BoolQueryBuilder buildBoolQueryBuilder(OrderQuery query) {
+
+        BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
+        if (Objects.nonNull(query.getBusinessIdentifier())) {
+            boolQueryBuilder.must(QueryBuilders.termQuery(OrderQueryFiledNameConstant.BUSINESS_IDENTIFIER, query.getBusinessIdentifier()));
+        }
+        if (CollectionUtils.isNotEmpty(query.getOrderIds())) {
+            boolQueryBuilder.must(QueryBuilders.termsQuery(OrderQueryFiledNameConstant.ORDER_ID, query.getOrderIds()));
+        }
+        if (CollectionUtils.isNotEmpty(query.getOrderTypes())) {
+            boolQueryBuilder.must(QueryBuilders.termsQuery(OrderQueryFiledNameConstant.ORDER_TYPE, query.getOrderTypes()));
+        }
+        if (CollectionUtils.isNotEmpty(query.getSellerIds())) {
+            boolQueryBuilder.must(QueryBuilders.termsQuery(OrderQueryFiledNameConstant.SELLER_ID, query.getSellerIds()));
+        }
+        if (CollectionUtils.isNotEmpty(query.getParentOrderIds())) {
+            boolQueryBuilder.must(QueryBuilders.termsQuery(OrderQueryFiledNameConstant.PARENT_ORDER_ID, query.getParentOrderIds()));
+        }
+        if (CollectionUtils.isNotEmpty(query.getUserIds())) {
+            boolQueryBuilder.must(QueryBuilders.termsQuery(OrderQueryFiledNameConstant.USER_ID, query.getUserIds()));
+        }
+        if (CollectionUtils.isNotEmpty(query.getOrderStatus())) {
+            boolQueryBuilder.must(QueryBuilders.termsQuery(OrderQueryFiledNameConstant.ORDER_STATUS, query.getOrderStatus()));
+        }
+        if (CollectionUtils.isNotEmpty(query.getReceiverPhones())) {
+            boolQueryBuilder.must(QueryBuilders.termsQuery(OrderQueryFiledNameConstant.RECEIVER_PHONE, query.getReceiverPhones()));
+        }
+        if (CollectionUtils.isNotEmpty(query.getReceiverNames())) {
+            boolQueryBuilder.must(QueryBuilders.termsQuery(OrderQueryFiledNameConstant.RECEIVER_NAME, query.getReceiverNames()));
+        }
+        if (CollectionUtils.isNotEmpty(query.getTradeNos())) {
+            boolQueryBuilder.must(QueryBuilders.termsQuery(OrderQueryFiledNameConstant.TRADE_NO, query.getTradeNos()));
+        }
+        if (CollectionUtils.isNotEmpty(query.getSkuCodes())) {
+            boolQueryBuilder.must(QueryBuilders.termsQuery(OrderQueryFiledNameConstant.SKU_CODE, query.getSkuCodes()));
+        }
+        if (CollectionUtils.isNotEmpty(query.getProductNames())) {
+            boolQueryBuilder.must(QueryBuilders.termsQuery(OrderQueryFiledNameConstant.PRODUCT_NAME, query.getProductNames()));
+        }
+        if (CollectionUtils.isNotEmpty(query.getProductNames())) {
+            boolQueryBuilder.must(QueryBuilders.termsQuery(OrderQueryFiledNameConstant.PRODUCT_NAME, query.getProductNames()));
+        }
+        if (Objects.nonNull(query.getCreatedTimeInterval())) {
+            Pair<Date, Date> createdTimeInterval = query.getCreatedTimeInterval();
+            boolQueryBuilder.must(QueryBuilders.rangeQuery(OrderQueryFiledNameConstant.CREATED_TIME)
+                    .gte(createdTimeInterval.getLeft()).lte(createdTimeInterval.getRight()));
+        }
+        if (Objects.nonNull(query.getPayTimeInterval())) {
+            Pair<Date, Date> payTimeInterval = query.getPayTimeInterval();
+            boolQueryBuilder.must(QueryBuilders.rangeQuery(OrderQueryFiledNameConstant.PAY_TIME)
+                    .gte(payTimeInterval.getLeft()).lte(payTimeInterval.getRight()));
+        }
+        if (Objects.nonNull(query.getPayAmountInterval())) {
+            Pair<Integer, Integer> payAmountInterval = query.getPayAmountInterval();
+            boolQueryBuilder.must(QueryBuilders.rangeQuery(OrderQueryFiledNameConstant.PAY_AMOUNT)
+                    .gte(payAmountInterval.getLeft()).lte(payAmountInterval.getRight()));
+        }
+
+        return boolQueryBuilder;
+    }
+
+    private void checkIntAllowableValues(Integer i, Set<Integer> allowableValues, String paramName) {
+        OrderErrorCodeEnum orderErrorCodeEnum = OrderErrorCodeEnum.ENUM_PARAM_MUST_BE_IN_ALLOWABLE_VALUE;
+        ParamCheckUtil.checkIntAllowableValues(i
+                , allowableValues,
+                orderErrorCodeEnum, paramName, allowableValues);
+    }
+
+    private void checkIntSetAllowableValues(Set<Integer> set, Set<Integer> allowableValues, String paramName) {
+        OrderErrorCodeEnum orderErrorCodeEnum = OrderErrorCodeEnum.ENUM_PARAM_MUST_BE_IN_ALLOWABLE_VALUE;
+        ParamCheckUtil.checkIntSetAllowableValues(set
+                , allowableValues,
+                orderErrorCodeEnum, paramName, allowableValues);
+    }
+
+    private void checkSetMaxSize(Set setParam, Integer maxSize, String paramName) {
+        OrderErrorCodeEnum orderErrorCodeEnum = OrderErrorCodeEnum.COLLECTION_PARAM_CANNOT_BEYOND_MAX_SIZE;
+        ParamCheckUtil.checkSetMaxSize(setParam, maxSize,
+                orderErrorCodeEnum, paramName
+                , maxSize);
+
+    }
 }

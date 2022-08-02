@@ -43,4 +43,9 @@ public class ReturnGoodsOrderRequest implements Serializable {
      * 退货sku编号
      */
     private String skuCode;
+
+    /**
+     * 退货数量
+     */
+    private Integer returnQuantity;
 }

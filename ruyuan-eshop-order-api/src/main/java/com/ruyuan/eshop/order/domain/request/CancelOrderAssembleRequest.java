@@ -44,12 +44,15 @@ public class CancelOrderAssembleRequest implements Serializable {
      * 订单取消类型 0-手动取消 1-超时未支付
      */
     private Integer cancelType;
+
     /**
      * 售后支付单id
      */
     private Long afterSaleRefundId;
+
     /**
-     * 当前订单是否是退最后一笔
+     * 调用履约接口标记
      */
-    private boolean lastReturnGoods = false;
+    private Integer executeFulfillMark;
+
 }

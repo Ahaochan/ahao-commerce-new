@@ -1,6 +1,7 @@
 package com.ruyuan.eshop.order;
 
 import com.google.common.collect.Lists;
+import com.ruyuan.eshop.common.enums.OrderTypeEnum;
 import com.ruyuan.eshop.common.utils.RandomUtil;
 import com.ruyuan.eshop.order.batch.service.OrderDeliveryDetailBatchService;
 import com.ruyuan.eshop.order.batch.service.OrderInfoBatchService;
@@ -12,7 +13,6 @@ import com.ruyuan.eshop.order.domain.entity.OrderInfoDO;
 import com.ruyuan.eshop.order.domain.entity.OrderItemDO;
 import com.ruyuan.eshop.order.domain.entity.OrderPaymentDetailDO;
 import com.ruyuan.eshop.order.enums.OrderNoTypeEnum;
-import com.ruyuan.eshop.order.enums.OrderTypeEnum;
 import com.ruyuan.eshop.order.manager.OrderNoManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;

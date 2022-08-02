@@ -53,8 +53,20 @@ public class DefaultProducer {
      * @param topic   topic
      * @param message 消息
      */
-    public void sendMessage(String topic, String message, String type, String tags, String keys) {
-        sendMessage(topic, message, -1, type, tags, keys);
+    public void sendMessage(String topic, String message, String msgDesc, String tags, String keys) {
+        sendMessage(topic, message, -1, msgDesc, tags, keys, null, null);
+    }
+
+
+    /**
+     * 发送消息
+     *
+     * @param topic   topic
+     * @param message 消息
+     */
+    public void sendMessage(String topic, String message, Integer delayTimeLevel, String msgDesc,
+                            String tags, String keys) {
+        sendMessage(topic, message, delayTimeLevel, msgDesc, tags, keys, null, null);
     }
 
     /**
@@ -63,15 +75,21 @@ public class DefaultProducer {
      * @param topic   topic
      * @param message 消息
      */
-    public void sendMessage(String topic, String message, Integer delayTimeLevel, String type, String tags, String keys) {
+    public void sendMessage(String topic, String message, Integer delayTimeLevel, String msgDesc,
+                            String tags, String keys, MessageQueueSelector selector, Object arg) {
         Message msg = new MQMessage(topic, tags, keys, message.getBytes(StandardCharsets.UTF_8));
         try {
             if (delayTimeLevel > 0) {
                 msg.setDelayTimeLevel(delayTimeLevel);
             }
-            SendResult send = producer.send(msg);
+            SendResult send;
+            if (selector == null) {
+                send = producer.send(msg);
+            } else {
+                send = producer.send(msg, selector, arg);
+            }
             if (SendStatus.SEND_OK == send.getSendStatus()) {
-                log.info("发送MQ消息成功, type:{}, message:{}", type, message);
+                log.info("发送MQ消息成功, type:{}, message:{}", msgDesc, message);
             } else {
                 throw new OrderBizException(send.getSendStatus().toString());
             }
@@ -79,9 +97,5 @@ public class DefaultProducer {
             log.error("发送MQ消息失败：", e);
             throw new OrderBizException(OrderErrorCodeEnum.SEND_MQ_FAILED);
         }
-    }
-
-    public DefaultMQProducer getProducer() {
-        return producer;
     }
 }

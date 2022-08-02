@@ -3,8 +3,9 @@ package com.ruyuan.eshop.order.service;
 import com.ruyuan.eshop.common.page.PagingInfo;
 import com.ruyuan.eshop.order.domain.dto.OrderDetailDTO;
 import com.ruyuan.eshop.order.domain.dto.OrderListDTO;
-import com.ruyuan.eshop.order.domain.query.AcceptOrderQuery;
 import com.ruyuan.eshop.order.domain.query.OrderQuery;
+import com.ruyuan.eshop.order.domain.request.OrderDetailRequest;
+import com.ruyuan.eshop.order.enums.OrderQueryDataTypeEnums;
 
 /**
  * <p>
@@ -18,22 +19,51 @@ public interface OrderQueryService {
     /**
      * 校验列表查询参数
      *
-     * @param acceptOrderQuery
+     * @param query
      */
-    void checkQueryParam(AcceptOrderQuery acceptOrderQuery);
+    void checkQueryParam(OrderQuery query);
 
     /**
-     * 执行列表查询
+     * 执行列表查询 v1
      *
      * @param query
      */
-    PagingInfo<OrderListDTO> executeListQuery(OrderQuery query);
+    PagingInfo<OrderListDTO> executeListQueryV1(OrderQuery query);
 
     /**
-     * 查询订单详情
+     *
+     *
+     *
+     * @param query
+     * @param queryDataTypes
+     * @return
+     */
+    /**
+     * 执行列表查询 v2
+     * toC : es+mysql
+     * toB : es+es
+     *
+     * @param query          入参
+     * @param downgrade      false : es+mysql; true:es+es
+     * @param queryDataTypes 查询项
+     */
+    PagingInfo<OrderDetailDTO> executeListQueryV2(OrderQuery query, Boolean downgrade,
+                                                  OrderQueryDataTypeEnums... queryDataTypes) throws Exception;
+
+
+    /**
+     * 查询订单详情 v1
      *
      * @param orderId
      * @return
      */
-    OrderDetailDTO orderDetail(String orderId);
+    OrderDetailDTO orderDetailV1(String orderId);
+
+    /**
+     * 查询订单详情 v2
+     *
+     * @param request
+     * @return
+     */
+    OrderDetailDTO orderDetailV2(OrderDetailRequest request);
 }

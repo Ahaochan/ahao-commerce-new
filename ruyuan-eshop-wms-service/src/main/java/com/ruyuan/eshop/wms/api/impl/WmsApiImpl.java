@@ -52,14 +52,14 @@ public class WmsApiImpl implements WmsApi {
             throw new WmsBizException("捡货异常！");
         }
 
-        //1、捡货，调度出库
+        // 1、捡货，调度出库
         ScheduleDeliveryResult result = scheduleDelivery(request);
 
-        //2、存储出库单和出库单条目
+        // 2、存储出库单和出库单条目
         deliveryOrderDAO.save(result.getDeliveryOrder());
         deliveryOrderItemDAO.saveBatch(result.getDeliveryOrderItems());
 
-        //3、构造返回参数
+        // 3、构造返回参数
         return JsonResult.buildSuccess(new PickDTO(request.getOrderId()));
     }
 
@@ -82,7 +82,7 @@ public class WmsApiImpl implements WmsApi {
                     .map(DeliveryOrderDO::getDeliveryOrderId).collect(Collectors.toList());
             List<DeliveryOrderItemDO> items = deliveryOrderItemDAO
                     .listByDeliveryOrderIds(deliveryOrderIds);
-            if(CollectionUtils.isNotEmpty(items)) {
+            if (CollectionUtils.isNotEmpty(items)) {
                 ids = items.stream().map(DeliveryOrderItemDO::getId).collect(Collectors.toList());
                 deliveryOrderItemDAO.removeByIds(ids);
             }
@@ -90,7 +90,6 @@ public class WmsApiImpl implements WmsApi {
 
         return JsonResult.buildSuccess(true);
     }
-
 
 
     /**

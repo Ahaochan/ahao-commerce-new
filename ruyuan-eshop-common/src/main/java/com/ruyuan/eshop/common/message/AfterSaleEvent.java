@@ -24,7 +24,7 @@ public class AfterSaleEvent<T> implements Serializable {
     /**
      * 售后id
      */
-    private Long afterSaleId;
+    private String afterSaleId;
     /**
      * 售后类型
      */

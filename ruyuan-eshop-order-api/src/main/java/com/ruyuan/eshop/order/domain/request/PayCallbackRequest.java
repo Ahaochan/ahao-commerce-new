@@ -1,8 +1,10 @@
 package com.ruyuan.eshop.order.domain.request;
 
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 支付系统回调请求对象
@@ -39,6 +41,12 @@ public class PayCallbackRequest implements Serializable {
      * 支付方式
      */
     private Integer payType;
+
+    /**
+     * 支付时间
+     */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date payTime;
 
     /**
      * 商户号

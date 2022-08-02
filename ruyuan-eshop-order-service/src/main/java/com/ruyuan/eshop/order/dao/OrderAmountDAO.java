@@ -31,6 +31,18 @@ public class OrderAmountDAO extends BaseDAO<OrderAmountMapper, OrderAmountDO> {
     }
 
     /**
+     * 根据订单号查询订单价格
+     *
+     * @param orderIds
+     * @return
+     */
+    public List<OrderAmountDO> listByOrderIds(List<String> orderIds) {
+        LambdaQueryWrapper<OrderAmountDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(OrderAmountDO::getOrderId, orderIds);
+        return list(queryWrapper);
+    }
+
+    /**
      * 查询订单指定类型费用
      *
      * @param orderId

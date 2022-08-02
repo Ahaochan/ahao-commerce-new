@@ -2,11 +2,11 @@ package com.ruyuan.eshop.order;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ruyuan.eshop.common.page.PagingInfo;
+import com.ruyuan.eshop.common.tuple.Pair;
 import com.ruyuan.eshop.order.domain.dto.AfterSaleOrderDetailDTO;
 import com.ruyuan.eshop.order.domain.dto.AfterSaleOrderListDTO;
 import com.ruyuan.eshop.order.domain.query.AfterSaleQuery;
 import com.ruyuan.eshop.order.service.AfterSaleQueryService;
-import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +31,7 @@ public class AfterSaleQueryServiceTest {
         afterSaleIds.add(2021112837104128002L);
         afterSaleIds.add(2021112837103888002L);
         query.setAfterSaleIds(afterSaleIds);
-        PagingInfo<AfterSaleOrderListDTO> result = afterSaleQueryService.executeListQuery(query);
+        PagingInfo<AfterSaleOrderListDTO> result = afterSaleQueryService.executeListQueryV1(query);
 
         System.out.println(JSONObject.toJSONString(result));
         System.out.println(result.getList().size());
@@ -82,7 +82,7 @@ public class AfterSaleQueryServiceTest {
         query.setRefundAmountInterval(Pair.of(1, 1));
 
 
-        PagingInfo<AfterSaleOrderListDTO> result = afterSaleQueryService.executeListQuery(query);
+        PagingInfo<AfterSaleOrderListDTO> result = afterSaleQueryService.executeListQueryV1(query);
 
         System.out.println(JSONObject.toJSONString(result));
         System.out.println(result.getList().size());
@@ -90,8 +90,8 @@ public class AfterSaleQueryServiceTest {
 
     @Test
     public void afterSaleDetail() throws Exception {
-        Long afterSaleId = 2021112837103888002L;
-        AfterSaleOrderDetailDTO afterSaleOrderDetailDTO = afterSaleQueryService.afterSaleDetail(afterSaleId);
+        String afterSaleId = "2021112837103888002";
+        AfterSaleOrderDetailDTO afterSaleOrderDetailDTO = afterSaleQueryService.afterSaleDetailV1(afterSaleId);
 
         System.out.println(JSONObject.toJSONString(afterSaleOrderDetailDTO));
     }

@@ -1,5 +1,6 @@
 package com.ruyuan.eshop.fulfill.service;
 
+import com.ruyuan.eshop.fulfill.builder.FulfillData;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
 
 /**
@@ -15,13 +16,14 @@ public interface FulfillService {
      *
      * @param request
      */
-    void createFulfillOrder(ReceiveFulfillRequest request);
+    FulfillData createFulfillOrders(ReceiveFulfillRequest request);
 
     /**
      * 取消履约单
      *
      * @param orderId
      */
+    @Deprecated
     void cancelFulfillOrder(String orderId);
 
     /**
