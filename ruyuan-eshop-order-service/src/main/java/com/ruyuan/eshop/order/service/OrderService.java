@@ -23,6 +23,7 @@ public interface OrderService {
 
     /**
      * 提交订单/生成订单
+     *
      * @param createOrderRequest 提交订单请求入参
      * @return 订单号
      */
@@ -30,6 +31,7 @@ public interface OrderService {
 
     /**
      * 预支付订单
+     *
      * @param prePayOrderRequest
      * @return
      */
@@ -37,6 +39,7 @@ public interface OrderService {
 
     /**
      * 支付回调
+     *
      * @param payCallbackRequest
      * @return
      */
@@ -44,13 +47,15 @@ public interface OrderService {
 
     /**
      * 移除订单
+     *
      * @param orderIds
      * @return
      */
-    boolean removeOrders(List<String> orderIds) ;
+    boolean removeOrders(List<String> orderIds);
 
     /**
      * 调整订单配送地址
+     *
      * @param request
      */
     boolean adjustDeliveryAddress(AdjustDeliveryAddressRequest request);

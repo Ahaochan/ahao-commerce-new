@@ -30,11 +30,12 @@ public class GlobalExceptionHandler {
 
     // =========== 系统级别未知异常 =========
 
-    @ExceptionHandler(value = Exception.class)
-    public JsonResult<Object> handle(Exception e) {
-        log.error("[ 系统未知错误 ]", e);
-        return JsonResult.buildError(CommonErrorCodeEnum.SYSTEM_UNKNOWN_ERROR);
-    }
+    // 演示sentinel错误熔断降级，临时注释
+//    @ExceptionHandler(value = Exception.class)
+//    public JsonResult<Object> handle(Exception e) {
+//        log.error("[ 系统未知错误 ]", e);
+//        return JsonResult.buildError(CommonErrorCodeEnum.SYSTEM_UNKNOWN_ERROR);
+//    }
 
     // =========== 客户端异常 =========
 

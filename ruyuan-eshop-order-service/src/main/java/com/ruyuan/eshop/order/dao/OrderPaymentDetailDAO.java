@@ -2,11 +2,10 @@ package com.ruyuan.eshop.order.dao;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.ruyuan.eshop.common.dao.BaseDAO;
 import com.ruyuan.eshop.order.domain.entity.OrderPaymentDetailDO;
 import com.ruyuan.eshop.order.mapper.OrderPaymentDetailMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -52,5 +51,25 @@ public class OrderPaymentDetailDAO extends BaseDAO<OrderPaymentDetailMapper, Ord
         QueryWrapper<OrderPaymentDetailDO> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("order_id", orderId);
         return getOne(queryWrapper);
+    }
+
+    /**
+     * 更新订单支付明细
+     */
+    public boolean updateByOrderId(OrderPaymentDetailDO orderPaymentDetailDO, String orderId) {
+        UpdateWrapper<OrderPaymentDetailDO> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("order_id", orderId);
+        return update(orderPaymentDetailDO, updateWrapper);
+    }
+
+    /**
+     * 批量订单支付状态
+     *
+     * @param orderIds
+     */
+    public void updateBatchByOrderIds(OrderPaymentDetailDO orderPaymentDetailDO, List<String> orderIds) {
+        UpdateWrapper<OrderPaymentDetailDO> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("order_id", orderIds);
+        update(orderPaymentDetailDO, updateWrapper);
     }
 }

@@ -5,6 +5,7 @@ import java.util.Map;
 
 /**
  * 库存缓存key-value support
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -24,6 +25,7 @@ public interface CacheSupport {
 
     /**
      * 构造缓存商品库存key
+     *
      * @param skuCode
      * @return
      */
@@ -33,14 +35,15 @@ public interface CacheSupport {
 
     /**
      * 构造缓存商品库存value
+     *
      * @param saleStockQuantity
      * @param saledStockQuantity
      * @return
      */
-    static Map<String,String> buildProductStockValue(Long saleStockQuantity,Long saledStockQuantity) {
-        Map<String,String> value = new HashMap<>();
-        value.put(SALE_STOCK,String.valueOf(saleStockQuantity));
-        value.put(SALED_STOCK,String.valueOf(saledStockQuantity));
+    static Map<String, String> buildProductStockValue(Long saleStockQuantity, Long saledStockQuantity) {
+        Map<String, String> value = new HashMap<>();
+        value.put(SALE_STOCK, String.valueOf(saleStockQuantity));
+        value.put(SALED_STOCK, String.valueOf(saledStockQuantity));
         return value;
     }
 }

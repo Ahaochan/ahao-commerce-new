@@ -42,7 +42,7 @@ public class AfterSaleRefundDAO extends BaseDAO<AfterSaleRefundMapper, AfterSale
         return update(afterSaleRefundDO, updateWrapper);
     }
 
-    public AfterSaleRefundDO findOrderAfterSaleStatus(String afterSaleId) {
+    public AfterSaleRefundDO findAfterSaleRefundByfterSaleId(String afterSaleId) {
         LambdaQueryWrapper<AfterSaleRefundDO> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(AfterSaleRefundDO::getAfterSaleId, afterSaleId);
         return baseMapper.selectOne(queryWrapper);

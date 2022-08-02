@@ -35,26 +35,27 @@
     </sql>
 
 
-    <select id="listByPage" parameterType="com.ruyuan.eshop.order.domain.dto.OrderListQueryDTO" resultType="com.ruyuan.eshop.order.domain.dto.OrderListDTO">
+    <select id="listByPage" parameterType="com.ruyuan.eshop.order.domain.dto.OrderListQueryDTO"
+            resultType="com.ruyuan.eshop.order.domain.dto.OrderListDTO">
         SELECT
-            o.business_identifier AS businessIdentifier,
-            o.order_id AS orderId,
-            o.business_order_id AS businessOrderId,
-            o.order_type AS orderType,
-            o.order_status AS orderStatus,
-            o.seller_id AS sellerId,
-            o.user_id AS userId,
-            o.pay_type AS payType,
-            o.coupon_id AS couponId,
-            o.pay_time AS payTime,
-            o.pay_amount AS payAmount,
-            o.user_remark AS userRemark,
-            o.comment_status AS commentStatus,
-            item.product_img AS productImg,
-            item.product_name AS productName,
-            item.sku_code AS skuCode,
-            item.sale_quantity AS saleQuantity,
-            item.pay_amount AS skuPayAmount
+        o.business_identifier AS businessIdentifier,
+        o.order_id AS orderId,
+        o.business_order_id AS businessOrderId,
+        o.order_type AS orderType,
+        o.order_status AS orderStatus,
+        o.seller_id AS sellerId,
+        o.user_id AS userId,
+        o.pay_type AS payType,
+        o.coupon_id AS couponId,
+        o.pay_time AS payTime,
+        o.pay_amount AS payAmount,
+        o.user_remark AS userRemark,
+        o.comment_status AS commentStatus,
+        item.product_img AS productImg,
+        item.product_name AS productName,
+        item.sku_code AS skuCode,
+        item.sale_quantity AS saleQuantity,
+        item.pay_amount AS skuPayAmount
         FROM order_info AS o
         LEFT JOIN order_item AS item ON o.order_id = item.order_id
         LEFT JOIN order_payment_detail AS pay ON o.order_id = pay.order_id
@@ -65,7 +66,8 @@
                 AND o.business_identifier = #{query.businessIdentifier}
             </if>
             <if test='query.orderTypes != null and query.orderTypes.size !=0'>
-                <foreach collection='query.orderTypes' item='type' open=' AND o.order_type in (' close=')' separator=','>
+                <foreach collection='query.orderTypes' item='type' open=' AND o.order_type in (' close=')'
+                         separator=','>
                     #{type}
                 </foreach>
             </if>
@@ -75,17 +77,20 @@
                 </foreach>
             </if>
             <if test='query.sellerIds != null and query.sellerIds.size !=0'>
-                <foreach collection='query.sellerIds' item='sellerId' open=' AND o.seller_id in (' close=')' separator=','>
+                <foreach collection='query.sellerIds' item='sellerId' open=' AND o.seller_id in (' close=')'
+                         separator=','>
                     #{sellerId}
                 </foreach>
             </if>
             <if test='query.parentOrderIds != null and query.parentOrderIds.size !=0'>
-                <foreach collection='query.parentOrderIds' item='parentOrderId' open=' AND o.parent_order_id in (' close=')' separator=','>
+                <foreach collection='query.parentOrderIds' item='parentOrderId' open=' AND o.parent_order_id in ('
+                         close=')' separator=','>
                     #{parentOrderId}
                 </foreach>
             </if>
             <if test='query.orderStatus != null and query.orderStatus.size !=0'>
-                <foreach collection='query.orderStatus' item='orderStatus' open=' AND o.order_status in (' close=')' separator=','>
+                <foreach collection='query.orderStatus' item='orderStatus' open=' AND o.order_status in (' close=')'
+                         separator=','>
                     #{orderStatus}
                 </foreach>
             </if>
@@ -95,41 +100,50 @@
                 </foreach>
             </if>
             <if test='query.receiverPhones != null and query.receiverPhones.size !=0'>
-                <foreach collection='query.receiverPhones' item='receiverPhone' open=' AND delivery.receiver_phone in (' close=')' separator=','>
+                <foreach collection='query.receiverPhones' item='receiverPhone' open=' AND delivery.receiver_phone in ('
+                         close=')' separator=','>
                     #{receiverPhone}
                 </foreach>
             </if>
             <if test='query.receiverNames != null and query.receiverNames.size !=0'>
-                <foreach collection='query.receiverNames' item='receiverName' open=' AND delivery.receiver_name in (' close=')' separator=','>
+                <foreach collection='query.receiverNames' item='receiverName' open=' AND delivery.receiver_name in ('
+                         close=')' separator=','>
                     #{receiverName}
                 </foreach>
             </if>
             <if test='query.tradeNos != null and query.tradeNos.size !=0'>
-                <foreach collection='query.tradeNos' item='tradeNo' open=' AND pay.out_trade_no in (' close=')' separator=','>
+                <foreach collection='query.tradeNos' item='tradeNo' open=' AND pay.out_trade_no in (' close=')'
+                         separator=','>
                     #{tradeNo}
                 </foreach>
             </if>
             <if test='query.skuCodes != null and query.skuCodes.size !=0'>
-                <foreach collection='query.skuCodes' item='skuCode' open=' AND item.sku_code in (' close=')' separator=','>
+                <foreach collection='query.skuCodes' item='skuCode' open=' AND item.sku_code in (' close=')'
+                         separator=','>
                     #{skuCode}
                 </foreach>
             </if>
             <if test='query.productNames != null and query.productNames.size !=0'>
-                <foreach collection='query.productNames' item='productName' open=' AND item.product_name in (' close=')' separator=','>
+                <foreach collection='query.productNames' item='productName' open=' AND item.product_name in (' close=')'
+                         separator=','>
                     #{productName}
                 </foreach>
             </if>
             <if test='query.createdTimeInterval != null and query.createdTimeInterval.left != null'>
-                AND DATE_FORMAT(o.gmt_create,'%Y-%m-%d %H:%i:%S') >= DATE_FORMAT(#{query.createdTimeInterval.left},'%Y-%m-%d %H:%i:%S')
+                AND DATE_FORMAT(o.gmt_create,'%Y-%m-%d %H:%i:%S') >=
+                DATE_FORMAT(#{query.createdTimeInterval.left},'%Y-%m-%d %H:%i:%S')
             </if>
             <if test='query.createdTimeInterval != null and query.createdTimeInterval.right != null'>
-                AND DATE_FORMAT(o.gmt_create,'%Y-%m-%d %H:%i:%S') <![CDATA[<=]]> DATE_FORMAT(#{query.createdTimeInterval.right},'%Y-%m-%d %H:%i:%S')
+                AND DATE_FORMAT(o.gmt_create,'%Y-%m-%d %H:%i:%S') <![CDATA[<=]]>
+                DATE_FORMAT(#{query.createdTimeInterval.right},'%Y-%m-%d %H:%i:%S')
             </if>
             <if test='query.payTimeInterval != null and query.payTimeInterval.left != null'>
-                AND DATE_FORMAT(o.pay_time,'%Y-%m-%d %H:%i:%S') >= DATE_FORMAT(#{query.payTimeInterval.left},'%Y-%m-%d %H:%i:%S')
+                AND DATE_FORMAT(o.pay_time,'%Y-%m-%d %H:%i:%S') >= DATE_FORMAT(#{query.payTimeInterval.left},'%Y-%m-%d
+                %H:%i:%S')
             </if>
             <if test='query.payTimeInterval != null and query.payTimeInterval.right != null'>
-                AND DATE_FORMAT(o.pay_time,'%Y-%m-%d %H:%i:%S') <![CDATA[<=]]> DATE_FORMAT(#{query.payTimeInterval.right},'%Y-%m-%d %H:%i:%S')
+                AND DATE_FORMAT(o.pay_time,'%Y-%m-%d %H:%i:%S') <![CDATA[<=]]>
+                DATE_FORMAT(#{query.payTimeInterval.right},'%Y-%m-%d %H:%i:%S')
             </if>
             <if test='query.payAmountInterval != null and query.payAmountInterval.left != null'>
                 AND o.pay_amount >= #{query.payAmountInterval.left}

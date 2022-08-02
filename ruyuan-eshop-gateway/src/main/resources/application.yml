@@ -7,10 +7,7 @@ spring:
         server-addr: localhost:8848
         username: nacos
         password: nacos
-    sentinel:
-      transport:
-        dashboard: 127.0.0.1:8080
-        port: 19000
+
     gateway:
       routes:
         # 订单服务

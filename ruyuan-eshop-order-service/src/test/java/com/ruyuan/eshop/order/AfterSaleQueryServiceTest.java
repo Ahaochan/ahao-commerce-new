@@ -75,11 +75,11 @@ public class AfterSaleQueryServiceTest {
         skuCodes.add("1");
         query.setSkuCodes(skuCodes);
 
-        query.setCreatedTimeInterval(Pair.of(new Date(),new Date()));
-        query.setApplyTimeInterval(Pair.of(new Date(),new Date()));
-        query.setReviewTimeInterval(Pair.of(new Date(),new Date()));
-        query.setRefundPayTimeInterval(Pair.of(new Date(),new Date()));
-        query.setRefundAmountInterval(Pair.of(1,1));
+        query.setCreatedTimeInterval(Pair.of(new Date(), new Date()));
+        query.setApplyTimeInterval(Pair.of(new Date(), new Date()));
+        query.setReviewTimeInterval(Pair.of(new Date(), new Date()));
+        query.setRefundPayTimeInterval(Pair.of(new Date(), new Date()));
+        query.setRefundAmountInterval(Pair.of(1, 1));
 
 
         PagingInfo<AfterSaleOrderListDTO> result = afterSaleQueryService.executeListQuery(query);
@@ -91,7 +91,7 @@ public class AfterSaleQueryServiceTest {
     @Test
     public void afterSaleDetail() throws Exception {
         Long afterSaleId = 2021112837103888002L;
-        AfterSaleOrderDetailDTO afterSaleOrderDetailDTO =  afterSaleQueryService.afterSaleDetail(afterSaleId);
+        AfterSaleOrderDetailDTO afterSaleOrderDetailDTO = afterSaleQueryService.afterSaleDetail(afterSaleId);
 
         System.out.println(JSONObject.toJSONString(afterSaleOrderDetailDTO));
     }

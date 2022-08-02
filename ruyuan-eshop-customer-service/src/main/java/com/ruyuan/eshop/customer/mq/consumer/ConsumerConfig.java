@@ -1,14 +1,15 @@
 package com.ruyuan.eshop.customer.mq.consumer;
 
-import com.ruyuan.eshop.customer.mq.config.RocketMQProperties;
 import com.ruyuan.eshop.customer.mq.consumer.listener.AfterSaleCustomerAuditTopicListener;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.spring.autoconfigure.RocketMQProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import static com.ruyuan.eshop.common.constants.RocketMqConstant.*;
+import static com.ruyuan.eshop.common.constants.RocketMqConstant.AFTER_SALE_CUSTOMER_AUDIT_GROUP;
+import static com.ruyuan.eshop.common.constants.RocketMqConstant.AFTER_SALE_CUSTOMER_AUDIT_TOPIC;
 
 /**
  * @author zhonghuashishan

@@ -18,8 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -72,6 +72,45 @@ public class OrderInfoDAO extends BaseDAO<OrderInfoMapper, OrderInfoDO> {
     }
 
     /**
+     * 根据订单号更新订单
+     *
+     * @param orderInfoDO
+     * @param orderId
+     * @return
+     */
+    public boolean updateByOrderId(OrderInfoDO orderInfoDO, String orderId) {
+        LambdaUpdateWrapper<OrderInfoDO> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.eq(OrderInfoDO::getOrderId, orderId);
+        return update(orderInfoDO, updateWrapper);
+    }
+
+
+    /**
+     * 根据父订单号更新订单
+     *
+     * @param orderInfoDO
+     * @param orderIds
+     * @return
+     */
+    public boolean updateBatchByOrderIds(OrderInfoDO orderInfoDO, List<String> orderIds) {
+        LambdaUpdateWrapper<OrderInfoDO> updateWrapper = new LambdaUpdateWrapper<>();
+        updateWrapper.in(OrderInfoDO::getOrderId, orderIds);
+        return update(orderInfoDO, updateWrapper);
+    }
+
+    /**
+     * 统计子订单数量
+     * @param orderId
+     * @return
+     */
+    public List<String> listSubOrderIds(String orderId) {
+        LambdaQueryWrapper<OrderInfoDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(OrderInfoDO::getOrderId);
+        queryWrapper.eq(OrderInfoDO::getParentOrderId, orderId);
+        return list(queryWrapper).stream().map(OrderInfoDO::getOrderId).collect(Collectors.toList());
+    }
+
+    /**
      * 根据父订单号查询子订单号
      *
      * @param orderId
@@ -90,8 +129,6 @@ public class OrderInfoDAO extends BaseDAO<OrderInfoMapper, OrderInfoDO> {
      * @return
      */
     public Page<OrderListDTO> listByPage(OrderListQueryDTO query) {
-        log.info("query={}", JSONObject.toJSONString(query));
-
         Page<OrderListDTO> page = new Page<>(query.getPageNo(), query.getPageSize());
         return orderInfoMapper.listByPage(page, query);
     }
@@ -116,18 +153,19 @@ public class OrderInfoDAO extends BaseDAO<OrderInfoMapper, OrderInfoDO> {
         return update(orderInfoDO, updateWrapper);
     }
 
-    public boolean updateOrderStatus(String orderId,Integer fromStatus,Integer toStatus) {
+    public boolean updateOrderStatus(String orderId, Integer fromStatus, Integer toStatus) {
         LambdaUpdateWrapper<OrderInfoDO> updateWrapper = new LambdaUpdateWrapper<>();
 
-        updateWrapper.set(OrderInfoDO::getOrderStatus,toStatus)
-                        .eq(OrderInfoDO::getOrderId,orderId)
-                        .eq(OrderInfoDO::getOrderStatus,fromStatus);
+        updateWrapper.set(OrderInfoDO::getOrderStatus, toStatus)
+                .eq(OrderInfoDO::getOrderId, orderId)
+                .eq(OrderInfoDO::getOrderStatus, fromStatus);
 
         return update(updateWrapper);
     }
 
     /**
      * 扫描所有未支付订单
+     *
      * @return
      */
     public List<OrderInfoDO> listAllUnPaid() {

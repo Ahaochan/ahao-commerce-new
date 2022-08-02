@@ -9,13 +9,14 @@ import java.io.Serializable;
 
 /**
  * 物流配送结果事件基类
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class BaseWmsShipEvent implements Serializable {
 
     private static final long serialVersionUID = 3310845067561671265L;

@@ -13,6 +13,6 @@ import org.springframework.stereotype.Repository;
  * @author zhonghuashishan
  */
 @Repository
-public class OrderAutoNoDAO extends BaseDAO<OrderAutoNoMapper, OrderAutoNoDO>  {
+public class OrderAutoNoDAO extends BaseDAO<OrderAutoNoMapper, OrderAutoNoDO> {
 
 }

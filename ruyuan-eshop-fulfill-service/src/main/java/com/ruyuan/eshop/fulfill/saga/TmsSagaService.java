@@ -5,6 +5,7 @@ import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
 
 /**
  * tms saga service
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -13,6 +14,7 @@ public interface TmsSagaService {
 
     /**
      * 发货
+     *
      * @param request
      * @return
      */
@@ -20,6 +22,7 @@ public interface TmsSagaService {
 
     /**
      * 发货补偿
+     *
      * @param request
      * @return
      */

@@ -1,6 +1,7 @@
 package com.ruyuan.eshop.order.api.impl;
 
 import com.ruyuan.eshop.common.core.JsonResult;
+import com.ruyuan.eshop.common.utils.LoggerFormat;
 import com.ruyuan.eshop.common.utils.ParamCheckUtil;
 import com.ruyuan.eshop.order.api.OrderApi;
 import com.ruyuan.eshop.order.constants.OrderConstants;
@@ -66,10 +67,14 @@ public class OrderApiImpl implements OrderApi {
             CreateOrderDTO createOrderDTO = orderService.createOrder(createOrderRequest);
             return JsonResult.buildSuccess(createOrderDTO);
         } catch (OrderBizException e) {
-            log.error("biz error", e);
+            log.error(LoggerFormat.build()
+                    .remark("biz error")
+                    .finish(), e);
             return JsonResult.buildError(e.getErrorCode(), e.getErrorMsg());
         } catch (Exception e) {
-            log.error("system error", e);
+            log.error(LoggerFormat.build()
+                    .remark("system error")
+                    .finish(), e);
             return JsonResult.buildError(e.getMessage());
         }
     }

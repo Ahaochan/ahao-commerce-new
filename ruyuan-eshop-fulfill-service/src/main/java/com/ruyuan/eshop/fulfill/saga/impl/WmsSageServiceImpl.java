@@ -2,16 +2,18 @@ package com.ruyuan.eshop.fulfill.saga.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ruyuan.eshop.common.core.JsonResult;
-import com.ruyuan.eshop.common.utils.ObjectUtil;
+import com.ruyuan.eshop.fulfill.converter.FulFillConverter;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
 import com.ruyuan.eshop.fulfill.exception.FulfillBizException;
 import com.ruyuan.eshop.fulfill.exception.FulfillErrorCodeEnum;
+import com.ruyuan.eshop.fulfill.remote.WmsRemote;
 import com.ruyuan.eshop.fulfill.saga.WmsSagaService;
 import com.ruyuan.eshop.wms.api.WmsApi;
 import com.ruyuan.eshop.wms.domain.PickDTO;
 import com.ruyuan.eshop.wms.domain.PickGoodsRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,21 +22,21 @@ import java.util.List;
 @Slf4j
 public class WmsSageServiceImpl implements WmsSagaService {
 
-    @DubboReference(version = "1.0.0",retries = 0)
-    private WmsApi wmsApi;
+    @Autowired
+    private WmsRemote wmsRemote;
+
+    @Autowired
+    private FulFillConverter fulFillConverter;
 
     @Override
     public Boolean pickGoods(ReceiveFulfillRequest request) {
         log.info("捡货，request={}", JSONObject.toJSONString(request));
 
         //调用wms系统进行捡货
-        JsonResult<PickDTO> jsonResult = wmsApi
+        PickDTO result = wmsRemote
                 .pickGoods(buildPickGoodsRequest(request));
 
-        log.info("捡货结果，jsonResult={}", JSONObject.toJSONString(jsonResult));
-        if(!jsonResult.getSuccess()) {
-            throw new FulfillBizException(FulfillErrorCodeEnum.WMS_IS_ERROR);
-        }
+        log.info("捡货结果，result={}", JSONObject.toJSONString(result));
 
         return true;
     }
@@ -45,23 +47,15 @@ public class WmsSageServiceImpl implements WmsSagaService {
         log.info("补偿捡货，request={}", JSONObject.toJSONString(request));
 
         //调用wms系统进行捡货
-        JsonResult<Boolean> jsonResult = wmsApi
-                .cancelPickGoods(request.getOrderId());
-
-        log.info("补偿捡货结果，jsonResult={}", JSONObject.toJSONString(jsonResult));
-        if(!jsonResult.getSuccess()) {
-            throw new FulfillBizException(FulfillErrorCodeEnum.WMS_IS_ERROR);
-        }
+        wmsRemote.cancelPickGoods(request.getOrderId());
 
         return true;
     }
 
 
-
     private PickGoodsRequest buildPickGoodsRequest(ReceiveFulfillRequest fulfillRequest) {
-        PickGoodsRequest request = fulfillRequest.clone(PickGoodsRequest.class);
-        List<PickGoodsRequest.OrderItemRequest> itemRequests = ObjectUtil
-                .convertList(fulfillRequest.getReceiveOrderItems(), PickGoodsRequest.OrderItemRequest.class);
+        PickGoodsRequest request = fulFillConverter.convertPickGoodsRequest(fulfillRequest);
+        List<PickGoodsRequest.OrderItemRequest> itemRequests = fulFillConverter.convertPickOrderItemRequest(fulfillRequest.getReceiveOrderItems());
         request.setOrderItems(itemRequests);
         return request;
     }

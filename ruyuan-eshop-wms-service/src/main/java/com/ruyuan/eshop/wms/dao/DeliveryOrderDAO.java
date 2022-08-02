@@ -20,12 +20,13 @@ public class DeliveryOrderDAO extends BaseDAO<DeliveryOrderMapper, DeliveryOrder
 
     /**
      * 查询出库单
+     *
      * @param orderId
      * @return
      */
     public List<DeliveryOrderDO> listByOrderId(String orderId) {
         LambdaQueryWrapper<DeliveryOrderDO> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(DeliveryOrderDO::getOrderId,orderId);
+        queryWrapper.eq(DeliveryOrderDO::getOrderId, orderId);
         return list(queryWrapper);
     }
 

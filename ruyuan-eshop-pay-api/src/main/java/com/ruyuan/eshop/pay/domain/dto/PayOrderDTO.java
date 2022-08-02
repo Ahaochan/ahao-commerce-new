@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.pay.domain.dto;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -8,11 +7,12 @@ import java.util.Map;
 
 /**
  * 预支付订单返回结果
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
 @Data
-public class PayOrderDTO extends AbstractObject implements Serializable {
+public class PayOrderDTO implements Serializable {
 
     private static final long serialVersionUID = -6780095800322751139L;
 

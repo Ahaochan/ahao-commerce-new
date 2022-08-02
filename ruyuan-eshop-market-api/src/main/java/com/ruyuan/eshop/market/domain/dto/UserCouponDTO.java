@@ -1,7 +1,6 @@
 package com.ruyuan.eshop.market.domain.dto;
 
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,7 +12,7 @@ import java.util.Date;
  * @author zhonghuashishan
  */
 @Data
-public class UserCouponDTO extends AbstractObject implements Serializable {
+public class UserCouponDTO implements Serializable {
 
     private static final long serialVersionUID = -7948590564195939334L;
 
@@ -61,5 +60,10 @@ public class UserCouponDTO extends AbstractObject implements Serializable {
      * 有效期结束时间
      */
     private Date validEndTime;
+
+    /**
+     * 是否已使用
+     */
+    private Integer used;
 
 }

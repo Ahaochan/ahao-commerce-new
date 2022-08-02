@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.order.domain.dto;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,7 +12,7 @@ import java.io.Serializable;
  * @author zhonghuashishan
  */
 @Data
-public class AfterSaleItemDTO extends AbstractObject implements Serializable {
+public class AfterSaleItemDTO implements Serializable {
 
     /**
      * 售后id

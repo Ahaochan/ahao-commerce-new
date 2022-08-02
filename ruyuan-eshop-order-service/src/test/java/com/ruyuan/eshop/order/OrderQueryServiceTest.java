@@ -91,12 +91,12 @@ public class OrderQueryServiceTest {
         productNames.add("1");
         query.setProductNames(productNames);
 
-        Pair<Date,Date> createdTimeInterval = Pair.of(new Date(),new Date());
+        Pair<Date, Date> createdTimeInterval = Pair.of(new Date(), new Date());
         query.setCreatedTimeInterval(createdTimeInterval);
-        Pair<Date,Date> payTimeInterval = Pair.of(new Date(),new Date());
+        Pair<Date, Date> payTimeInterval = Pair.of(new Date(), new Date());
         query.setPayTimeInterval(payTimeInterval);
 
-        Pair<Integer,Integer> payAmountInterval = Pair.of(1,1);
+        Pair<Integer, Integer> payAmountInterval = Pair.of(1, 1);
         query.setPayAmountInterval(payAmountInterval);
 
         query.setPageNo(2);

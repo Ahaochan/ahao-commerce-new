@@ -2,12 +2,9 @@ package com.ruyuan.eshop.order.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
-import com.ruyuan.eshop.address.api.AddressApi;
 import com.ruyuan.eshop.common.constants.RedisLockKeyConstants;
 import com.ruyuan.eshop.common.constants.RocketDelayedLevel;
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
-import com.ruyuan.eshop.common.core.CloneDirection;
-import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.common.enums.AmountTypeEnum;
 import com.ruyuan.eshop.common.enums.DeleteStatusEnum;
 import com.ruyuan.eshop.common.enums.OrderStatusEnum;
@@ -17,13 +14,11 @@ import com.ruyuan.eshop.common.message.PaidOrderSuccessMessage;
 import com.ruyuan.eshop.common.message.PayOrderTimeoutDelayMessage;
 import com.ruyuan.eshop.common.redis.RedisLock;
 import com.ruyuan.eshop.common.utils.JsonUtil;
-import com.ruyuan.eshop.common.utils.ObjectUtil;
+import com.ruyuan.eshop.common.utils.LoggerFormat;
 import com.ruyuan.eshop.common.utils.ParamCheckUtil;
-import com.ruyuan.eshop.inventory.api.InventoryApi;
-import com.ruyuan.eshop.inventory.domain.request.DeductProductStockRequest;
-import com.ruyuan.eshop.market.api.MarketApi;
 import com.ruyuan.eshop.market.domain.dto.CalculateOrderAmountDTO;
 import com.ruyuan.eshop.market.domain.request.CalculateOrderAmountRequest;
+import com.ruyuan.eshop.order.converter.OrderConverter;
 import com.ruyuan.eshop.order.dao.OrderDeliveryDetailDAO;
 import com.ruyuan.eshop.order.dao.OrderInfoDAO;
 import com.ruyuan.eshop.order.dao.OrderPaymentDetailDAO;
@@ -38,21 +33,19 @@ import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
 import com.ruyuan.eshop.order.manager.OrderManager;
 import com.ruyuan.eshop.order.manager.OrderNoManager;
 import com.ruyuan.eshop.order.mq.producer.DefaultProducer;
+import com.ruyuan.eshop.order.remote.MarketRemote;
+import com.ruyuan.eshop.order.remote.PayRemote;
+import com.ruyuan.eshop.order.remote.ProductRemote;
+import com.ruyuan.eshop.order.remote.RiskRemote;
 import com.ruyuan.eshop.order.service.OrderService;
-import com.ruyuan.eshop.pay.api.PayApi;
 import com.ruyuan.eshop.pay.domain.dto.PayOrderDTO;
 import com.ruyuan.eshop.pay.domain.request.PayOrderRequest;
 import com.ruyuan.eshop.pay.domain.request.PayRefundRequest;
-import com.ruyuan.eshop.product.api.ProductApi;
 import com.ruyuan.eshop.product.domain.dto.ProductSkuDTO;
-import com.ruyuan.eshop.product.domain.query.ProductSkuQuery;
-import com.ruyuan.eshop.risk.api.RiskApi;
-import com.ruyuan.eshop.risk.domain.dto.CheckOrderRiskDTO;
 import com.ruyuan.eshop.risk.domain.request.CheckOrderRiskRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.LocalTransactionState;
 import org.apache.rocketmq.client.producer.TransactionListener;
@@ -99,38 +92,23 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private RedisLock redisLock;
 
-    /**
-     * 商品服务
-     */
-    @DubboReference(version = "1.0.0")
-    private ProductApi productApi;
+    @Autowired
+    private ProductRemote productRemote;
 
-    /**
-     * 风控服务
-     */
-    @DubboReference(version = "1.0.0", retries = 0)
-    private RiskApi riskApi;
+    @Autowired
+    private RiskRemote riskRemote;
 
-    /**
-     * 支付服务
-     */
-    @DubboReference(version = "1.0.0", retries = 0)
-    private PayApi payApi;
+    @Autowired
+    private PayRemote payRemote;
 
-    /**
-     * 地址服务
-     */
-    @DubboReference(version = "1.0.0")
-    private AddressApi addressApi;
-
-    /**
-     * 营销服务
-     */
-    @DubboReference(version = "1.0.0", retries = 0)
-    private MarketApi marketApi;
+    @Autowired
+    private MarketRemote marketRemote;
 
     @Autowired
     private OrderManager orderManager;
+
+    @Autowired
+    private OrderConverter orderConverter;
 
     /**
      * 生成订单号接口
@@ -140,6 +118,11 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public GenOrderIdDTO genOrderId(GenOrderIdRequest genOrderIdRequest) {
+        log.info(LoggerFormat.build()
+                .remark("genOrderId->request")
+                .data("request", genOrderIdRequest)
+                .finish());
+
         // 参数检查
         String userId = genOrderIdRequest.getUserId();
         ParamCheckUtil.checkStringNonEmpty(userId);
@@ -149,6 +132,11 @@ public class OrderServiceImpl implements OrderService {
         String orderId = orderNoManager.genOrderId(OrderNoTypeEnum.SALE_ORDER.getCode(), userId);
         GenOrderIdDTO genOrderIdDTO = new GenOrderIdDTO();
         genOrderIdDTO.setOrderId(orderId);
+
+        log.info(LoggerFormat.build()
+                .remark("genOrderId->response")
+                .data("response", genOrderIdDTO)
+                .finish());
         return genOrderIdDTO;
     }
 
@@ -160,6 +148,11 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public CreateOrderDTO createOrder(CreateOrderRequest createOrderRequest) {
+        log.info(LoggerFormat.build()
+                .remark("createOrder->request")
+                .data("request", createOrderRequest)
+                .finish());
+
         // 1、入参检查
         checkCreateOrderRequestParam(createOrderRequest);
 
@@ -189,6 +182,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 插入订单到数据库
+     *
      * @param createOrderRequest
      * @param productSkuList
      * @param calculateOrderAmountDTO
@@ -197,7 +191,6 @@ public class OrderServiceImpl implements OrderService {
                              CalculateOrderAmountDTO calculateOrderAmountDTO) {
         // 插入订单到数据库
         orderManager.createOrder(createOrderRequest, productSkuList, calculateOrderAmountDTO);
-
     }
 
     /**
@@ -209,6 +202,8 @@ public class OrderServiceImpl implements OrderService {
         // 订单ID
         String orderId = createOrderRequest.getOrderId();
         ParamCheckUtil.checkStringNonEmpty(orderId, OrderErrorCodeEnum.ORDER_ID_IS_NULL);
+        OrderInfoDO order = orderInfoDAO.getByOrderId(orderId);
+        ParamCheckUtil.checkObjectNull(order, OrderErrorCodeEnum.ORDER_EXISTED);
 
         // 业务线标识
         Integer businessIdentifier = createOrderRequest.getBusinessIdentifier();
@@ -310,7 +305,9 @@ public class OrderServiceImpl implements OrderService {
         if (orderAmountMap.get(AmountTypeEnum.REAL_PAY_AMOUNT.getCode()) == null) {
             throw new OrderBizException(OrderErrorCodeEnum.ORDER_REAL_PAY_AMOUNT_IS_NULL);
         }
-        if (StringUtils.isNotEmpty(createOrderRequest.getCouponId())) {
+
+        String couponId = createOrderRequest.getCouponId();
+        if (StringUtils.isNotEmpty(couponId)) {
             // 订单优惠券抵扣金额不能为空
             if (orderAmountMap.get(AmountTypeEnum.COUPON_DISCOUNT_AMOUNT.getCode()) == null) {
                 throw new OrderBizException(OrderErrorCodeEnum.ORDER_DISCOUNT_AMOUNT_IS_NULL);
@@ -339,38 +336,26 @@ public class OrderServiceImpl implements OrderService {
      */
     private void checkRisk(CreateOrderRequest createOrderRequest) {
         // 调用风控服务进行风控检查
-        CheckOrderRiskRequest checkOrderRiskRequest = createOrderRequest.clone(CheckOrderRiskRequest.class);
-        JsonResult<CheckOrderRiskDTO> jsonResult = riskApi.checkOrderRisk(checkOrderRiskRequest);
-        if (!jsonResult.getSuccess()) {
-            throw new OrderBizException(jsonResult.getErrorCode(), jsonResult.getErrorMessage());
-        }
+        CheckOrderRiskRequest checkOrderRiskRequest = orderConverter.convertRiskRequest(createOrderRequest);
+        riskRemote.checkOrderRisk(checkOrderRiskRequest);
     }
-
-
 
     /**
      * 获取订单条目商品信息
      */
     private List<ProductSkuDTO> listProductSkus(CreateOrderRequest createOrderRequest) {
         List<CreateOrderRequest.OrderItemRequest> orderItemRequestList = createOrderRequest.getOrderItemRequestList();
-        List<ProductSkuDTO> productSkuList = new ArrayList<>();
+
+        List<String> skuCodeList = new ArrayList<>();
         for (CreateOrderRequest.OrderItemRequest orderItemRequest : orderItemRequestList) {
             String skuCode = orderItemRequest.getSkuCode();
-
-            ProductSkuQuery productSkuQuery = new ProductSkuQuery();
-            productSkuQuery.setSkuCode(skuCode);
-            productSkuQuery.setSellerId(createOrderRequest.getSellerId());
-            JsonResult<ProductSkuDTO> jsonResult = productApi.getProductSku(productSkuQuery);
-            if (!jsonResult.getSuccess()) {
-                throw new OrderBizException(jsonResult.getErrorCode(), jsonResult.getErrorMessage());
-            }
-            ProductSkuDTO productSkuDTO = jsonResult.getData();
-            // sku不存在
-            if (productSkuDTO == null) {
-                throw new OrderBizException(OrderErrorCodeEnum.PRODUCT_SKU_CODE_ERROR, skuCode);
-            }
-            productSkuList.add(productSkuDTO);
+            skuCodeList.add(skuCode);
         }
+        List<ProductSkuDTO> productSkuList = productRemote.listProductSku(skuCodeList, createOrderRequest.getSellerId());
+        log.info(LoggerFormat.build()
+                .remark("listProductSkus->return")
+                .data("productSkus", productSkuList)
+                .finish());
         return productSkuList;
     }
 
@@ -382,7 +367,8 @@ public class OrderServiceImpl implements OrderService {
      * @param productSkuList     商品信息
      */
     private CalculateOrderAmountDTO calculateOrderAmount(CreateOrderRequest createOrderRequest, List<ProductSkuDTO> productSkuList) {
-        CalculateOrderAmountRequest calculateOrderPriceRequest = createOrderRequest.clone(CalculateOrderAmountRequest.class, CloneDirection.FORWARD);
+
+        CalculateOrderAmountRequest calculateOrderPriceRequest = orderConverter.convertCalculateOrderAmountRequest(createOrderRequest);
 
         // 订单条目补充商品信息
         Map<String, ProductSkuDTO> productSkuDTOMap = productSkuList.stream().collect(Collectors.toMap(ProductSkuDTO::getSkuCode, Function.identity()));
@@ -394,27 +380,25 @@ public class OrderServiceImpl implements OrderService {
         });
 
         // 调用营销服务计算订单价格
-        JsonResult<CalculateOrderAmountDTO> jsonResult = marketApi.calculateOrderAmount(calculateOrderPriceRequest);
-
-        // 检查价格计算结果
-        if (!jsonResult.getSuccess()) {
-            throw new OrderBizException(jsonResult.getErrorCode(), jsonResult.getErrorMessage());
-        }
-        CalculateOrderAmountDTO calculateOrderAmountDTO = jsonResult.getData();
+        CalculateOrderAmountDTO calculateOrderAmountDTO = marketRemote.calculateOrderAmount(calculateOrderPriceRequest);
         if (calculateOrderAmountDTO == null) {
             throw new OrderBizException(OrderErrorCodeEnum.CALCULATE_ORDER_AMOUNT_ERROR);
         }
         // 订单费用信息
-        List<OrderAmountDTO> orderAmountList = ObjectUtil.convertList(calculateOrderAmountDTO.getOrderAmountList(), OrderAmountDTO.class);
+        List<OrderAmountDTO> orderAmountList = orderConverter.convertOrderAmountDTO(calculateOrderAmountDTO.getOrderAmountList());
         if (orderAmountList == null || orderAmountList.isEmpty()) {
             throw new OrderBizException(OrderErrorCodeEnum.CALCULATE_ORDER_AMOUNT_ERROR);
         }
 
         // 订单条目费用明细
-        List<OrderAmountDetailDTO> orderItemAmountList = ObjectUtil.convertList(calculateOrderAmountDTO.getOrderAmountDetail(), OrderAmountDetailDTO.class);
+        List<OrderAmountDetailDTO> orderItemAmountList = orderConverter.convertOrderAmountDetail(calculateOrderAmountDTO.getOrderAmountDetail());
         if (orderItemAmountList == null || orderItemAmountList.isEmpty()) {
             throw new OrderBizException(OrderErrorCodeEnum.CALCULATE_ORDER_AMOUNT_ERROR);
         }
+        log.info(LoggerFormat.build()
+                .remark("calculateOrderAmount->return")
+                .data("return", calculateOrderAmountDTO)
+                .finish());
         return calculateOrderAmountDTO;
     }
 
@@ -443,16 +427,14 @@ public class OrderServiceImpl implements OrderService {
     }
 
 
-
-
-
     /**
      * 发送支付订单超时延迟消息，用于支付超时自动关单
      */
     private void sendPayOrderTimeoutDelayMessage(CreateOrderRequest createOrderRequest) {
         PayOrderTimeoutDelayMessage message = new PayOrderTimeoutDelayMessage();
 
-        message.setOrderId(createOrderRequest.getOrderId());
+        String orderId = createOrderRequest.getOrderId();
+        message.setOrderId(orderId);
         message.setBusinessIdentifier(createOrderRequest.getBusinessIdentifier());
         message.setCancelType(OrderCancelTypeEnum.TIMEOUT_CANCELED.getCode());
         message.setUserId(createOrderRequest.getUserId());
@@ -461,7 +443,7 @@ public class OrderServiceImpl implements OrderService {
 
         String msgJson = JsonUtil.object2Json(message);
         defaultProducer.sendMessage(RocketMqConstant.PAY_ORDER_TIMEOUT_DELAY_TOPIC, msgJson,
-                RocketDelayedLevel.DELAYED_30m, "支付订单超时延迟消息");
+                RocketDelayedLevel.DELAYED_30m, "支付订单超时延迟消息", null, orderId);
     }
 
     /**
@@ -470,6 +452,11 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public PrePayOrderDTO prePayOrder(PrePayOrderRequest prePayOrderRequest) {
+        log.info(LoggerFormat.build()
+                .remark("prePayOrder->request")
+                .data("request", prePayOrderRequest)
+                .finish());
+
         // 入参检查
         checkPrePayOrderRequestParam(prePayOrderRequest);
 
@@ -478,7 +465,7 @@ public class OrderServiceImpl implements OrderService {
 
         // 加分布式锁（与订单支付回调时加的是同一把锁）
         String key = RedisLockKeyConstants.ORDER_PAY_KEY + orderId;
-        boolean lock = redisLock.lock(key);
+        boolean lock = redisLock.tryLock(key);
         if (!lock) {
             throw new OrderBizException(OrderErrorCodeEnum.ORDER_PRE_PAY_ERROR);
         }
@@ -487,17 +474,20 @@ public class OrderServiceImpl implements OrderService {
             checkPrePayOrderInfo(orderId, payAmount);
 
             // 调用支付系统进行预支付
-            PayOrderRequest payOrderRequest = prePayOrderRequest.clone(PayOrderRequest.class);
-            JsonResult<PayOrderDTO> jsonResult = payApi.payOrder(payOrderRequest);
-            if (!jsonResult.getSuccess()) {
-                throw new OrderBizException(OrderErrorCodeEnum.ORDER_PRE_PAY_ERROR);
-            }
-            PayOrderDTO payOrderDTO = jsonResult.getData();
+            PayOrderRequest payOrderRequest = orderConverter.convertPayOrderRequest(prePayOrderRequest);
+            PayOrderDTO payOrderDTO = payRemote.payOrder(payOrderRequest);
 
             // 更新订单表与支付信息表
             updateOrderPaymentInfo(payOrderDTO);
 
-            return payOrderDTO.clone(PrePayOrderDTO.class);
+            PrePayOrderDTO result = orderConverter.convertPrePayOrderRequest(payOrderDTO);
+
+            log.info(LoggerFormat.build()
+                    .remark("prePayOrder->response")
+                    .data("response", result)
+                    .finish());
+
+            return orderConverter.convertPrePayOrderRequest(payOrderDTO);
         } finally {
             // 释放分布式锁
             redisLock.unlock(key);
@@ -506,6 +496,7 @@ public class OrderServiceImpl implements OrderService {
 
     /**
      * 预支付订单的前置检查
+     *
      * @param orderId
      * @param payAmount
      */
@@ -572,47 +563,34 @@ public class OrderServiceImpl implements OrderService {
         String outTradeNo = payOrderDTO.getOutTradeNo();
         Date payTime = new Date();
 
-        // 订单表支付信息
-        OrderInfoDO orderInfoDO = orderInfoDAO.getByOrderId(orderId);
+        // 更新订单表支付信息
+        OrderInfoDO orderInfoDO = new OrderInfoDO();
         orderInfoDO.setPayType(payType);
         orderInfoDO.setPayTime(payTime);
-        orderInfoDAO.updateById(orderInfoDO);
+        orderInfoDAO.updateByOrderId(orderInfoDO, orderId);
 
-        // 支付明细信息
-        OrderPaymentDetailDO orderPaymentDetailDO = orderPaymentDetailDAO.getPaymentDetailByOrderId(orderId);
+        // 更新支付明细信息
+        OrderPaymentDetailDO orderPaymentDetailDO = new OrderPaymentDetailDO();
         orderPaymentDetailDO.setPayTime(payTime);
         orderPaymentDetailDO.setPayType(payType);
         orderPaymentDetailDO.setOutTradeNo(outTradeNo);
-        orderPaymentDetailDAO.updateById(orderPaymentDetailDO);
+        orderPaymentDetailDAO.updateByOrderId(orderPaymentDetailDO, orderId);
 
         // 判断是否存在子订单
-        List<OrderInfoDO> subOrderInfoList = orderInfoDAO.listByParentOrderId(orderId);
-        if (subOrderInfoList != null && !subOrderInfoList.isEmpty()) {
-            List<OrderInfoDO> tempSubOrderInfoList = new ArrayList<>();
-            List<String> tempSubOrderIds = new ArrayList<>();
-
+        List<String> subOrderIds = orderInfoDAO.listSubOrderIds(orderId);
+        if (subOrderIds != null && !subOrderIds.isEmpty()) {
             // 更新子订单支付信息
-            for (OrderInfoDO subOrderInfoDO : subOrderInfoList) {
-                subOrderInfoDO.setPayType(payType);
-                subOrderInfoDO.setPayTime(payTime);
-                tempSubOrderInfoList.add(subOrderInfoDO);
-                tempSubOrderIds.add(subOrderInfoDO.getOrderId());
-            }
-            orderInfoDAO.updateBatchById(tempSubOrderInfoList);
+            OrderInfoDO subOrderInfoDO = new OrderInfoDO();
+            subOrderInfoDO.setPayType(payType);
+            subOrderInfoDO.setPayTime(payTime);
+            orderInfoDAO.updateBatchByOrderIds(subOrderInfoDO, subOrderIds);
 
             // 更新子订单支付明细信息
-            List<OrderPaymentDetailDO> orderPaymentDetailDOList =
-                    orderPaymentDetailDAO.listByOrderIds(tempSubOrderIds);
-            if(orderPaymentDetailDOList != null && !orderPaymentDetailDOList.isEmpty()) {
-                List<OrderPaymentDetailDO> tempSubOrderPaymentDetailList = new ArrayList<>();
-                for(OrderPaymentDetailDO subOrderPaymentDetailDO : orderPaymentDetailDOList) {
-                    subOrderPaymentDetailDO.setPayTime(payTime);
-                    subOrderPaymentDetailDO.setPayType(payType);
-                    subOrderPaymentDetailDO.setOutTradeNo(outTradeNo);
-                    tempSubOrderPaymentDetailList.add(subOrderPaymentDetailDO);
-                }
-                orderPaymentDetailDAO.updateBatchById(tempSubOrderPaymentDetailList);
-            }
+            OrderPaymentDetailDO subOrderPaymentDetailDO = new OrderPaymentDetailDO();
+            subOrderPaymentDetailDO.setPayTime(payTime);
+            subOrderPaymentDetailDO.setPayType(payType);
+            subOrderPaymentDetailDO.setOutTradeNo(outTradeNo);
+            orderPaymentDetailDAO.updateBatchByOrderIds(subOrderPaymentDetailDO, subOrderIds);
         }
 
     }
@@ -624,6 +602,11 @@ public class OrderServiceImpl implements OrderService {
      */
     @Override
     public void payCallback(PayCallbackRequest payCallbackRequest) {
+        log.info(LoggerFormat.build()
+                .remark("payCallback->request")
+                .data("request", payCallbackRequest)
+                .finish());
+
         // 入参检查
         checkPayCallbackRequestParam(payCallbackRequest);
 
@@ -681,7 +664,7 @@ public class OrderServiceImpl implements OrderService {
                     public LocalTransactionState checkLocalTransaction(MessageExt messageExt) {
                         // 检查订单是否是已支付
                         OrderInfoDO orderInfoDO = orderInfoDAO.getByOrderId(orderId);
-                        if(orderInfoDO != null
+                        if (orderInfoDO != null
                                 && OrderStatusEnum.PAID.getCode().equals(orderInfoDO.getOrderStatus())) {
                             return LocalTransactionState.COMMIT_MESSAGE;
                         }
@@ -719,8 +702,11 @@ public class OrderServiceImpl implements OrderService {
                     }
                 }
             }
-
+            log.info(LoggerFormat.build()
+                    .remark("payCallback->response")
+                    .finish());
         } catch (Exception e) {
+            log.error("payCallback error", e);
             throw new OrderBizException(e.getMessage());
         } finally {
             // 释放分布式锁
@@ -736,7 +722,7 @@ public class OrderServiceImpl implements OrderService {
         payRefundRequest.setOrderId(orderInfoDO.getOrderId());
         payRefundRequest.setRefundAmount(orderPaymentDetailDO.getPayAmount());
         payRefundRequest.setOutTradeNo(orderPaymentDetailDO.getOutTradeNo());
-        payApi.executeRefund(payRefundRequest);
+        payRemote.executeRefund(payRefundRequest);
     }
 
     /**
@@ -777,11 +763,16 @@ public class OrderServiceImpl implements OrderService {
         String orderId = orderInfoDO.getOrderId();
         PaidOrderSuccessMessage message = new PaidOrderSuccessMessage();
         message.setOrderId(orderId);
+        log.info(LoggerFormat.build()
+                .remark("发送订单已支付消息")
+                .data("message", message)
+                .finish());
+
         String topic = RocketMqConstant.PAID_ORDER_SUCCESS_TOPIC;
         byte[] body = JSON.toJSONString(message).getBytes(StandardCharsets.UTF_8);
-        Message mq = new Message(topic, body);
+        Message mq = new Message(topic, null, orderId, body);
         TransactionSendResult result = transactionMQProducer.sendMessageInTransaction(mq, orderInfoDO);
-        if(!result.getLocalTransactionState().equals(LocalTransactionState.COMMIT_MESSAGE)) {
+        if (!result.getLocalTransactionState().equals(LocalTransactionState.COMMIT_MESSAGE)) {
             throw new OrderBizException(OrderErrorCodeEnum.ORDER_PAY_CALLBACK_SEND_MQ_ERROR);
         }
     }

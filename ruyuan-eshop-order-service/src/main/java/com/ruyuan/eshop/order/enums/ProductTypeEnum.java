@@ -5,6 +5,7 @@ import java.util.Map;
 
 /**
  * 商品类型枚举
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -30,16 +31,16 @@ public enum ProductTypeEnum {
         return msg;
     }
 
-    public static Map<Integer, String> toMap(){
+    public static Map<Integer, String> toMap() {
         Map<Integer, String> map = new HashMap<>(16);
-        for (ProductTypeEnum element : ProductTypeEnum.values() ){
-            map.put(element.getCode(),element.getMsg());
+        for (ProductTypeEnum element : ProductTypeEnum.values()) {
+            map.put(element.getCode(), element.getMsg());
         }
         return map;
     }
 
-    public static ProductTypeEnum getByCode(Integer code){
-        for(ProductTypeEnum element : ProductTypeEnum.values()){
+    public static ProductTypeEnum getByCode(Integer code) {
+        for (ProductTypeEnum element : ProductTypeEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }

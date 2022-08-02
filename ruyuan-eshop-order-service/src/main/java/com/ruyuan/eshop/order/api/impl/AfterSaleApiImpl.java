@@ -9,14 +9,17 @@ import com.ruyuan.eshop.common.enums.CustomerAuditSourceEnum;
 import com.ruyuan.eshop.common.message.ActualRefundMessage;
 import com.ruyuan.eshop.common.redis.RedisLock;
 import com.ruyuan.eshop.common.utils.ParamCheckUtil;
+import com.ruyuan.eshop.customer.domain.request.CustomerReceiveAfterSaleRequest;
 import com.ruyuan.eshop.customer.domain.request.CustomerReviewReturnGoodsRequest;
 import com.ruyuan.eshop.order.api.AfterSaleApi;
 import com.ruyuan.eshop.order.dao.AfterSaleItemDAO;
+import com.ruyuan.eshop.order.dao.AfterSaleRefundDAO;
 import com.ruyuan.eshop.order.dao.OrderItemDAO;
 import com.ruyuan.eshop.order.domain.dto.CheckLackDTO;
 import com.ruyuan.eshop.order.domain.dto.LackDTO;
 import com.ruyuan.eshop.order.domain.dto.ReleaseProductStockDTO;
 import com.ruyuan.eshop.order.domain.entity.AfterSaleItemDO;
+import com.ruyuan.eshop.order.domain.entity.AfterSaleRefundDO;
 import com.ruyuan.eshop.order.domain.entity.OrderItemDO;
 import com.ruyuan.eshop.order.domain.request.*;
 import com.ruyuan.eshop.order.enums.AfterSaleStatusEnum;
@@ -68,6 +71,9 @@ public class AfterSaleApiImpl implements AfterSaleApi {
     @Autowired
     private OrderItemDAO orderItemDAO;
 
+    @Autowired
+    private AfterSaleRefundDAO afterSaleRefundDAO;
+
     /**
      * 取消订单/超时未支付取消
      */
@@ -95,7 +101,7 @@ public class AfterSaleApiImpl implements AfterSaleApi {
 
             //2、加锁防并发
             String lockKey = RedisLockKeyConstants.LACK_REQUEST_KEY + request.getOrderId();
-            if (!redisLock.lock(lockKey)) {
+            if (!redisLock.tryLock(lockKey)) {
                 throw new OrderBizException(OrderErrorCodeEnum.ORDER_NOT_ALLOW_TO_LACK);
             }
             //3、参数校验
@@ -265,7 +271,7 @@ public class AfterSaleApiImpl implements AfterSaleApi {
         //2、加锁，锁整个售后单，两个作用
         // 2.1 防并发
         // 2.2 业务上的考虑：只要涉及售后表的更新，就需要加锁，锁整个售后表，否则算钱的时候，就会由于突然撤销，导致钱多算了
-        if (!redisLock.lock(lockKey)) {
+        if (!redisLock.tryLock(lockKey)) {
             throw new OrderBizException(OrderErrorCodeEnum.AFTER_SALE_CANNOT_REVOKE);
         }
 
@@ -278,6 +284,19 @@ public class AfterSaleApiImpl implements AfterSaleApi {
         }
 
         return JsonResult.buildSuccess(true);
+    }
+
+    @Override
+    public JsonResult<Long> customerFindAfterSaleRefundInfo(CustomerReceiveAfterSaleRequest customerReceiveAfterSaleRequest) {
+        String afterSaleId = customerReceiveAfterSaleRequest.getAfterSaleId();
+        AfterSaleRefundDO afterSaleRefundDO = afterSaleRefundDAO.findAfterSaleRefundByfterSaleId(afterSaleId);
+        if (afterSaleRefundDO == null) {
+            throw new OrderBizException(OrderErrorCodeEnum.AFTER_SALE_REFUND_ID_IS_NULL);
+        }
+        JsonResult<Long> jsonResult = new JsonResult<>();
+        jsonResult.setData(afterSaleRefundDO.getId());
+        jsonResult.setSuccess(true);
+        return jsonResult;
     }
 
 }

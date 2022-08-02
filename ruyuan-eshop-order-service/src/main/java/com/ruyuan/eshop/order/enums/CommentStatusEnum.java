@@ -5,6 +5,7 @@ import java.util.Map;
 
 /**
  * 发表评论状态枚举
+ *
  * @author zhonghuashishan
  */
 public enum CommentStatusEnum {
@@ -29,16 +30,16 @@ public enum CommentStatusEnum {
         return msg;
     }
 
-    public static Map<Integer, String> toMap(){
+    public static Map<Integer, String> toMap() {
         Map<Integer, String> map = new HashMap<>(16);
-        for (CommentStatusEnum element : CommentStatusEnum.values() ){
-            map.put(element.getCode(),element.getMsg());
+        for (CommentStatusEnum element : CommentStatusEnum.values()) {
+            map.put(element.getCode(), element.getMsg());
         }
         return map;
     }
 
-    public static CommentStatusEnum getByCode(Integer code){
-        for(CommentStatusEnum element : CommentStatusEnum.values()){
+    public static CommentStatusEnum getByCode(Integer code) {
+        for (CommentStatusEnum element : CommentStatusEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }

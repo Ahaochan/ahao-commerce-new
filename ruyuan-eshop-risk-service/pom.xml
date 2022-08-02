@@ -41,6 +41,11 @@
                     <artifactId>mysql-connector-java</artifactId>
                 </exclusion>
 
+                <exclusion>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>druid-spring-boot-starter</artifactId>
+                </exclusion>
+
             </exclusions>
         </dependency>
 

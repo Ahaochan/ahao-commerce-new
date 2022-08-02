@@ -14,6 +14,7 @@ import java.util.Map;
 
 /**
  * 添加商品库存处理器
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -29,6 +30,7 @@ public class AddProductStockProcessor {
 
     /**
      * 执行添加商品库存逻辑
+     *
      * @param request
      */
     @Transactional(rollbackFor = Exception.class)
@@ -45,13 +47,14 @@ public class AddProductStockProcessor {
 
     /**
      * 保存商品库存到redis
+     *
      * @param productStock
      */
     public void addStockToRedis(ProductStockDO productStock) {
         String productStockKey = CacheSupport.buildProductStockKey(productStock.getSkuCode());
-        Map<String,String> productStockValue = CacheSupport
-                .buildProductStockValue(productStock.getSaleStockQuantity(),productStock.getSaledStockQuantity());
-        redisCache.hPutAll(productStockKey,productStockValue);
+        Map<String, String> productStockValue = CacheSupport
+                .buildProductStockValue(productStock.getSaleStockQuantity(), productStock.getSaledStockQuantity());
+        redisCache.hPutAll(productStockKey, productStockValue);
     }
 
     private ProductStockDO buildProductStock(AddProductStockRequest request) {

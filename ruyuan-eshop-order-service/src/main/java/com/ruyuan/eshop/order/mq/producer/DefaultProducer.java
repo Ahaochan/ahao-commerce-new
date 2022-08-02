@@ -1,22 +1,25 @@
 package com.ruyuan.eshop.order.mq.producer;
 
+import com.alibaba.fastjson.JSON;
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
+import com.ruyuan.eshop.common.message.TraceableMessage;
+import com.ruyuan.eshop.common.utils.MdcUtil;
 import com.ruyuan.eshop.order.exception.OrderBizException;
 import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
-import com.ruyuan.eshop.order.mq.config.RocketMQProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.client.producer.SendStatus;
 import org.apache.rocketmq.client.producer.TransactionMQProducer;
+import org.apache.rocketmq.client.producer.TransactionSendResult;
 import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.spring.autoconfigure.RocketMQProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 
 /**
- *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -57,8 +60,8 @@ public class DefaultProducer {
      * @param topic   topic
      * @param message 消息
      */
-    public void sendMessage(String topic, String message, String type) {
-        sendMessage(topic, message, -1, type);
+    public void sendMessage(String topic, String message, String type, String tags, String keys) {
+        sendMessage(topic, message, -1, type, tags, keys);
     }
 
     /**
@@ -67,8 +70,8 @@ public class DefaultProducer {
      * @param topic   topic
      * @param message 消息
      */
-    public void sendMessage(String topic, String message, Integer delayTimeLevel, String type) {
-        Message msg = new Message(topic, message.getBytes(StandardCharsets.UTF_8));
+    public void sendMessage(String topic, String message, Integer delayTimeLevel, String type, String tags, String keys) {
+        Message msg = new Message(topic, tags, keys, message.getBytes(StandardCharsets.UTF_8));
         try {
             if (delayTimeLevel > 0) {
                 msg.setDelayTimeLevel(delayTimeLevel);
@@ -83,6 +86,15 @@ public class DefaultProducer {
             log.error("发送MQ消息失败：", e);
             throw new OrderBizException(OrderErrorCodeEnum.SEND_MQ_FAILED);
         }
+    }
+
+    public TransactionSendResult sendMessageInTransaction(String topic, Object messageContent)
+            throws MQClientException {
+        String traceId = MdcUtil.getTraceId();
+        TraceableMessage m = new TraceableMessage(traceId, messageContent.getClass(), messageContent);
+        byte[] body = JSON.toJSONString(m).getBytes(StandardCharsets.UTF_8);
+        Message message = new Message(topic, body);
+        return producer.sendMessageInTransaction(message, messageContent);
     }
 
     public TransactionMQProducer getProducer() {

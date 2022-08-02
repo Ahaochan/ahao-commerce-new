@@ -53,7 +53,7 @@ public class DateFormatUtil {
     /**
      * 日期格式化
      *
-     * @param date 日期
+     * @param date    日期
      * @param pattern 自定义格式
      * @return
      */

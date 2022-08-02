@@ -6,6 +6,7 @@ import java.util.*;
 
 /**
  * 订单号状态枚举
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -40,16 +41,16 @@ public enum OrderStatusEnum {
         return msg;
     }
 
-    public static Map<Integer,String> toMap() {
-        Map<Integer,String> map = new HashMap<>(16);
-        for (OrderStatusEnum element : OrderStatusEnum.values() ){
-            map.put(element.getCode(),element.getMsg());
+    public static Map<Integer, String> toMap() {
+        Map<Integer, String> map = new HashMap<>(16);
+        for (OrderStatusEnum element : OrderStatusEnum.values()) {
+            map.put(element.getCode(), element.getMsg());
         }
         return map;
     }
 
     public static OrderStatusEnum getByCode(Integer code) {
-        for(OrderStatusEnum element : OrderStatusEnum.values()){
+        for (OrderStatusEnum element : OrderStatusEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }
@@ -59,6 +60,7 @@ public enum OrderStatusEnum {
 
     /**
      * 未出库订单状态
+     *
      * @return
      */
     public static List<Integer> unOutStockStatus() {
@@ -71,6 +73,7 @@ public enum OrderStatusEnum {
 
     /**
      * 可以移除的订单状态
+     *
      * @return
      */
     public static List<Integer> canRemoveStatus() {
@@ -84,6 +87,7 @@ public enum OrderStatusEnum {
 
     /**
      * 未支付的订单状态
+     *
      * @return
      */
     public static List<Integer> unPaidStatus() {
@@ -102,6 +106,7 @@ public enum OrderStatusEnum {
 
     /**
      * 有效订单状态
+     *
      * @return
      */
     public static Set<Integer> validStatus() {
@@ -112,6 +117,7 @@ public enum OrderStatusEnum {
 
     /**
      * 可以发起缺品的状态(已出库)
+     *
      * @return
      */
     public static Set<Integer> canLack() {

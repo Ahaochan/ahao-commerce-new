@@ -5,6 +5,7 @@ import java.util.Map;
 
 /**
  * 快照类型
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -31,16 +32,16 @@ public enum SnapshotTypeEnum {
         return msg;
     }
 
-    public static Map<Integer, String> toMap(){
+    public static Map<Integer, String> toMap() {
         Map<Integer, String> map = new HashMap<>(16);
-        for (SnapshotTypeEnum element : SnapshotTypeEnum.values() ){
-            map.put(element.getCode(),element.getMsg());
+        for (SnapshotTypeEnum element : SnapshotTypeEnum.values()) {
+            map.put(element.getCode(), element.getMsg());
         }
         return map;
     }
 
-    public static SnapshotTypeEnum getByCode(Integer code){
-        for(SnapshotTypeEnum element : SnapshotTypeEnum.values()){
+    public static SnapshotTypeEnum getByCode(Integer code) {
+        for (SnapshotTypeEnum element : SnapshotTypeEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }

@@ -15,6 +15,7 @@ import java.util.List;
 
 /**
  * 监听订单创建成功后的消息
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -32,7 +33,7 @@ public class CreateOrderSuccessListener implements MessageListenerConcurrently {
     public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
         try {
 
-            for(MessageExt messageExt : list) {
+            for (MessageExt messageExt : list) {
                 String message = new String(messageExt.getBody());
                 DeductProductStockRequest deductProductStockRequest = JSON.parseObject(message, DeductProductStockRequest.class);
                 // 触发扣减商品库存

@@ -23,14 +23,15 @@ public class CityDAO extends BaseDAO<CityMapper, CityDO> {
 
     /**
      * 查询市
+     *
      * @param cityCodes
      * @param city
      * @return
      */
     public List<CityDO> listCities(Set<String> cityCodes, String city) {
         LambdaQueryWrapper<CityDO> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(StringUtils.isNotBlank(city),CityDO::getName,city)
-                .in(CollectionUtils.isNotEmpty(cityCodes),CityDO::getCode,cityCodes);
+        queryWrapper.eq(StringUtils.isNotBlank(city), CityDO::getName, city)
+                .in(CollectionUtils.isNotEmpty(cityCodes), CityDO::getCode, cityCodes);
         return list(queryWrapper);
     }
 }

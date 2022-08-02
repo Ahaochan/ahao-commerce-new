@@ -1,10 +1,10 @@
 package com.ruyuan.eshop.market.mq.consumer;
 
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
-import com.ruyuan.eshop.market.mq.config.RocketMQProperties;
 import com.ruyuan.eshop.market.mq.consumer.listener.ReleasePropertyListener;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.spring.autoconfigure.RocketMQProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +21,7 @@ public class ConsumerConfig {
 
     /**
      * 释放资产权益消息消费者
+     *
      * @param releasePropertyListener
      * @return
      */

@@ -33,4 +33,15 @@ public class CoreConstant {
      */
     public static final String GMT_FORMAT_PATTERN = "EEE MMM dd HH:mm:ss z yyyy";
 
+    /**
+     * traceId
+     */
+    public static final String TRACE_ID = "trace_id";
+
+
+    /**
+     * 默认等待锁时间
+     */
+    public static final Integer DEFAULT_WAIT_SECONDS = 3;
+
 }

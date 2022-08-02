@@ -5,6 +5,7 @@ import java.util.Map;
 
 /**
  * 订单操作类型枚举值
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -27,13 +28,11 @@ public enum OrderOperateTypeEnum {
 
 
     // 订单已出库
-    ORDER_OUT_STOCK(60,"订单已出库"),
+    ORDER_OUT_STOCK(60, "订单已出库"),
 
-    ORDER_DELIVERED(70,"订单已配送"),
+    ORDER_DELIVERED(70, "订单已配送"),
 
-    ORDER_SIGNED(80,"订单已签收")
-
-    ;
+    ORDER_SIGNED(80, "订单已签收");
 
     private Integer code;
 
@@ -52,16 +51,16 @@ public enum OrderOperateTypeEnum {
         return msg;
     }
 
-    public static Map<Integer, String> toMap(){
+    public static Map<Integer, String> toMap() {
         Map<Integer, String> map = new HashMap<>(16);
-        for (OrderOperateTypeEnum element : OrderOperateTypeEnum.values() ){
-            map.put(element.getCode(),element.getMsg());
+        for (OrderOperateTypeEnum element : OrderOperateTypeEnum.values()) {
+            map.put(element.getCode(), element.getMsg());
         }
         return map;
     }
 
-    public static OrderOperateTypeEnum getByCode(Integer code){
-        for(OrderOperateTypeEnum element : OrderOperateTypeEnum.values()){
+    public static OrderOperateTypeEnum getByCode(Integer code) {
+        for (OrderOperateTypeEnum element : OrderOperateTypeEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }

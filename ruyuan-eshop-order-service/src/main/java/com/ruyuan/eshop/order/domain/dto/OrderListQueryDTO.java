@@ -1,9 +1,5 @@
 package com.ruyuan.eshop.order.domain.dto;
 
-import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.ruyuan.eshop.common.core.AbstractObject;
-import com.ruyuan.eshop.common.enums.OrderStatusEnum;
-import com.ruyuan.eshop.order.domain.query.OrderQuery;
 import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -12,13 +8,13 @@ import java.util.Set;
 
 /**
  * <p>
- *  订单列表查询入参DTO
+ * 订单列表查询入参DTO
  * </p>
  *
  * @author zhonghuashishan
  */
 @Data
-public class OrderListQueryDTO extends AbstractObject {
+public class OrderListQueryDTO {
 
     /**
      * 业务线
@@ -72,16 +68,15 @@ public class OrderListQueryDTO extends AbstractObject {
     /**
      * 创建时间-查询区间
      */
-    private Pair<Date,Date> createdTimeInterval;
+    private Pair<Date, Date> createdTimeInterval;
     /**
      * 支付时间-查询区间
      */
-    private Pair<Date,Date> payTimeInterval;
+    private Pair<Date, Date> payTimeInterval;
     /**
      * 支付金额-查询区间
      */
-    private Pair<Integer,Integer> payAmountInterval;
-
+    private Pair<Integer, Integer> payAmountInterval;
 
     /**
      * 页码
@@ -91,47 +86,5 @@ public class OrderListQueryDTO extends AbstractObject {
      * 每页条数
      */
     private Integer pageSize = 20;
-
-    /**
-     * 内部构造器
-     */
-    public static class Builder {
-
-        private OrderListQueryDTO query = null;
-
-        public static Builder builder() {
-            return new Builder();
-        }
-
-        public Builder copy(OrderQuery orderQuery) {
-            query = orderQuery.clone(OrderListQueryDTO.class);
-            return this;
-        }
-
-        /**
-         * 不展示无效订单
-         * @return
-         */
-        public Builder removeInValidStatus() {
-            if(CollectionUtils.isEmpty(query.getOrderStatus())) {
-                query.setOrderStatus(OrderStatusEnum.validStatus());
-            }
-            return this;
-        }
-
-        /**
-         * 设置分页
-         * @return
-         */
-        public Builder setPage(OrderQuery orderQuery) {
-            query.setPageNo(orderQuery.getPageNo());
-            query.setPageSize(orderQuery.getPageSize());
-            return this;
-        }
-
-        public OrderListQueryDTO build() {
-            return query;
-        }
-    }
 
 }

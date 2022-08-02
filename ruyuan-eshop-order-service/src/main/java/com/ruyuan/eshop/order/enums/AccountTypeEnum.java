@@ -31,16 +31,16 @@ public enum AccountTypeEnum {
         return msg;
     }
 
-    public static Map<Integer, String> toMap(){
+    public static Map<Integer, String> toMap() {
         Map<Integer, String> map = new HashMap<>(16);
-        for (AccountTypeEnum element : AccountTypeEnum.values() ){
-            map.put(element.getCode(),element.getMsg());
+        for (AccountTypeEnum element : AccountTypeEnum.values()) {
+            map.put(element.getCode(), element.getMsg());
         }
         return map;
     }
 
-    public static AccountTypeEnum getByCode(Integer code){
-        for(AccountTypeEnum element : AccountTypeEnum.values()){
+    public static AccountTypeEnum getByCode(Integer code) {
+        for (AccountTypeEnum element : AccountTypeEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }

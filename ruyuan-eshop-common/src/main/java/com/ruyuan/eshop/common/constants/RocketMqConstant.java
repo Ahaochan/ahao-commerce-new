@@ -115,16 +115,6 @@ public class RocketMqConstant {
 
 
     /**
-     * 取消履约topic
-     */
-    public static String CANCEL_FULFILL_TOPIC = "cancel_fulfill_topic";
-
-    /**
-     * 取消履约topic consumer 分组
-     */
-    public static String CANCEL_FULFILL_CONSUMER_GROUP = "cancel_fulfill_consumer_group";
-
-    /**
      * 售后申请发送给客服审核 topic
      */
     public static String AFTER_SALE_CUSTOMER_AUDIT_TOPIC = "after_sale_customer_audit_topic";

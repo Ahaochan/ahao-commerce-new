@@ -28,27 +28,28 @@ public abstract class AbstractWmsShipResultProcessor implements OrderWmsShipResu
 
         //1、查询订单
         OrderInfoDO order = orderInfoDAO.getByOrderId(wmsShipDTO.getOrderId());
-        if(null == order) {
+        if (null == order) {
             return;
         }
 
         //2、校验订单状态
-        if(!checkOrderStatus(order)) {
+        if (!checkOrderStatus(order)) {
             return;
         }
 
         //3、执行具体的业务逻辑
-        doExecute(wmsShipDTO,order);
+        doExecute(wmsShipDTO, order);
 
         //4、更新订单状态
-        changeOrderStatus(order,wmsShipDTO);
+        changeOrderStatus(order, wmsShipDTO);
 
         //5、增加操作日志
-        saveOrderOperateLog(order,wmsShipDTO);
+        saveOrderOperateLog(order, wmsShipDTO);
     }
 
     /**
      * 校验订单状态
+     *
      * @param order
      * @throws OrderBizException
      */
@@ -56,6 +57,7 @@ public abstract class AbstractWmsShipResultProcessor implements OrderWmsShipResu
 
     /**
      * 执行具体的业务逻辑
+     *
      * @param wmsShipDTO
      * @param order
      */
@@ -63,21 +65,23 @@ public abstract class AbstractWmsShipResultProcessor implements OrderWmsShipResu
 
     /**
      * 更新订单状态
+     *
      * @param order
      */
-    private void changeOrderStatus(OrderInfoDO order,WmsShipDTO wmsShipDTO) {
+    private void changeOrderStatus(OrderInfoDO order, WmsShipDTO wmsShipDTO) {
         //todo 状态机
         OrderStatusChangeEnum statusChange = wmsShipDTO.getStatusChange();
-        orderInfoDAO.updateOrderStatus(order.getOrderId(),statusChange.getPreStatus().getCode()
-                ,statusChange.getCurrentStatus().getCode());
+        orderInfoDAO.updateOrderStatus(order.getOrderId(), statusChange.getPreStatus().getCode()
+                , statusChange.getCurrentStatus().getCode());
     }
 
     /**
      * 增加订单操作日志
+     *
      * @param order
      */
-    private void saveOrderOperateLog(OrderInfoDO order,WmsShipDTO wmsShipDTO) {
-        orderOperateLogDAO.save(orderOperateLogFactory.get(order,wmsShipDTO.getStatusChange()));
+    private void saveOrderOperateLog(OrderInfoDO order, WmsShipDTO wmsShipDTO) {
+        orderOperateLogDAO.save(orderOperateLogFactory.get(order, wmsShipDTO.getStatusChange()));
     }
 
 }

@@ -1,9 +1,9 @@
 package com.ruyuan.eshop.pay.mq.producer;
 
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
-import com.ruyuan.eshop.pay.mq.config.RocketMQProperties;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
+import org.apache.rocketmq.spring.autoconfigure.RocketMQProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -49,10 +49,10 @@ public class RedisConfig {
 
     @Bean
     @ConditionalOnClass(RedissonClient.class)
-    public RedissonClient redissonClient(){
+    public RedissonClient redissonClient() {
         Config config = new Config();
         config.useSingleServer()
-                .setAddress("redis://"+host+":"+port)
+                .setAddress("redis://" + host + ":" + port)
                 .setPassword(password)
                 .setConnectionMinimumIdleSize(10)
                 .setConnectionPoolSize(100)

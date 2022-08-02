@@ -16,6 +16,7 @@ public class CouponConfigDAO extends BaseDAO<CouponConfigMapper, CouponConfigDO>
 
     /**
      * 优惠券配置信息
+     *
      * @param couponConfigId
      * @return
      */

@@ -9,16 +9,15 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 /**
- *
  * @author zhonghuashishan
  * @version 1.0
  */
 @Configuration
 public class DataSourceConfiguration {
 
-    @ConfigurationProperties(prefix = "spring.datasource")
+    @ConfigurationProperties(prefix = "spring.datasource.druid")
     @Bean
-    public DruidDataSource druidDataSource(){
+    public DruidDataSource druidDataSource() {
         return new DruidDataSource();
     }
 

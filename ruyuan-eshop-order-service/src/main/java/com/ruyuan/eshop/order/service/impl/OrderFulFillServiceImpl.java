@@ -57,19 +57,19 @@ public class OrderFulFillServiceImpl implements OrderFulFillService {
     public void triggerOrderFulFill(String orderId) throws OrderBizException {
         //1、查询订单
         OrderInfoDO order = orderInfoDAO.getByOrderId(orderId);
-        if(Objects.isNull(order)) {
+        if (Objects.isNull(order)) {
             return;
         }
 
         //2、校验订单是否已支付
         OrderStatusEnum orderStatus = OrderStatusEnum.getByCode(order.getOrderStatus());
-        if(!OrderStatusEnum.PAID.equals(orderStatus)) {
-            log.info("order has not been paid，cannot fulfill, orderId={}",order.getOrderId());
+        if (!OrderStatusEnum.PAID.equals(orderStatus)) {
+            log.info("order has not been paid，cannot fulfill, orderId={}", order.getOrderId());
             return;
         }
 
         //3、更新订单状态为：“已履约”
-        orderInfoDAO.updateOrderStatus(orderId,OrderStatusEnum.PAID.getCode(), OrderStatusEnum.FULFILL.getCode());
+        orderInfoDAO.updateOrderStatus(orderId, OrderStatusEnum.PAID.getCode(), OrderStatusEnum.FULFILL.getCode());
 
         //4、并插入一条订单变更记录
         orderOperateLogDAO.save(orderOperateLogFactory.get(order, OrderStatusChangeEnum.ORDER_FULFILLED));
@@ -82,13 +82,14 @@ public class OrderFulFillServiceImpl implements OrderFulFillService {
         OrderWmsShipResultProcessor processor = getProcessor(wmsShipDTO.getStatusChange());
 
         //2、执行
-        if(null != processor) {
+        if (null != processor) {
             processor.execute(wmsShipDTO);
         }
     }
 
     /**
      * 构建接受订单履约请求
+     *
      * @param orderInfo
      * @return
      */
@@ -120,18 +121,18 @@ public class OrderFulFillServiceImpl implements OrderFulFillService {
                 .payType(orderInfo.getPayType())
                 .payAmount(orderInfo.getPayAmount())
                 .totalAmount(orderInfo.getTotalAmount())
-                .receiveOrderItems(buildReceiveOrderItemRequest(orderInfo,orderItems))
+                .receiveOrderItems(buildReceiveOrderItemRequest(orderInfo, orderItems))
                 .build();
 
         //运费
-        if(null != deliveryAmount) {
+        if (null != deliveryAmount) {
             request.setDeliveryAmount(deliveryAmount.getAmount());
         }
         return request;
     }
 
 
-    private List<ReceiveOrderItemRequest> buildReceiveOrderItemRequest(OrderInfoDO orderInfo,List<OrderItemDO> items) {
+    private List<ReceiveOrderItemRequest> buildReceiveOrderItemRequest(OrderInfoDO orderInfo, List<OrderItemDO> items) {
 
         List<ReceiveOrderItemRequest> itemRequests = new ArrayList<>();
 
@@ -148,23 +149,22 @@ public class OrderFulFillServiceImpl implements OrderFulFillService {
             itemRequests.add(request);
         });
 
-       return itemRequests;
+        return itemRequests;
     }
 
     /**
      * 获取对应的订单物流结果处理器
+     *
      * @param orderStatusChange
      * @return
      */
     private OrderWmsShipResultProcessor getProcessor(OrderStatusChangeEnum orderStatusChange) {
 
-        if(OrderStatusChangeEnum.ORDER_OUT_STOCKED.equals(orderStatusChange)) {
+        if (OrderStatusChangeEnum.ORDER_OUT_STOCKED.equals(orderStatusChange)) {
             return springApplicationContext.getBean(OrderOutStockedProcessor.class);
-        }
-        else if(OrderStatusChangeEnum.ORDER_DELIVERED.equals(orderStatusChange)) {
+        } else if (OrderStatusChangeEnum.ORDER_DELIVERED.equals(orderStatusChange)) {
             return springApplicationContext.getBean(OrderDeliveredProcessor.class);
-        }
-        else if(OrderStatusChangeEnum.ORDER_SIGNED.equals(orderStatusChange)) {
+        } else if (OrderStatusChangeEnum.ORDER_SIGNED.equals(orderStatusChange)) {
             return springApplicationContext.getBean(OrderSignedProcessor.class);
         }
 

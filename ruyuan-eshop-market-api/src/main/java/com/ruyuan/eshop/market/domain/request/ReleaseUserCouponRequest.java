@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.market.domain.request;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,7 +11,7 @@ import java.io.Serializable;
  * @version 1.0
  */
 @Data
-public class ReleaseUserCouponRequest extends AbstractObject implements Serializable {
+public class ReleaseUserCouponRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**

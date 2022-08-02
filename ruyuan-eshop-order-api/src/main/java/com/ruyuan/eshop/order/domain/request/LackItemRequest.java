@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.order.domain.request;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,13 +9,14 @@ import java.util.Objects;
 
 /**
  * 具体的缺品项
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class LackItemRequest extends AbstractObject implements Serializable {
+public class LackItemRequest implements Serializable {
 
     /**
      * sku编码

@@ -5,6 +5,7 @@ import java.util.Map;
 
 /**
  * 订单号类型枚举
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -32,16 +33,16 @@ public enum OrderNoTypeEnum {
         return msg;
     }
 
-    public static Map<Integer,String> toMap(){
-        Map<Integer,String> map = new HashMap<>(16);
-        for (OrderNoTypeEnum element : OrderNoTypeEnum.values() ){
-            map.put(element.getCode(),element.getMsg());
+    public static Map<Integer, String> toMap() {
+        Map<Integer, String> map = new HashMap<>(16);
+        for (OrderNoTypeEnum element : OrderNoTypeEnum.values()) {
+            map.put(element.getCode(), element.getMsg());
         }
         return map;
     }
 
-    public static OrderNoTypeEnum getByCode(Integer code){
-        for(OrderNoTypeEnum element : OrderNoTypeEnum.values()){
+    public static OrderNoTypeEnum getByCode(Integer code) {
+        for (OrderNoTypeEnum element : OrderNoTypeEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }

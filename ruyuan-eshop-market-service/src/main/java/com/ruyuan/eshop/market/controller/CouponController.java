@@ -8,14 +8,14 @@ import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 优惠券管理controller组件
- * @author zhonghuashishan
  *
+ * @author zhonghuashishan
  */
 @RestController
 @RequestMapping("/api/coupon")
 public class CouponController {
-	
-	private static final Logger logger = LoggerFactory.getLogger(CouponController.class);
 
-	
+    private static final Logger logger = LoggerFactory.getLogger(CouponController.class);
+
+
 }

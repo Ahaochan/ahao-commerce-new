@@ -1,12 +1,10 @@
 package com.ruyuan.eshop.market.domain.entity;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.ruyuan.eshop.common.domain.BaseEntity;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -17,7 +15,7 @@ import java.io.Serializable;
  */
 @Data
 @TableName("market_freight_template")
-public class FreightTemplateDO extends BaseEntity implements Serializable {
+public class FreightTemplateDO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -26,6 +24,18 @@ public class FreightTemplateDO extends BaseEntity implements Serializable {
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
+
+    /**
+     * 创建时间
+     */
+    @TableField(fill = FieldFill.INSERT)
+    private Date gmtCreate;
+
+    /**
+     * 更新时间
+     */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Date gmtModified;
 
     /**
      * 模板名称

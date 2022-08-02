@@ -5,6 +5,7 @@ import com.ruyuan.eshop.common.exception.BaseErrorCodeEnum;
 /**
  * 异常错误码枚举值
  * 前三位代表服务，后三位代表功能错误码
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -13,7 +14,9 @@ public enum InventoryErrorCodeEnum implements BaseErrorCodeEnum {
     PRODUCT_SKU_STOCK_NOT_FOUND_ERROR("100001", "商品库存记录不存在"),
     PRODUCT_SKU_STOCK_EXISTED_ERROR("100002", "商品库存记录已存在"),
     DEDUCT_PRODUCT_SKU_STOCK_ERROR("100003", "扣减商品库存失败"),
+    DEDUCT_PRODUCT_SKU_STOCK_CANNOT_ACQUIRE("100003", "无法获取扣减库存锁"),
     RELEASE_PRODUCT_SKU_STOCK_ERROR("100004", "释放商品库存失败"),
+    RELEASE_PRODUCT_SKU_STOCK_LOCK_CANNOT_ACQUIRE("100004", "无法获取释放库存锁"),
     CONSUME_MQ_FAILED("100005", "消费MQ消息失败"),
     SKU_CODE_IS_EMPTY("100006", "skuCode不能为空"),
     SALE_STOCK_QUANTITY_IS_EMPTY("100007", "销售库存数量不能为空"),

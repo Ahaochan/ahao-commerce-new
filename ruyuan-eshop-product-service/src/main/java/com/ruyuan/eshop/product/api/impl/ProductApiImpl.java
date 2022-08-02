@@ -12,8 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 /**
  * 商品中心-商品信息
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -28,16 +31,36 @@ public class ProductApiImpl implements ProductApi {
     public JsonResult<ProductSkuDTO> getProductSku(ProductSkuQuery productSkuQuery) {
         try {
             ParamCheckUtil.checkObjectNonNull(productSkuQuery);
-            String skuCode = productSkuQuery.getSkuCode();
+            List<String> skuCodeList = productSkuQuery.getSkuCodeList();
+            ParamCheckUtil.checkCollectionNonEmpty(skuCodeList);
 
-            ProductSkuDTO productSkuDTO = productSkuService.getProductSkuByCode(skuCode);
+            ProductSkuDTO productSkuDTO = productSkuService.getProductSkuByCode(skuCodeList.get(0));
             log.info("productSkuDTO={},productSkuQuery={}"
-                    , JSONObject.toJSONString(productSkuDTO),JSONObject.toJSONString(productSkuQuery));
+                    , JSONObject.toJSONString(productSkuDTO), JSONObject.toJSONString(productSkuQuery));
             return JsonResult.buildSuccess(productSkuDTO);
-        } catch(ProductBizException e) {
+        } catch (ProductBizException e) {
             log.error("biz error", e);
             return JsonResult.buildError(e.getErrorCode(), e.getErrorMsg());
-        } catch(Exception e) {
+        } catch (Exception e) {
+            log.error("system error", e);
+            return JsonResult.buildError(e.getMessage());
+        }
+    }
+
+    @Override
+    public JsonResult<List<ProductSkuDTO>> listProductSku(ProductSkuQuery productSkuQuery) {
+        try {
+            ParamCheckUtil.checkObjectNonNull(productSkuQuery);
+            List<String> skuCodeList = productSkuQuery.getSkuCodeList();
+
+            List<ProductSkuDTO> productSkuDTOList = productSkuService.listProductSkuByCode(skuCodeList);
+            log.info("productSkuDTO={},productSkuQuery={}"
+                    , JSONObject.toJSONString(productSkuDTOList), JSONObject.toJSONString(productSkuQuery));
+            return JsonResult.buildSuccess(productSkuDTOList);
+        } catch (ProductBizException e) {
+            log.error("biz error", e);
+            return JsonResult.buildError(e.getErrorCode(), e.getErrorMsg());
+        } catch (Exception e) {
             log.error("system error", e);
             return JsonResult.buildError(e.getMessage());
         }

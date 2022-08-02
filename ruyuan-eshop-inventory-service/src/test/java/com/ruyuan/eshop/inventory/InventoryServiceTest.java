@@ -39,7 +39,7 @@ public class InventoryServiceTest {
         Long saleStockQuantity = 10000L;
         String productStockKey = CacheSupport.buildProductStockKey(skuCode);
 
-        Map<String,String> productStockValue = redisCache.hGetAll(productStockKey);
+        Map<String, String> productStockValue = redisCache.hGetAll(productStockKey);
 
         System.out.println("before productStockValue=" + JSONObject.toJSONString(productStockValue));
 
@@ -59,7 +59,7 @@ public class InventoryServiceTest {
         Long stockIncremental = 100L;
         String productStockKey = CacheSupport.buildProductStockKey(skuCode);
 
-        Map<String,String> productStockValue = redisCache.hGetAll(productStockKey);
+        Map<String, String> productStockValue = redisCache.hGetAll(productStockKey);
 
         System.out.println("before productStockValue=" + JSONObject.toJSONString(productStockValue));
         ModifyProductStockRequest request = new ModifyProductStockRequest();
@@ -81,15 +81,15 @@ public class InventoryServiceTest {
         Integer saleQuantity2 = 1;
         String productStockKey2 = CacheSupport.buildProductStockKey(skuCode2);
 
-        Map<String,String> productStockValue1 = redisCache.hGetAll(productStockKey1);
-        Map<String,String> productStockValue2 = redisCache.hGetAll(productStockKey2);
+        Map<String, String> productStockValue1 = redisCache.hGetAll(productStockKey1);
+        Map<String, String> productStockValue2 = redisCache.hGetAll(productStockKey2);
         System.out.println("before productStockValue1=" + JSONObject.toJSONString(productStockValue1));
         System.out.println("before productStockValue2=" + JSONObject.toJSONString(productStockValue2));
 
         DeductProductStockRequest request = new DeductProductStockRequest();
         request.setBusinessIdentifier(1);
         request.setOrderId("1");
-        List<DeductProductStockRequest.OrderItemRequest> orderItemRequests= new ArrayList<>();
+        List<DeductProductStockRequest.OrderItemRequest> orderItemRequests = new ArrayList<>();
         request.setOrderItemRequestList(orderItemRequests);
 
         DeductProductStockRequest.OrderItemRequest itemRequest1 = new DeductProductStockRequest.OrderItemRequest();
@@ -104,7 +104,7 @@ public class InventoryServiceTest {
 
         try {
             inventoryService.deductProductStock(request);
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -125,14 +125,14 @@ public class InventoryServiceTest {
         Integer saleQuantity2 = 1;
         String productStockKey2 = CacheSupport.buildProductStockKey(skuCode2);
 
-        Map<String,String> productStockValue1 = redisCache.hGetAll(productStockKey1);
-        Map<String,String> productStockValue2 = redisCache.hGetAll(productStockKey2);
+        Map<String, String> productStockValue1 = redisCache.hGetAll(productStockKey1);
+        Map<String, String> productStockValue2 = redisCache.hGetAll(productStockKey2);
         System.out.println("before productStockValue1=" + JSONObject.toJSONString(productStockValue1));
         System.out.println("before productStockValue2=" + JSONObject.toJSONString(productStockValue2));
 
         ReleaseProductStockRequest request = new ReleaseProductStockRequest();
         request.setOrderId("1");
-        List<ReleaseProductStockRequest.OrderItemRequest> orderItemRequests= new ArrayList<>();
+        List<ReleaseProductStockRequest.OrderItemRequest> orderItemRequests = new ArrayList<>();
         request.setOrderItemRequestList(orderItemRequests);
 
         ReleaseProductStockRequest.OrderItemRequest itemRequest1 = new ReleaseProductStockRequest.OrderItemRequest();
@@ -147,7 +147,7 @@ public class InventoryServiceTest {
 
         try {
             inventoryService.releaseProductStock(request);
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -174,8 +174,8 @@ public class InventoryServiceTest {
         inventoryService.syncStockToCache(request);
 
 
-        Map<String,String> productStockValue1 = redisCache.hGetAll(productStockKey1);
-        Map<String,String> productStockValue2 = redisCache.hGetAll(productStockKey2);
+        Map<String, String> productStockValue1 = redisCache.hGetAll(productStockKey1);
+        Map<String, String> productStockValue2 = redisCache.hGetAll(productStockKey2);
 
         System.out.println("after productStockValue1=" + JSONObject.toJSONString(productStockValue1));
         System.out.println("after productStockValue2=" + JSONObject.toJSONString(productStockValue2));

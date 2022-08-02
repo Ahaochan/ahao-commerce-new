@@ -1,9 +1,13 @@
 package com.ruyuan.eshop.order.api;
 
 import com.ruyuan.eshop.common.core.JsonResult;
+import com.ruyuan.eshop.customer.domain.request.CustomerReceiveAfterSaleRequest;
 import com.ruyuan.eshop.customer.domain.request.CustomerReviewReturnGoodsRequest;
 import com.ruyuan.eshop.order.domain.dto.LackDTO;
-import com.ruyuan.eshop.order.domain.request.*;
+import com.ruyuan.eshop.order.domain.request.CancelOrderRequest;
+import com.ruyuan.eshop.order.domain.request.LackRequest;
+import com.ruyuan.eshop.order.domain.request.RefundCallbackRequest;
+import com.ruyuan.eshop.order.domain.request.RevokeAfterSaleRequest;
 
 /**
  * 订单中心-逆向售后业务接口
@@ -37,5 +41,10 @@ public interface AfterSaleApi {
      * 用户撤销售后申请
      */
     JsonResult<Boolean> revokeAfterSale(RevokeAfterSaleRequest request);
+
+    /**
+     * 提供给客服系统查询售后支付单信息
+     */
+    JsonResult<Long> customerFindAfterSaleRefundInfo(CustomerReceiveAfterSaleRequest customerReceiveAfterSaleRequest);
 
 }

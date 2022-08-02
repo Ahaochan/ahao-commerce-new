@@ -7,6 +7,7 @@ import java.util.Set;
 
 /**
  * 平台类型枚举
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -35,16 +36,16 @@ public enum PlatformEnum {
         return msg;
     }
 
-    public static Map<Integer, String> toMap(){
+    public static Map<Integer, String> toMap() {
         Map<Integer, String> map = new HashMap<>(16);
-        for (PlatformEnum element : PlatformEnum.values() ){
-            map.put(element.getCode(),element.getMsg());
+        for (PlatformEnum element : PlatformEnum.values()) {
+            map.put(element.getCode(), element.getMsg());
         }
         return map;
     }
 
-    public static PlatformEnum getByCode(Integer code){
-        for(PlatformEnum element : PlatformEnum.values()){
+    public static PlatformEnum getByCode(Integer code) {
+        for (PlatformEnum element : PlatformEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }

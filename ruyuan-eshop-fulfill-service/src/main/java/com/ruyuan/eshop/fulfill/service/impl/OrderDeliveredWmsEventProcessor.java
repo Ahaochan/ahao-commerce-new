@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * 订单已配送事件处理器
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -27,8 +28,8 @@ public class OrderDeliveredWmsEventProcessor extends AbstractWmsShipEventProcess
         OrderDeliveredWmsEvent deliveredWmsEvent = (OrderDeliveredWmsEvent) request.getWmsEvent();
         String fulfillId = request.getFulfillId();
         //更新配送员信息
-        orderFulfillDAO.updateDeliverer(fulfillId,deliveredWmsEvent.getDelivererNo(),
-                deliveredWmsEvent.getDelivererName(),deliveredWmsEvent.getDelivererPhone());
+        orderFulfillDAO.updateDeliverer(fulfillId, deliveredWmsEvent.getDelivererNo(),
+                deliveredWmsEvent.getDelivererName(), deliveredWmsEvent.getDelivererPhone());
     }
 
     @Override

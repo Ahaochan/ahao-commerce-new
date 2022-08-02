@@ -1,16 +1,15 @@
 package com.ruyuan.eshop.order.mq.consumer;
 
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
-import com.ruyuan.eshop.order.mq.config.RocketMQProperties;
 import com.ruyuan.eshop.order.mq.consumer.listener.*;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.spring.autoconfigure.RocketMQProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static com.ruyuan.eshop.common.constants.RocketMqConstant.*;
-import static com.ruyuan.eshop.common.constants.RocketMqConstant.ACTUAL_REFUND_TOPIC;
 
 /**
  * @author zhonghuashishan
@@ -24,6 +23,7 @@ public class ConsumerConfig {
 
     /**
      * 订单完成支付消息消费者
+     *
      * @param paidOrderSuccessListener
      * @return
      * @throws MQClientException
@@ -52,6 +52,7 @@ public class ConsumerConfig {
 
     /**
      * 消费退款请求消息 消费者
+     *
      * @param cancelRefundListener
      * @return
      * @throws MQClientException
@@ -70,6 +71,7 @@ public class ConsumerConfig {
 
     /**
      * 订单物流配送结果rocketmq消息消费者
+     *
      * @param orderWmsShipResultListener
      * @return
      * @throws MQClientException
@@ -87,6 +89,7 @@ public class ConsumerConfig {
 
     /**
      * 支付订单超时延迟消息消费者
+     *
      * @param payOrderTimeoutListener
      * @return
      * @throws MQClientException
@@ -105,6 +108,7 @@ public class ConsumerConfig {
 
     /**
      * 释放资产消息消费者
+     *
      * @param releaseAssetsListener
      * @return
      * @throws MQClientException
@@ -116,23 +120,6 @@ public class ConsumerConfig {
         consumer.setNamesrvAddr(rocketMQProperties.getNameServer());
         consumer.subscribe(RELEASE_ASSETS_TOPIC, "*");
         consumer.registerMessageListener(releaseAssetsListener);
-        consumer.start();
-        return consumer;
-    }
-
-    /**
-     * 释放资产消息消费者
-     * @param testMqListener
-     * @return
-     * @throws MQClientException
-     */
-    @Bean("testConsumer")
-    public DefaultMQPushConsumer testConsumer(TestMqListener testMqListener)
-            throws MQClientException {
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("test_mq_consumer_group");
-        consumer.setNamesrvAddr(rocketMQProperties.getNameServer());
-        consumer.subscribe("test_topic", "*");
-        consumer.registerMessageListener(testMqListener);
         consumer.start();
         return consumer;
     }

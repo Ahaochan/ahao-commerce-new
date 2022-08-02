@@ -29,11 +29,11 @@ public class OrderLackServiceTest {
         lackRequest.setUserId("user_id_001");
 
         Set<LackItemRequest> itemRequests = new HashSet<>();
-        itemRequests.add(new LackItemRequest("10101010",1));
+        itemRequests.add(new LackItemRequest("10101010", 1));
         lackRequest.setLackItems(itemRequests);
 
         JsonResult<LackDTO> jsonResult = api.lockItem(lackRequest);
-        System.out.println("jsonResult="+ JSONObject.toJSONString(jsonResult));
+        System.out.println("jsonResult=" + JSONObject.toJSONString(jsonResult));
     }
 
 

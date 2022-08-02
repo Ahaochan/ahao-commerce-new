@@ -16,7 +16,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 public class StateMachineConfiguration {
 
     @Bean
-    public ThreadPoolExecutorFactoryBean threadExecutor(){
+    public ThreadPoolExecutorFactoryBean threadExecutor() {
         ThreadPoolExecutorFactoryBean threadExecutor = new ThreadPoolExecutorFactoryBean();
         threadExecutor.setThreadNamePrefix("SAGA_ASYNC_EXE_");
         threadExecutor.setCorePoolSize(1);
@@ -33,24 +33,25 @@ public class StateMachineConfiguration {
         dbStateMachineConfig.setResources(new PathMatchingResourcePatternResolver()
                 .getResources("classpath*:statelang/*.json"));
         dbStateMachineConfig.setEnableAsync(true);
-        dbStateMachineConfig.setTxServiceGroup("ruyuan-eshop-fulfill-group");
+        dbStateMachineConfig.setTxServiceGroup("default_tx_group");
         return dbStateMachineConfig;
     }
 
     /**
      * saga状态机实例
+     *
      * @param dbStateMachineConfig
      * @return
      */
     @Bean
-    public ProcessCtrlStateMachineEngine stateMachineEngine(DbStateMachineConfig dbStateMachineConfig){
+    public ProcessCtrlStateMachineEngine stateMachineEngine(DbStateMachineConfig dbStateMachineConfig) {
         ProcessCtrlStateMachineEngine stateMachineEngine = new ProcessCtrlStateMachineEngine();
         stateMachineEngine.setStateMachineConfig(dbStateMachineConfig);
         return stateMachineEngine;
     }
 
     @Bean
-    public StateMachineEngineHolder stateMachineEngineHolder(ProcessCtrlStateMachineEngine stateMachineEngine){
+    public StateMachineEngineHolder stateMachineEngineHolder(ProcessCtrlStateMachineEngine stateMachineEngine) {
         StateMachineEngineHolder stateMachineEngineHolder = new StateMachineEngineHolder();
         stateMachineEngineHolder.setStateMachineEngine(stateMachineEngine);
         return stateMachineEngineHolder;

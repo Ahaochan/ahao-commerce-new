@@ -2,7 +2,7 @@ spring:
   application:
     name: ruyuan-eshop-pay
   profiles:
-    active: dev
+    active: local
   cloud:
     nacos:
       config:

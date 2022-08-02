@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "45b7a4ce-7060-4db5-8050-58a30cf445cf",
+		"_postman_id": "256aaa09-da9d-4ef4-95c0-0d5152fca7bc",
 		"name": "订单系统接口清单",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -38,13 +38,42 @@
 					"response": []
 				},
 				{
+					"name": "生成新的订单号-压测",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"businessIdentifier\":1,\n    \"userId\":100\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8005/order/test/genOrderId",
+							"host": [
+								"localhost"
+							],
+							"port": "8005",
+							"path": [
+								"order",
+								"test",
+								"genOrderId"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "提交订单",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"orderId\":1021121337153297100,\n    \"businessIdentifier\":1,\n    \"openid\":null,\n    \"userId\":100,\n    \"orderType\":1,\n    \"sellerId\":101,\n    \"userRemark\":\"test reamark\",\n    \"couponId\":\"1001001\",\n    \"deliveryType\":1,\n    \"province\":\"110000\",\n    \"city\":\"110100\",\n    \"area\":\"110105\",\n    \"street\":\"110101007\",\n    \"detailAddress\":\"北京路10号\",\n    \"lon\":100.10000,\n    \"lat\":1010.201010,\n    \"receiverName\":\"张三\",\n    \"receiverPhone\":\"13434545545\",\n    \"userAddressId\":\"1010\",\n    \"addressCode\":\"1010100\",\n    \"regionId\":\"10002020\",\n    \"shippingAreaId\":\"101010212\",\n    \"clientIp\":\"34.53.12.34\",\n    \"deviceId\":\"45sf2354adfw245\",\n    \"orderItemRequestList\":[\n        {\n            \"productType\":1,\n            \"saleQuantity\":10,\n            \"skuCode\":\"10101010\"\n        },\n        {\n            \"productType\":1,\n            \"saleQuantity\":1,\n            \"skuCode\":\"10101011\"\n        }\n    ],\n    \"orderAmountRequestList\":[\n        {\n            \"amountType\":10,\n            \"amount\":10100\n        },\n        {\n            \"amountType\":20,\n            \"amount\":500\n        },\n        {\n            \"amountType\":30,\n            \"amount\":0\n        },\n        {\n            \"amountType\":50,\n            \"amount\":9600\n        }\n    ],\n    \"paymentRequestList\":[\n        {\n            \"payType\":10,\n            \"accountType\":1\n        }\n    ]\n}",
+							"raw": "{\n    \"orderId\":1021121732891264100,\n    \"businessIdentifier\":1,\n    \"openid\":null,\n    \"userId\":100,\n    \"orderType\":1,\n    \"sellerId\":101,\n    \"userRemark\":\"test reamark\",\n    \"deliveryType\":1,\n    \"province\":\"110000\",\n    \"city\":\"110100\",\n    \"area\":\"110105\",\n    \"street\":\"110101007\",\n    \"detailAddress\":\"北京路10号\",\n    \"lon\":100.10000,\n    \"lat\":1010.201010,\n    \"receiverName\":\"张三\",\n    \"receiverPhone\":\"13434545545\",\n    \"userAddressId\":\"1010\",\n    \"addressCode\":\"1010100\",\n    \"regionId\":\"10002020\",\n    \"shippingAreaId\":\"101010212\",\n    \"clientIp\":\"34.53.12.34\",\n    \"deviceId\":\"45sf2354adfw245\",\n    \"orderItemRequestList\":[\n        {\n            \"productType\":1,\n            \"saleQuantity\":10,\n            \"skuCode\":\"skuCode001\"\n        }\n    ],\n    \"orderAmountRequestList\":[\n        {\n            \"amountType\":10,\n            \"amount\":10000\n        },\n        {\n            \"amountType\":30,\n            \"amount\":0\n        },\n        {\n            \"amountType\":50,\n            \"amount\":10000\n        }\n    ],\n    \"paymentRequestList\":[\n        {\n            \"payType\":10,\n            \"accountType\":1\n        }\n    ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -73,7 +102,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"userId\":\"100\",\n    \"businessIdentifier\":1,\n    \"payType\":10,\n    \"orderId\":\"1021121337153297100\",\n    \"payAmount\":\"9600\",\n    \"callbackUrl\":\"http://pay.ruyuan.com/order/callbackUrl\",\n    \"callbackFailUrl\":\"http://pay.ruyuan.com/order/callbackFailUrl\",\n    \"openid\":null,\n    \"subject\":\"新鲜水果\",\n    \"itemInfo\":\"test\"\n}",
+							"raw": "{\n    \"userId\":\"100\",\n    \"businessIdentifier\":1,\n    \"payType\":10,\n    \"orderId\":\"1021121537167617100\",\n    \"payAmount\":\"10100\",\n    \"callbackUrl\":\"http://pay.ruyuan.com/order/callbackUrl\",\n    \"callbackFailUrl\":\"http://pay.ruyuan.com/order/callbackFailUrl\",\n    \"openid\":null,\n    \"subject\":\"新鲜水果\",\n    \"itemInfo\":\"test\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -102,7 +131,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"orderId\":\"1021121337153297100\",\n    \"payAccount\":\"demopay@qq.com\",\n    \"payAmount\":\"9600\",\n    \"outTradeNo\":\"2883761786611116217\",\n    \"payType\":10,\n    \"merchantId\":\"43523123122343\",\n    \"payChannel\":\"WeChatPay\",\n    \"appid\":\"wx207d34495e348e0c\"\n}",
+							"raw": "{\n    \"orderId\":\"1021120632909569100\",\n    \"payAccount\":\"demopay@qq.com\",\n    \"payAmount\":\"9600\",\n    \"outTradeNo\":\"0360406257224885731\",\n    \"payType\":10,\n    \"merchantId\":\"43523123122343\",\n    \"payChannel\":\"WeChatPay\",\n    \"appid\":\"wx207d34495e348e0c\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -713,6 +742,142 @@
 					"response": []
 				},
 				{
+					"name": "扣商品库存",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"orderId\":\"orderId001\",\n    \"orderItemRequestList\":[\n        {\n            \"saleQuantity\":10,\n            \"skuCode\":\"10101010\"\n        },\n        {\n            \"saleQuantity\":1,\n            \"skuCode\":\"10101011\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8001/inventory/deductProductStock",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"inventory",
+								"deductProductStock"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取库存信息",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"orderId\":\"orderId001\",\n    \"orderItemRequestList\":[\n        {\n            \"saleQuantity\":10,\n            \"skuCode\":\"10101010\"\n        },\n        {\n            \"saleQuantity\":1,\n            \"skuCode\":\"10101011\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8001/inventory/getStockInfo?skuCode=skuCode002",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"inventory",
+								"getStockInfo"
+							],
+							"query": [
+								{
+									"key": "skuCode",
+									"value": "skuCode002"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "获取库存信息-压测",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"orderId\":\"orderId001\",\n    \"orderItemRequestList\":[\n        {\n            \"saleQuantity\":10,\n            \"skuCode\":\"10101010\"\n        },\n        {\n            \"saleQuantity\":1,\n            \"skuCode\":\"10101011\"\n        }\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "106.15.191.229:8001/inventory/getStockInfo?skuCode=skuCode002",
+							"host": [
+								"106",
+								"15",
+								"191",
+								"229"
+							],
+							"port": "8001",
+							"path": [
+								"inventory",
+								"getStockInfo"
+							],
+							"query": [
+								{
+									"key": "skuCode",
+									"value": "skuCode002"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "新增商品库存-压测",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"skuCode\":\"test002\",\n    \"saleStockQuantity\":\"100\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "106.15.191.229:8001/inventory/addProductStock",
+							"host": [
+								"106",
+								"15",
+								"191",
+								"229"
+							],
+							"port": "8001",
+							"path": [
+								"inventory",
+								"addProductStock"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "调整商品库存",
 					"request": {
 						"method": "POST",
@@ -741,13 +906,13 @@
 					"response": []
 				},
 				{
-					"name": "同步mysql中的库存到redis",
+					"name": "同步商品库存",
 					"request": {
 						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"skuCode\":10101010\n}",
+							"raw": "{\n    \"skuCode\":\"10101011\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -755,17 +920,45 @@
 							}
 						},
 						"url": {
-							"raw": "47.100.171.165:8001/inventory/syncStockToCache",
+							"raw": "106.15.191.229:8001/inventory/syncStockToCache",
 							"host": [
-								"47",
-								"100",
-								"171",
-								"165"
+								"106",
+								"15",
+								"191",
+								"229"
 							],
 							"port": "8001",
 							"path": [
 								"inventory",
 								"syncStockToCache"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "初始化压测数据",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"skuCodes\":[\n        \"skuCode1\",\n        \"skuCode2\",\n        \"skuCode3\",\n        \"skuCode4\",\n        \"skuCode5\",\n        \"skuCode6\",\n        \"skuCode7\",\n        \"skuCode8\",\n        \"skuCode9\",\n        \"skuCode10\",\n        \"skuCode11\",\n        \"skuCode12\",\n        \"skuCode13\",\n        \"skuCode14\",\n        \"skuCode15\",\n        \"skuCode16\",\n        \"skuCode17\",\n        \"skuCode18\",\n        \"skuCode19\",\n        \"skuCode20\",\n        \"skuCode21\",\n        \"skuCode22\",\n        \"skuCode23\",\n        \"skuCode24\",\n        \"skuCode25\",\n        \"skuCode26\",\n        \"skuCode27\",\n        \"skuCode28\",\n        \"skuCode29\",\n        \"skuCode30\",\n        \"skuCode31\",\n        \"skuCode32\",\n        \"skuCode33\",\n        \"skuCode34\",\n        \"skuCode35\",\n        \"skuCode36\",\n        \"skuCode37\",\n        \"skuCode38\",\n        \"skuCode39\",\n        \"skuCode40\",\n        \"skuCode41\",\n        \"skuCode42\",\n        \"skuCode43\",\n        \"skuCode44\",\n        \"skuCode45\",\n        \"skuCode46\",\n        \"skuCode47\",\n        \"skuCode48\",\n        \"skuCode49\",\n        \"skuCode50\",\n        \"skuCode51\",\n        \"skuCode52\",\n        \"skuCode53\",\n        \"skuCode54\",\n        \"skuCode55\",\n        \"skuCode56\",\n        \"skuCode57\",\n        \"skuCode58\",\n        \"skuCode59\",\n        \"skuCode60\",\n        \"skuCode61\",\n        \"skuCode62\",\n        \"skuCode63\",\n        \"skuCode64\",\n        \"skuCode65\",\n        \"skuCode66\",\n        \"skuCode67\",\n        \"skuCode68\",\n        \"skuCode69\",\n        \"skuCode70\",\n        \"skuCode71\",\n        \"skuCode72\",\n        \"skuCode73\",\n        \"skuCode74\",\n        \"skuCode75\",\n        \"skuCode76\",\n        \"skuCode77\",\n        \"skuCode78\",\n        \"skuCode79\",\n        \"skuCode80\",\n        \"skuCode81\",\n        \"skuCode82\",\n        \"skuCode83\",\n        \"skuCode84\",\n        \"skuCode85\",\n        \"skuCode86\",\n        \"skuCode87\",\n        \"skuCode88\",\n        \"skuCode89\",\n        \"skuCode90\",\n        \"skuCode91\",\n        \"skuCode92\",\n        \"skuCode93\",\n        \"skuCode94\",\n        \"skuCode95\",\n        \"skuCode96\",\n        \"skuCode97\",\n        \"skuCode98\",\n        \"skuCode99\",\n        \"skuCode100\"\n    ]\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8001/inventory/initMeasureData",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"inventory",
+								"initMeasureData"
 							]
 						}
 					},

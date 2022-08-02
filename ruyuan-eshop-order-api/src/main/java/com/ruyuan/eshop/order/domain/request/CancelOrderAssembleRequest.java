@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.order.domain.request;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import com.ruyuan.eshop.order.domain.dto.CancelOrderRefundAmountDTO;
 import com.ruyuan.eshop.order.domain.dto.OrderInfoDTO;
 import com.ruyuan.eshop.order.domain.dto.OrderItemDTO;
@@ -14,7 +13,7 @@ import java.util.List;
  * @version 1.0
  */
 @Data
-public class CancelOrderAssembleRequest extends AbstractObject implements Serializable {
+public class CancelOrderAssembleRequest implements Serializable {
 
     /**
      * 订单信息

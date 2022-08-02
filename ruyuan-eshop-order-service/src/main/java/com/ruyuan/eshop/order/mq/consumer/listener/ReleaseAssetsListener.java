@@ -51,19 +51,19 @@ public class ReleaseAssetsListener implements MessageListenerConcurrently {
                 // 2、发送取消订单退款请求MQ
                 if (orderInfoDTO.getOrderStatus() > OrderStatusEnum.CREATED.getCode()) {
                     defaultProducer.sendMessage(RocketMqConstant.CANCEL_REFUND_REQUEST_TOPIC,
-                            JSONObject.toJSONString(cancelOrderAssembleRequest), "取消订单退款");
+                            JSONObject.toJSONString(cancelOrderAssembleRequest), "取消订单退款", null, orderInfoDTO.getOrderId());
                 }
 
                 // 3、发送释放库存MQ
                 ReleaseProductStockRequest releaseProductStockRequest = buildReleaseProductStock(orderInfoDTO, orderItemDAO);
                 defaultProducer.sendMessage(RocketMqConstant.CANCEL_RELEASE_INVENTORY_TOPIC,
-                        JSONObject.toJSONString(releaseProductStockRequest), "取消订单释放库存");
+                        JSONObject.toJSONString(releaseProductStockRequest), "取消订单释放库存", null, orderInfoDTO.getOrderId());
 
                 // 4、发送释放优惠券MQ
                 if (!Strings.isNullOrEmpty(orderInfoDTO.getCouponId())) {
                     ReleaseUserCouponRequest releaseUserCouponRequest = buildReleaseUserCoupon(orderInfoDTO);
                     defaultProducer.sendMessage(RocketMqConstant.CANCEL_RELEASE_PROPERTY_TOPIC,
-                            JSONObject.toJSONString(releaseUserCouponRequest), "取消订单释放优惠券");
+                            JSONObject.toJSONString(releaseUserCouponRequest), "取消订单释放优惠券", null, orderInfoDTO.getOrderId());
                 }
             }
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;

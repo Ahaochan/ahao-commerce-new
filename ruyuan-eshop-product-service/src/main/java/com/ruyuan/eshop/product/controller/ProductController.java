@@ -1,5 +1,6 @@
 package com.ruyuan.eshop.product.controller;
 
+import com.ruyuan.eshop.product.converter.ProductConverter;
 import com.ruyuan.eshop.product.domain.dto.ProductSkuDTO;
 import com.ruyuan.eshop.product.domain.vo.ProductSkuVO;
 import com.ruyuan.eshop.product.service.ProductSkuService;
@@ -20,18 +21,22 @@ public class ProductController {
     @Autowired
     private ProductSkuService productSkuService;
 
+    @Autowired
+    private ProductConverter productConverter;
+
     /**
      * 根据skuCode查询商品sku信息
+     *
      * @param skuCode
      * @return
      */
     @GetMapping("/{skuCode}")
     public ProductSkuVO getProductSkuByCode(@PathVariable("skuCode") String skuCode) {
         ProductSkuDTO productSkuDTO = productSkuService.getProductSkuByCode(skuCode);
-        if(productSkuDTO == null) {
+        if (productSkuDTO == null) {
             return null;
         }
-        return productSkuDTO.clone(ProductSkuVO.class);
+        return productConverter.convert(productSkuDTO);
     }
 
 

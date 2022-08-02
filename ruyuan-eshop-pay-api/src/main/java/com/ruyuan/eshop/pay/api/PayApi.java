@@ -2,8 +2,8 @@ package com.ruyuan.eshop.pay.api;
 
 import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.pay.domain.dto.PayOrderDTO;
-import com.ruyuan.eshop.pay.domain.request.PayRefundRequest;
 import com.ruyuan.eshop.pay.domain.request.PayOrderRequest;
+import com.ruyuan.eshop.pay.domain.request.PayRefundRequest;
 
 /**
  * @author zhonghuashishan
@@ -20,13 +20,8 @@ public interface PayApi {
     JsonResult<PayOrderDTO> payOrder(PayOrderRequest payOrderRequest);
 
     /**
-     * 查询支付交易流水号
-     */
-    Boolean getTradeNoByRealTime(String orderId, Integer businessIdentifier);
-
-    /**
      * 调用支付接口执行退款
      */
-    Boolean executeRefund(PayRefundRequest payRefundRequest);
+    JsonResult<Boolean> executeRefund(PayRefundRequest payRefundRequest);
 
 }

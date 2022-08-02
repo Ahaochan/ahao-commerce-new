@@ -10,6 +10,7 @@ import java.io.Serializable;
 
 /**
  * 触发订单物流配送结果事件请求
+ *
  * @author zhonghuashishan
  * @version 1.0
  */

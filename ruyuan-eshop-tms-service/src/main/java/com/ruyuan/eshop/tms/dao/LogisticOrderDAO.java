@@ -20,12 +20,13 @@ public class LogisticOrderDAO extends BaseDAO<LogisticOrderMapper, LogisticOrder
 
     /**
      * 查询物流单
+     *
      * @author zhonghuashishan
      * @version 1.0
      */
     public List<LogisticOrderDO> listByOrderId(String orderId) {
         LambdaQueryWrapper<LogisticOrderDO> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(LogisticOrderDO::getOrderId,orderId);
+        queryWrapper.eq(LogisticOrderDO::getOrderId, orderId);
         return list(queryWrapper);
     }
 

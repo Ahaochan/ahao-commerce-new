@@ -1,5 +1,6 @@
 package com.ruyuan.eshop.order.domain.dto;
 
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
@@ -7,12 +8,13 @@ import java.util.Map;
 
 /**
  * <p>
- *  订单详情DTO
+ * 订单详情DTO
  * </p>
  *
  * @author zhonghuashishan
  */
 @Data
+@Builder
 public class OrderDetailDTO {
 
     /**

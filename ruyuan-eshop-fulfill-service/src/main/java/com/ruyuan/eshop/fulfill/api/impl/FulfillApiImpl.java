@@ -2,7 +2,6 @@ package com.ruyuan.eshop.fulfill.api.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ruyuan.eshop.common.bean.SpringApplicationContext;
-import com.ruyuan.eshop.common.constants.RocketMqConstant;
 import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.common.enums.OrderStatusChangeEnum;
 import com.ruyuan.eshop.fulfill.api.FulfillApi;
@@ -10,7 +9,8 @@ import com.ruyuan.eshop.fulfill.domain.request.CancelFulfillRequest;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
 import com.ruyuan.eshop.fulfill.domain.request.TriggerOrderWmsShipEventRequest;
 import com.ruyuan.eshop.fulfill.exception.FulfillBizException;
-import com.ruyuan.eshop.fulfill.mq.producer.DefaultProducer;
+import com.ruyuan.eshop.fulfill.remote.TmsRemote;
+import com.ruyuan.eshop.fulfill.remote.WmsRemote;
 import com.ruyuan.eshop.fulfill.service.FulfillService;
 import com.ruyuan.eshop.fulfill.service.OrderWmsShipEventProcessor;
 import com.ruyuan.eshop.fulfill.service.impl.OrderDeliveredWmsEventProcessor;
@@ -32,10 +32,13 @@ public class FulfillApiImpl implements FulfillApi {
     private SpringApplicationContext springApplicationContext;
 
     @Autowired
-    private DefaultProducer defaultProducer;
+    private FulfillService fulfillService;
 
     @Autowired
-    private FulfillService fulfillService;
+    private TmsRemote tmsRemote;
+
+    @Autowired
+    private WmsRemote wmsRemote;
 
 
     @Override
@@ -61,7 +64,7 @@ public class FulfillApiImpl implements FulfillApi {
         OrderWmsShipEventProcessor processor = getWmsShipEventProcessor(orderStatusChange);
 
         //2、执行
-        if(null != processor) {
+        if (null != processor) {
             processor.execute(request);
         }
 
@@ -71,17 +74,23 @@ public class FulfillApiImpl implements FulfillApi {
 
     @Override
     public JsonResult<Boolean> cancelFulfill(CancelFulfillRequest cancelFulfillRequest) {
-        log.info("取消履约：request={}",JSONObject.toJSONString(cancelFulfillRequest));
+        log.info("取消履约：request={}", JSONObject.toJSONString(cancelFulfillRequest));
 
-        //发送取消履约消息
-        defaultProducer.sendMessage(RocketMqConstant.CANCEL_FULFILL_TOPIC,
-               JSONObject.toJSONString(cancelFulfillRequest), "取消履约");
+        //1、取消履约单
+        fulfillService.cancelFulfillOrder(cancelFulfillRequest.getOrderId());
+
+        //2、取消捡货
+        wmsRemote.cancelPickGoods(cancelFulfillRequest.getOrderId());
+
+        //3、取消发货
+        tmsRemote.cancelSendOut(cancelFulfillRequest.getOrderId());
 
         return JsonResult.buildSuccess(true);
     }
 
     /**
      * 订单物流配送结果处理器
+     *
      * @param orderStatusChange
      * @return
      */

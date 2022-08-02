@@ -24,26 +24,28 @@ public class ProductStockLogDAO extends BaseDAO<ProductStockLogMapper, ProductSt
 
     /**
      * 查询库存扣减日志
+     *
      * @param orderId
      * @param skuCode
      * @return
      */
     public ProductStockLogDO getLog(String orderId, String skuCode) {
         LambdaQueryWrapper<ProductStockLogDO> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(ProductStockLogDO::getOrderId,orderId)
-                .eq(ProductStockLogDO::getSkuCode,skuCode)
+        queryWrapper.eq(ProductStockLogDO::getOrderId, orderId)
+                .eq(ProductStockLogDO::getSkuCode, skuCode)
         ;
         return baseMapper.selectOne(queryWrapper);
     }
 
     /**
      * 更新库存日志状态
+     *
      * @return
      */
-    public Boolean updateStatus(Long id,StockLogStatusEnum status) {
+    public Boolean updateStatus(Long id, StockLogStatusEnum status) {
         LambdaUpdateWrapper<ProductStockLogDO> updateWrapper = new LambdaUpdateWrapper<>();
-        updateWrapper.eq(ProductStockLogDO::getId,id)
-                .set(ProductStockLogDO::getStatus,status.getCode())
+        updateWrapper.eq(ProductStockLogDO::getId, id)
+                .set(ProductStockLogDO::getStatus, status.getCode())
         ;
         return update(updateWrapper);
     }

@@ -31,16 +31,16 @@ public enum DeleteStatusEnum {
         return msg;
     }
 
-    public static Map<Integer, String> toMap(){
+    public static Map<Integer, String> toMap() {
         Map<Integer, String> map = new HashMap<>(16);
-        for (DeleteStatusEnum element : DeleteStatusEnum.values() ){
-            map.put(element.getCode(),element.getMsg());
+        for (DeleteStatusEnum element : DeleteStatusEnum.values()) {
+            map.put(element.getCode(), element.getMsg());
         }
         return map;
     }
 
-    public static DeleteStatusEnum getByCode(Integer code){
-        for(DeleteStatusEnum element : DeleteStatusEnum.values()){
+    public static DeleteStatusEnum getByCode(Integer code) {
+        for (DeleteStatusEnum element : DeleteStatusEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }

@@ -30,7 +30,7 @@ public class CancelRefundListener implements MessageListenerConcurrently {
     @Override
     public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
         try {
-            for(MessageExt messageExt : list) {
+            for (MessageExt messageExt : list) {
                 String message = new String(messageExt.getBody());
                 CancelOrderAssembleRequest cancelOrderAssembleRequest = JSONObject.parseObject(message, CancelOrderAssembleRequest.class);
                 log.info("CancelRefundConsumer message:{}", message);

@@ -1,29 +1,36 @@
 package com.ruyuan.eshop.order.service.impl;
 
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ruyuan.eshop.common.enums.OrderStatusEnum;
 import com.ruyuan.eshop.common.page.PagingInfo;
-import com.ruyuan.eshop.common.utils.ExtJsonUtil;
+import com.ruyuan.eshop.common.utils.LoggerFormat;
 import com.ruyuan.eshop.common.utils.ParamCheckUtil;
-import com.ruyuan.eshop.order.builder.OrderDetailBuilder;
-import com.ruyuan.eshop.order.constants.OrderConstants;
+import com.ruyuan.eshop.order.converter.OrderConverter;
 import com.ruyuan.eshop.order.dao.*;
-import com.ruyuan.eshop.order.domain.dto.*;
+import com.ruyuan.eshop.order.domain.dto.OrderDetailDTO;
+import com.ruyuan.eshop.order.domain.dto.OrderLackItemDTO;
+import com.ruyuan.eshop.order.domain.dto.OrderListDTO;
+import com.ruyuan.eshop.order.domain.dto.OrderListQueryDTO;
 import com.ruyuan.eshop.order.domain.entity.*;
+import com.ruyuan.eshop.order.domain.query.AcceptOrderQuery;
 import com.ruyuan.eshop.order.domain.query.OrderQuery;
-import com.ruyuan.eshop.order.enums.*;
+import com.ruyuan.eshop.order.enums.BusinessIdentifierEnum;
+import com.ruyuan.eshop.order.enums.OrderTypeEnum;
 import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
 import com.ruyuan.eshop.order.service.AfterSaleQueryService;
 import com.ruyuan.eshop.order.service.OrderLackService;
 import com.ruyuan.eshop.order.service.OrderQueryService;
-import io.swagger.models.auth.In;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class OrderQueryServiceImpl implements OrderQueryService {
 
     @Autowired
@@ -56,26 +63,29 @@ public class OrderQueryServiceImpl implements OrderQueryService {
     @Autowired
     private OrderLackService orderLackService;
 
+    @Autowired
+    private OrderConverter orderConverter;
+
 
     @Override
-    public void checkQueryParam(OrderQuery query) {
+    public void checkQueryParam(AcceptOrderQuery acceptOrderQuery) {
 
-        ParamCheckUtil.checkObjectNonNull(query.getBusinessIdentifier(),OrderErrorCodeEnum.BUSINESS_IDENTIFIER_IS_NULL);
-        checkIntAllowableValues(query.getBusinessIdentifier(),BusinessIdentifierEnum.allowableValues(),"businessIdentifier");
-        checkIntSetAllowableValues(query.getOrderTypes(),OrderTypeEnum.allowableValues(),"orderTypes");
-        checkIntSetAllowableValues(query.getOrderStatus(),OrderStatusEnum.allowableValues(),"orderStatus");
+        ParamCheckUtil.checkObjectNonNull(acceptOrderQuery.getBusinessIdentifier(), OrderErrorCodeEnum.BUSINESS_IDENTIFIER_IS_NULL);
+        checkIntAllowableValues(acceptOrderQuery.getBusinessIdentifier(), BusinessIdentifierEnum.allowableValues(), "businessIdentifier");
+        checkIntSetAllowableValues(acceptOrderQuery.getOrderTypes(), OrderTypeEnum.allowableValues(), "orderTypes");
+        checkIntSetAllowableValues(acceptOrderQuery.getOrderStatus(), OrderStatusEnum.allowableValues(), "orderStatus");
 
 
         Integer maxSize = OrderQuery.MAX_PAGE_SIZE;
-        checkSetMaxSize(query.getOrderIds(),maxSize,"orderIds");
-        checkSetMaxSize(query.getSellerIds(),maxSize,"sellerIds");
-        checkSetMaxSize(query.getParentOrderIds(),maxSize,"parentOrderIds");
-        checkSetMaxSize(query.getReceiverNames(),maxSize,"receiverNames");
-        checkSetMaxSize(query.getReceiverPhones(),maxSize,"receiverPhones");
-        checkSetMaxSize(query.getTradeNos(),maxSize,"tradeNos");
-        checkSetMaxSize(query.getUserIds(),maxSize,"userIds");
-        checkSetMaxSize(query.getSkuCodes(),maxSize,"skuCodes");
-        checkSetMaxSize(query.getProductNames(),maxSize,"productNames");
+        checkSetMaxSize(acceptOrderQuery.getOrderIds(), maxSize, "orderIds");
+        checkSetMaxSize(acceptOrderQuery.getSellerIds(), maxSize, "sellerIds");
+        checkSetMaxSize(acceptOrderQuery.getParentOrderIds(), maxSize, "parentOrderIds");
+        checkSetMaxSize(acceptOrderQuery.getReceiverNames(), maxSize, "receiverNames");
+        checkSetMaxSize(acceptOrderQuery.getReceiverPhones(), maxSize, "receiverPhones");
+        checkSetMaxSize(acceptOrderQuery.getTradeNos(), maxSize, "tradeNos");
+        checkSetMaxSize(acceptOrderQuery.getUserIds(), maxSize, "userIds");
+        checkSetMaxSize(acceptOrderQuery.getSkuCodes(), maxSize, "skuCodes");
+        checkSetMaxSize(acceptOrderQuery.getProductNames(), maxSize, "productNames");
     }
 
     @Override
@@ -85,48 +95,55 @@ public class OrderQueryServiceImpl implements OrderQueryService {
         //第二阶段会接入es，优化这块的查询性能
 
         //1、组装业务查询规则
-        OrderListQueryDTO queryDTO = OrderListQueryDTO.Builder.builder()
-                .copy(query)
-                //不展示无效订单
-                .removeInValidStatus()
-                .setPage(query)
-                .build();
-
+        if (CollectionUtils.isEmpty(query.getOrderStatus())) {
+            //不展示无效订单
+            query.setOrderStatus(OrderStatusEnum.validStatus());
+        }
+        OrderListQueryDTO queryDTO = orderConverter.orderListQuery2DTO(query);
+        log.info(LoggerFormat.build()
+                .remark("executeListQuery->request")
+                .data("request", query)
+                .finish());
         //2、查询
         Page<OrderListDTO> page = orderInfoDAO.listByPage(queryDTO);
 
         //3、转化
         return PagingInfo.toResponse(page.getRecords()
-                , page.getTotal(), (int)page.getCurrent(), (int) page.getSize());
+                , page.getTotal(), (int) page.getCurrent(), (int) page.getSize());
     }
 
-    private void checkIntAllowableValues(Integer i, Set<Integer> allowableValues,String paramName) {
+    private void checkIntAllowableValues(Integer i, Set<Integer> allowableValues, String paramName) {
         OrderErrorCodeEnum orderErrorCodeEnum = OrderErrorCodeEnum.ENUM_PARAM_MUST_BE_IN_ALLOWABLE_VALUE;
         ParamCheckUtil.checkIntAllowableValues(i
                 , allowableValues,
-                orderErrorCodeEnum,paramName,allowableValues);
+                orderErrorCodeEnum, paramName, allowableValues);
     }
 
     private void checkIntSetAllowableValues(Set<Integer> set, Set<Integer> allowableValues, String paramName) {
         OrderErrorCodeEnum orderErrorCodeEnum = OrderErrorCodeEnum.ENUM_PARAM_MUST_BE_IN_ALLOWABLE_VALUE;
         ParamCheckUtil.checkIntSetAllowableValues(set
                 , allowableValues,
-                orderErrorCodeEnum,paramName,allowableValues);
+                orderErrorCodeEnum, paramName, allowableValues);
     }
 
-    private void checkSetMaxSize(Set setParam,Integer maxSize,String paramName) {
+    private void checkSetMaxSize(Set setParam, Integer maxSize, String paramName) {
         OrderErrorCodeEnum orderErrorCodeEnum = OrderErrorCodeEnum.COLLECTION_PARAM_CANNOT_BEYOND_MAX_SIZE;
         ParamCheckUtil.checkSetMaxSize(setParam, maxSize,
-                orderErrorCodeEnum,paramName
-                ,maxSize);
+                orderErrorCodeEnum, paramName
+                , maxSize);
 
     }
 
     @Override
     public OrderDetailDTO orderDetail(String orderId) {
+        log.info(LoggerFormat.build()
+                .remark("orderDetail->request")
+                .data("orderId", orderId)
+                .finish());
+
         //1、查询订单
         OrderInfoDO orderInfo = orderInfoDAO.getByOrderId(orderId);
-        if(null == orderInfo) {
+        if (null == orderInfo) {
             return null;
         }
 
@@ -153,20 +170,21 @@ public class OrderQueryServiceImpl implements OrderQueryService {
 
         //9、查询缺品退款信息
         List<OrderLackItemDTO> lackItems = null;
-        if(orderLackService.isOrderLacked(orderInfo)) {
+        if (orderLackService.isOrderLacked(orderInfo)) {
             lackItems = afterSaleQueryService.getOrderLackItemInfo(orderId);
         }
 
         //10、构造返参
-        return new OrderDetailBuilder()
-                .orderInfo(orderInfo)
-                .orderItems(orderItems)
-                .orderAmountDetails(orderAmountDetails)
-                .orderDeliveryDetail(orderAmountDetail)
-                .orderPaymentDetails(orderPaymentDetails)
-                .orderAmounts(orderAmounts)
-                .orderOperateLogs(orderOperateLogs)
-                .orderSnapshots(orderSnapshots)
+        return OrderDetailDTO.builder()
+                .orderInfo(orderConverter.orderInfoDO2DTO(orderInfo))
+                .orderItems(orderConverter.orderItemDO2DTO(orderItems))
+                .orderAmountDetails(orderConverter.orderAmountDetailDO2DTO(orderAmountDetails))
+                .orderDeliveryDetail(orderConverter.orderDeliveryDetailDO2DTO(orderAmountDetail))
+                .orderPaymentDetails(orderConverter.orderPaymentDetailDO2DTO(orderPaymentDetails))
+                .orderAmounts(orderAmounts.stream().collect(
+                        Collectors.toMap(OrderAmountDO::getAmountType, OrderAmountDO::getAmount, (v1, v2) -> v1)))
+                .orderOperateLogs(orderConverter.orderOperateLogsDO2DTO(orderOperateLogs))
+                .orderSnapshots(orderConverter.orderSnapshotsDO2DTO(orderSnapshots))
                 .lackItems(lackItems)
                 .build();
     }

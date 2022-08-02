@@ -7,6 +7,7 @@ import java.util.Date;
 
 /**
  * 订单已出库物流结果消息
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -15,6 +16,6 @@ public class OrderOutStockWmsEvent extends BaseWmsShipEvent {
     /**
      * 出库时间
      */
-    @DateTimeFormat(pattern="yyyy-MM-dd HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date outStockTime;
 }

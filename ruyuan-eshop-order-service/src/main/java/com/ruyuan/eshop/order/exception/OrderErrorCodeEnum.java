@@ -15,6 +15,7 @@ public enum OrderErrorCodeEnum implements BaseErrorCodeEnum {
     ORDER_NO_TYPE_ERROR("105002", "订单号类型错误"),
     CREATE_ORDER_REQUEST_ERROR("105003", "生单请求参数错误"),
     ORDER_ID_IS_NULL("105004", "订单号不能为空"),
+    ORDER_EXISTED("105004", "订单已存在"),
     BUSINESS_IDENTIFIER_IS_NULL("105005", "业务线标识不能为空"),
     BUSINESS_IDENTIFIER_ERROR("105006", "业务线标识错误"),
     ORDER_TYPE_IS_NULL("105007", "订单类型不能为空"),
@@ -35,6 +36,7 @@ public enum OrderErrorCodeEnum implements BaseErrorCodeEnum {
     ORDER_SHIPPING_AMOUNT_IS_NULL("105021", "订单运费不能为空"),
     ORDER_REAL_PAY_AMOUNT_IS_NULL("105022", "订单实付金额不能为空"),
     ORDER_DISCOUNT_AMOUNT_IS_NULL("105023", "订单优惠券抵扣金额不能为空"),
+    USER_COUPON_IS_USED("105023", "优惠券记录已经被使用了"),
     ORDER_PAYMENT_IS_NULL("105024", "订单支付信息不能为空"),
     PAY_TYPE_PARAM_ERROR("105025", "支付类型错误"),
     ACCOUNT_TYPE_PARAM_ERROR("105026", "账户类型错误"),
@@ -71,9 +73,10 @@ public enum OrderErrorCodeEnum implements BaseErrorCodeEnum {
     ORDER_FULFILL_ERROR("105050", "订单履约失败"),
     AFTER_SALE_NOT_FOUND("105051", "查无此售后单"),
     AFTER_SALE_CANNOT_REVOKE("105052", "售后单无法撤销"),
-
+    AFTER_SALE_REFUND_ID_IS_NULL("105054", "售后支付ID不能为空"),
     ORDER_STATUS_ERROR("105049", "订单状态异常"),
     ORDER_PAY_STATUS_IS_PAID("105050", "订单已经是已完成支付状态"),
+    SEND_AFTER_SALE_CUSTOMER_AUDIT_MQ_FAILED("105055", "发送客服审核售后事务消息失败"),
 
 
     RETURN_GOODS_REQUEST_IS_NULL("105051", "手动退货入参不能为空"),

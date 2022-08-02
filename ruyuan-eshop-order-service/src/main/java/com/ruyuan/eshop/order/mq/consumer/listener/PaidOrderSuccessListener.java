@@ -33,6 +33,7 @@ import static com.ruyuan.eshop.common.constants.RocketMqConstant.TRIGGER_ORDER_F
 
 /**
  * 监听订单支付成功后的消息
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -56,21 +57,21 @@ public class PaidOrderSuccessListener implements MessageListenerConcurrently {
     public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
         try {
 
-            for(MessageExt messageExt : list) {
+            for (MessageExt messageExt : list) {
                 String message = new String(messageExt.getBody());
                 PaidOrderSuccessMessage paidOrderSuccessMessage = JSON.parseObject(message, PaidOrderSuccessMessage.class);
                 String orderId = paidOrderSuccessMessage.getOrderId();
                 log.info("触发订单履约，orderId:{}", orderId);
 
                 OrderInfoDO order = orderInfoDAO.getByOrderId(orderId);
-                if(Objects.isNull(order)) {
+                if (Objects.isNull(order)) {
                     throw new OrderBizException(OrderErrorCodeEnum.ORDER_INFO_IS_NULL);
                 }
 
                 //1、加分布式锁+里面的履约前置状态校验防止消息重复消费
                 String key = RedisLockKeyConstants.ORDER_FULFILL_KEY + orderId;
-                if(!redisLock.lock(key)) {
-                    log.error("order has not acquired lock，cannot fulfill, orderId={}",orderId);
+                if (!redisLock.tryLock(key)) {
+                    log.error("order has not acquired lock，cannot fulfill, orderId={}", orderId);
                     throw new BaseBizException(OrderErrorCodeEnum.ORDER_FULFILL_ERROR);
                 }
 
@@ -97,7 +98,7 @@ public class PaidOrderSuccessListener implements MessageListenerConcurrently {
                         public LocalTransactionState checkLocalTransaction(MessageExt messageExt) {
                             // 检查订单是否"已履约"状态
                             OrderInfoDO orderInfoDO = orderInfoDAO.getByOrderId(orderId);
-                            if(orderInfoDO != null
+                            if (orderInfoDO != null
                                     && OrderStatusEnum.FULFILL.getCode().equals(orderInfoDO.getOrderStatus())) {
                                 return LocalTransactionState.COMMIT_MESSAGE;
                             }
@@ -109,10 +110,10 @@ public class PaidOrderSuccessListener implements MessageListenerConcurrently {
 
                     String topic = TRIGGER_ORDER_FULFILL_TOPIC;
                     byte[] body = JSON.toJSONString(receiveFulfillRequest).getBytes(StandardCharsets.UTF_8);
-                    Message mq = new Message(topic, body);
+                    Message mq = new Message(topic, null, orderId, body);
                     producer.sendMessageInTransaction(mq, order);
 
-                }finally {
+                } finally {
                     redisLock.unlock(key);
                 }
             }

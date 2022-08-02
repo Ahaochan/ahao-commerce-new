@@ -7,7 +7,7 @@ import java.util.Date;
 
 /**
  * <p>
- *     物流配送结果请求
+ * 物流配送结果请求
  * </p>
  *
  * @author zhonghuashishan

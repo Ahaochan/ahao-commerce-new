@@ -28,9 +28,9 @@ public enum AfterSaleStatusChangeEnum {
 
 
     public static AfterSaleStatusChangeEnum getBy(int preStatus, int currentStatus) {
-        for(AfterSaleStatusChangeEnum element : AfterSaleStatusChangeEnum.values()){
+        for (AfterSaleStatusChangeEnum element : AfterSaleStatusChangeEnum.values()) {
             if (preStatus == element.preStatus.getCode() &&
-                currentStatus == element.currentStatus.getCode()) {
+                    currentStatus == element.currentStatus.getCode()) {
                 return element;
             }
         }

@@ -1,16 +1,16 @@
 package com.ruyuan.eshop.product.domain.query;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author zhonghuashishan
  * @version 1.0
  */
 @Data
-public class ProductSkuQuery extends AbstractObject implements Serializable {
+public class ProductSkuQuery implements Serializable {
 
     private static final long serialVersionUID = 4788741095015777932L;
 
@@ -20,7 +20,7 @@ public class ProductSkuQuery extends AbstractObject implements Serializable {
     private String sellerId;
 
     /**
-     * 商品skuCode
+     * 商品skuCode集合
      */
-    private String skuCode;
+    private List<String> skuCodeList;
 }

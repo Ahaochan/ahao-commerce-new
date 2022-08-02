@@ -2,7 +2,7 @@ package com.ruyuan.eshop.market.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.ruyuan.eshop.market.domain.entity.CouponDO;
-import org.apache.ibatis.annotations.*;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>

@@ -1,9 +1,9 @@
 package com.ruyuan.eshop.common.utils;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.ruyuan.eshop.common.exception.BaseBizException;
 import com.ruyuan.eshop.common.exception.BaseErrorCodeEnum;
 import com.ruyuan.eshop.common.exception.CommonErrorCodeEnum;
-import com.ruyuan.eshop.common.exception.BaseBizException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -14,7 +14,7 @@ import java.util.Set;
 
 /**
  * <p>
- *     参数校验工具类
+ * 参数校验工具类
  * </p>
  *
  * @author zhonghuashishan
@@ -30,13 +30,13 @@ public class ParamCheckUtil {
 
     public static void checkObjectNonNull(Object o, BaseErrorCodeEnum baseErrorCodeEnum, Object... arguments) throws BaseBizException {
         if (Objects.isNull(o)) {
-            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(),arguments);
+            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(), arguments);
         }
     }
 
     public static void checkObjectNull(Object o, BaseErrorCodeEnum baseErrorCodeEnum, Object... arguments) throws BaseBizException {
         if (Objects.nonNull(o)) {
-            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(),arguments);
+            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(), arguments);
         }
     }
 
@@ -49,25 +49,25 @@ public class ParamCheckUtil {
 
     public static void checkStringNonEmpty(String s, BaseErrorCodeEnum baseErrorCodeEnum, Object... arguments) throws BaseBizException {
         if (StringUtils.isBlank(s)) {
-            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(),arguments);
+            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(), arguments);
         }
     }
 
-    public static void checkIntAllowableValues(Integer i, Set<Integer> allowableValues, BaseErrorCodeEnum baseErrorCodeEnum,Object... arguments) throws BaseBizException {
+    public static void checkIntAllowableValues(Integer i, Set<Integer> allowableValues, BaseErrorCodeEnum baseErrorCodeEnum, Object... arguments) throws BaseBizException {
         if (Objects.nonNull(i) && !allowableValues.contains(i)) {
-            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(),arguments);
+            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(), arguments);
         }
     }
 
-    public static void checkIntMin(Integer i, int min, BaseErrorCodeEnum baseErrorCodeEnum,Object... arguments) throws BaseBizException {
-        if (Objects.isNull(i) || i<min) {
-            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(),arguments);
+    public static void checkIntMin(Integer i, int min, BaseErrorCodeEnum baseErrorCodeEnum, Object... arguments) throws BaseBizException {
+        if (Objects.isNull(i) || i < min) {
+            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(), arguments);
         }
     }
 
-    public static void checkLongMin(Long i, Long min, BaseErrorCodeEnum baseErrorCodeEnum,Object... arguments) throws BaseBizException {
-        if (Objects.isNull(i) || i<min) {
-            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(),arguments);
+    public static void checkLongMin(Long i, Long min, BaseErrorCodeEnum baseErrorCodeEnum, Object... arguments) throws BaseBizException {
+        if (Objects.isNull(i) || i < min) {
+            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(), arguments);
         }
     }
 
@@ -79,24 +79,25 @@ public class ParamCheckUtil {
 
     public static void checkCollectionNonEmpty(Collection<?> collection, BaseErrorCodeEnum baseErrorCodeEnum, Object... arguments) throws BaseBizException {
         if (CollectionUtils.isEmpty(collection)) {
-            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(),arguments);
+            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(), arguments);
         }
     }
 
-    public static void checkIntSetAllowableValues(Set<Integer> intSet, Set<Integer> allowableValues, BaseErrorCodeEnum baseErrorCodeEnum,Object... arguments) throws BaseBizException {
-        if (CollectionUtils.isNotEmpty(intSet) && !diffSet(intSet,allowableValues).isEmpty()) {
-            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(),arguments);
+    public static void checkIntSetAllowableValues(Set<Integer> intSet, Set<Integer> allowableValues, BaseErrorCodeEnum baseErrorCodeEnum, Object... arguments) throws BaseBizException {
+        if (CollectionUtils.isNotEmpty(intSet) && !diffSet(intSet, allowableValues).isEmpty()) {
+            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(), arguments);
         }
     }
 
-    public static void checkSetMaxSize(Set<?> setParam, Integer maxSize, BaseErrorCodeEnum baseErrorCodeEnum,Object... arguments) throws BaseBizException {
+    public static void checkSetMaxSize(Set<?> setParam, Integer maxSize, BaseErrorCodeEnum baseErrorCodeEnum, Object... arguments) throws BaseBizException {
         if (CollectionUtils.isNotEmpty(setParam) && setParam.size() > maxSize) {
-            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(),arguments);
+            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(), arguments);
         }
     }
 
     /**
      * 求set 差集合
+     *
      * @param set1
      * @param set2
      * @return

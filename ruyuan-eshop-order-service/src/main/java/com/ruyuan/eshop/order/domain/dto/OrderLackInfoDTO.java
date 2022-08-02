@@ -6,10 +6,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * 订单缺品信息
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -54,12 +57,12 @@ public class OrderLackInfoDTO {
     }
 
     public void setLackItems(Set<LackItemRequest> requests) {
-        if(CollectionUtils.isEmpty(requests)) {
+        if (CollectionUtils.isEmpty(requests)) {
             return;
         }
         List<LackItem> lackItems = new ArrayList<>(requests.size());
-        requests.forEach(request->{
-            lackItems.add(new LackItem(request.getSkuCode(),request.getLackNum()));
+        requests.forEach(request -> {
+            lackItems.add(new LackItem(request.getSkuCode(), request.getLackNum()));
         });
 
         this.lackItems = lackItems;

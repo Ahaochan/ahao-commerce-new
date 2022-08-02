@@ -73,7 +73,7 @@ public class MarketApiImpl implements MarketApi {
         //  分布式锁
         String couponId = releaseUserCouponRequest.getCouponId();
         String key = RedisLockKeyConstants.RELEASE_COUPON_KEY + couponId;
-        boolean lock = redisLock.lock(key);
+        boolean lock = redisLock.tryLock(key);
         if (!lock) {
             throw new MarketBizException(MarketErrorCodeEnum.RELEASE_COUPON_FAILED);
         }

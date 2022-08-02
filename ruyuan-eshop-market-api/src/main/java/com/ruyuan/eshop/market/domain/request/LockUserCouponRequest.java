@@ -1,17 +1,17 @@
 package com.ruyuan.eshop.market.domain.request;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
 
 /**
  * 锁定使用优惠券入参
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
 @Data
-public class LockUserCouponRequest extends AbstractObject implements Serializable {
+public class LockUserCouponRequest implements Serializable {
 
     private static final long serialVersionUID = 8135282200466056333L;
 

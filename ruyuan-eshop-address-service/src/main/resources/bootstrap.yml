@@ -2,7 +2,7 @@ spring:
   application:
     name: ruyuan-eshop-address
   profiles:
-    active: dev
+    active: local
   cloud:
     nacos:
       config:
@@ -10,7 +10,7 @@ spring:
           - data-id: ruyuan-eshop-common-${spring.profiles.active}.yaml
             group: DEFAULT_GROUP
             refresh: true
-        server-addr: localhost:8848
+        server-addr: locahoost:8848
         file-extension: yaml
         username: nacos
         password: nacos

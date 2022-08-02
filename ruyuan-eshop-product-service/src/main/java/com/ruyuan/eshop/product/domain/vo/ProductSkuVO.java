@@ -1,17 +1,15 @@
 package com.ruyuan.eshop.product.domain.vo;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 /**
  * @author zhonghuashishan
  * @version 1.0
  */
 @Data
-public class ProductSkuVO extends AbstractObject implements Serializable {
+public class ProductSkuVO implements Serializable {
 
     /**
      * 商品编号

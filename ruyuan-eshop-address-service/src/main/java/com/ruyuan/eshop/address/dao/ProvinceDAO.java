@@ -23,8 +23,8 @@ public class ProvinceDAO extends BaseDAO<ProvinceMapper, ProvinceDO> {
 
     public List<ProvinceDO> listProvinces(Set<String> provinceCodes, String province) {
         LambdaQueryWrapper<ProvinceDO> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(StringUtils.isNotBlank(province),ProvinceDO::getName,province)
-                .in(CollectionUtils.isNotEmpty(provinceCodes),ProvinceDO::getCode,provinceCodes);
+        queryWrapper.eq(StringUtils.isNotBlank(province), ProvinceDO::getName, province)
+                .in(CollectionUtils.isNotEmpty(provinceCodes), ProvinceDO::getCode, provinceCodes);
         return list(queryWrapper);
     }
 }

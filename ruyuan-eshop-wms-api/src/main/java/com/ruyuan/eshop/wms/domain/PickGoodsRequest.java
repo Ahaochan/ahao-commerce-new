@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.wms.domain;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Tolerate;
@@ -11,14 +10,14 @@ import java.util.List;
 
 /**
  * <p>
- *  捡货请求
+ * 捡货请求
  * </p>
  *
  * @author zhonghuashishan
  */
 @Data
 @Builder
-public class PickGoodsRequest extends AbstractObject implements Serializable {
+public class PickGoodsRequest implements Serializable {
 
     /**
      * 接入方业务线标识  1, "自营商城"
@@ -101,7 +100,7 @@ public class PickGoodsRequest extends AbstractObject implements Serializable {
     private Integer payType;
 
     /**
-     *  付款总金额
+     * 付款总金额
      */
     private Integer payAmount;
 
@@ -131,14 +130,14 @@ public class PickGoodsRequest extends AbstractObject implements Serializable {
 
     /**
      * <p>
-     *  订单商品明细请求
+     * 订单商品明细请求
      * </p>
      *
      * @author zhonghuashishan
      */
     @Data
     @Builder
-    public static class OrderItemRequest extends AbstractObject implements Serializable {
+    public static class OrderItemRequest implements Serializable {
 
         /**
          * 商品id

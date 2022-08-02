@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.order.domain.request;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import com.ruyuan.eshop.order.domain.dto.OrderInfoDTO;
 import lombok.Data;
 
@@ -12,7 +11,7 @@ import java.util.Date;
  * @version 1.0
  */
 @Data
-public class RefundCallbackAssembleRequest extends AbstractObject implements Serializable {
+public class RefundCallbackAssembleRequest implements Serializable {
     /**
      * 退款批次号
      */

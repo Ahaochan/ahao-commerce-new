@@ -17,6 +17,7 @@ public interface ProductStockMapper extends BaseMapper<ProductStockDO> {
 
     /**
      * 扣减商品库存
+     *
      * @param skuCode
      * @param saleQuantity
      * @return
@@ -25,16 +26,18 @@ public interface ProductStockMapper extends BaseMapper<ProductStockDO> {
 
     /**
      * 扣减销售库存
+     *
      * @param skuCode
      * @param saleQuantity
      * @param originSaleStock
      * @return
      */
     int deductSaleStock(@Param("skuCode") String skuCode, @Param("saleQuantity") Integer saleQuantity
-            ,@Param("originSaleStock") Integer originSaleStock);
+            , @Param("originSaleStock") Integer originSaleStock);
 
     /**
      * 增加销售库存
+     *
      * @param skuCode
      * @param saleQuantity
      * @param originSaledStock
@@ -45,6 +48,7 @@ public interface ProductStockMapper extends BaseMapper<ProductStockDO> {
 
     /**
      * 还原销售库存
+     *
      * @param skuCode
      * @param saleQuantity
      * @param originSaleStock
@@ -55,6 +59,7 @@ public interface ProductStockMapper extends BaseMapper<ProductStockDO> {
 
     /**
      * 释放商品库存
+     *
      * @param skuCode
      * @param saleQuantity
      * @return
@@ -63,11 +68,12 @@ public interface ProductStockMapper extends BaseMapper<ProductStockDO> {
 
     /**
      * 调整商品库存
+     *
      * @param skuCode
      * @param originSaleQuantity
      * @param saleIncremental
      * @return
      */
-    int modifyProductStock(@Param("skuCode") String skuCode,@Param("originSaleQuantity") Long originSaleQuantity, @Param("saleIncremental") Long saleIncremental);
+    int modifyProductStock(@Param("skuCode") String skuCode, @Param("originSaleQuantity") Long originSaleQuantity, @Param("saleIncremental") Long saleIncremental);
 
 }

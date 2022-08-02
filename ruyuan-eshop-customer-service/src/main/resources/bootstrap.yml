@@ -2,7 +2,7 @@ spring:
   application:
     name: ruyuan-eshop-customer
   profiles:
-    active: dev
+    active: local
   cloud:
     nacos:
       config:
@@ -12,3 +12,5 @@ spring:
             refresh: true
         server-addr: localhost:8848
         file-extension: yaml
+        username: nacos
+        password: nacos

@@ -8,6 +8,7 @@ import java.io.Serializable;
 
 /**
  * 逆向订单通用事件
+ *
  * @author zhonghuashishan
  * @version 1.0
  */

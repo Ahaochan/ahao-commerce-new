@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
 import com.ruyuan.eshop.common.message.ActualRefundMessage;
 import com.ruyuan.eshop.inventory.domain.request.ReleaseProductStockRequest;
+import com.ruyuan.eshop.order.converter.OrderConverter;
 import com.ruyuan.eshop.order.domain.dto.ReleaseProductStockDTO;
 import com.ruyuan.eshop.order.domain.request.AuditPassReleaseAssetsRequest;
 import com.ruyuan.eshop.order.mq.producer.DefaultProducer;
@@ -31,6 +32,9 @@ public class AuditPassReleaseAssetsListener implements MessageListenerConcurrent
     @Autowired
     private DefaultProducer defaultProducer;
 
+    @Autowired
+    private OrderConverter orderConverter;
+
     @Override
     public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
         try {
@@ -44,12 +48,12 @@ public class AuditPassReleaseAssetsListener implements MessageListenerConcurrent
                 ReleaseProductStockDTO releaseProductStockDTO = auditPassReleaseAssetsRequest.getReleaseProductStockDTO();
                 ReleaseProductStockRequest releaseProductStockRequest = buildReleaseProductStock(releaseProductStockDTO);
                 defaultProducer.sendMessage(RocketMqConstant.CANCEL_RELEASE_INVENTORY_TOPIC,
-                        JSONObject.toJSONString(releaseProductStockRequest), "客服审核通过释放库存");
+                        JSONObject.toJSONString(releaseProductStockRequest), "客服审核通过释放库存", null, null);
 
                 // 3、发送实际退款
                 ActualRefundMessage actualRefundMessage = auditPassReleaseAssetsRequest.getActualRefundMessage();
                 defaultProducer.sendMessage(RocketMqConstant.ACTUAL_REFUND_TOPIC,
-                        JSONObject.toJSONString(actualRefundMessage), "客服审核通过实际退款");
+                        JSONObject.toJSONString(actualRefundMessage), "客服审核通过实际退款", null, null);
 
             }
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
@@ -68,9 +72,7 @@ public class AuditPassReleaseAssetsListener implements MessageListenerConcurrent
 
         //  补充订单条目
         for (ReleaseProductStockDTO.OrderItemRequest releaseProductOrderItemRequest : releaseProductStockDTO.getOrderItemRequestList()) {
-            ReleaseProductStockRequest.OrderItemRequest orderItemRequest = new ReleaseProductStockRequest.OrderItemRequest();
-            ReleaseProductStockRequest.OrderItemRequest cloneResult = releaseProductOrderItemRequest.clone(orderItemRequest);
-            orderItemRequestList.add(cloneResult);
+            orderItemRequestList.add(orderConverter.convertOrderItemRequest(releaseProductOrderItemRequest));
         }
 
         ReleaseProductStockRequest releaseProductStockRequest = new ReleaseProductStockRequest();

@@ -1,7 +1,6 @@
 package com.ruyuan.eshop.customer.exception;
 
 import com.ruyuan.eshop.common.exception.BaseErrorCodeEnum;
-import com.ruyuan.eshop.common.utils.ParamCheckUtil;
 
 /**
  * 异常错误码枚举值

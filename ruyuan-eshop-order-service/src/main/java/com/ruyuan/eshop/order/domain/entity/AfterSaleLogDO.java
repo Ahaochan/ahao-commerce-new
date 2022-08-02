@@ -3,7 +3,6 @@ package com.ruyuan.eshop.order.domain.entity;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -18,7 +17,7 @@ import java.util.Date;
  */
 @Data
 @TableName("after_sale_log")
-public class AfterSaleLogDO extends AbstractObject implements Serializable {
+public class AfterSaleLogDO implements Serializable {
     private static final long serialVersionUID = -594243757641531958L;
     /**
      * 售后单号

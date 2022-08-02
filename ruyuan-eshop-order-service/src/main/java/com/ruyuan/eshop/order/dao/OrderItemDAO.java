@@ -2,9 +2,6 @@ package com.ruyuan.eshop.order.dao;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.ruyuan.eshop.common.dao.BaseDAO;
-import com.ruyuan.eshop.order.domain.entity.AfterSaleItemDO;
-import com.ruyuan.eshop.order.domain.entity.OrderAmountDetailDO;
-import com.ruyuan.eshop.order.domain.entity.OrderInfoDO;
 import com.ruyuan.eshop.order.domain.entity.OrderItemDO;
 import com.ruyuan.eshop.order.mapper.OrderItemMapper;
 import org.springframework.stereotype.Repository;

@@ -3,12 +3,12 @@ package com.ruyuan.eshop.fulfill.mq.producer;
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
 import com.ruyuan.eshop.fulfill.exception.FulfillBizException;
 import com.ruyuan.eshop.fulfill.exception.FulfillErrorCodeEnum;
-import com.ruyuan.eshop.fulfill.mq.config.RocketMQProperties;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.client.producer.SendStatus;
 import org.apache.rocketmq.common.message.Message;
+import org.apache.rocketmq.spring.autoconfigure.RocketMQProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,26 +24,26 @@ import java.nio.charset.StandardCharsets;
  */
 @Component
 public class DefaultProducer {
-	
+
     private static Logger log = LoggerFactory.getLogger(DefaultProducer.class);
-	
-	private DefaultMQProducer producer;
-	
-	@Autowired
-	public DefaultProducer(RocketMQProperties rocketMQProperties){
+
+    private DefaultMQProducer producer;
+
+    @Autowired
+    public DefaultProducer(RocketMQProperties rocketMQProperties) {
         producer = new DefaultMQProducer(RocketMqConstant.ORDER_DEFAULT_PRODUCER_GROUP);
         producer.setNamesrvAddr(rocketMQProperties.getNameServer());
         start();
     }
-	
-	public DefaultMQProducer getProducer() {
+
+    public DefaultMQProducer getProducer() {
         return this.producer;
     }
 
     /**
      * 对象在使用之前必须要调用一次，只能初始化一次
      */
-    public void start(){
+    public void start() {
         try {
             this.producer.start();
         } catch (MQClientException e) {
@@ -55,7 +55,7 @@ public class DefaultProducer {
     /**
      * 一般在应用上下文，使用上下文监听器，进行关闭
      */
-    public void shutdown(){
+    public void shutdown() {
         this.producer.shutdown();
     }
 

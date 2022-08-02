@@ -7,22 +7,21 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.Objects;
 
 /**
- *
  * @author zhonghuashishan
  * @version 1.0
  */
 @Slf4j
 public class ExtJsonUtil {
 
-    public static String mergeExtJson(String srcExtJson, String targetExtJson)   {
+    public static String mergeExtJson(String srcExtJson, String targetExtJson) {
         JSONObject srcJSON = parseExtJson(srcExtJson);
         JSONObject targetJSON = parseExtJson(targetExtJson);
         // 如果原值为空 直接返回新值
-        if(srcJSON == null){
+        if (srcJSON == null) {
             return targetExtJson;
         }
         // 如果新值为空 直接返回就值
-        if(targetJSON == null){
+        if (targetJSON == null) {
             return srcExtJson;
         }
 
@@ -32,7 +31,7 @@ public class ExtJsonUtil {
         return srcJSON.toJSONString();
     }
 
-    public static String mergeField(String srcExtJson, String field, Object value)   {
+    public static String mergeField(String srcExtJson, String field, Object value) {
         // 如果没有新加的内容，就直接返回原值
         if (StringUtils.isBlank(field) || Objects.isNull(value)) {
             return srcExtJson;
@@ -41,7 +40,7 @@ public class ExtJsonUtil {
         JSONObject targetJSON = new JSONObject();
         targetJSON.put(field, value);
         // 如果原值为空 直接返回新值
-        if(srcJSON == null){
+        if (srcJSON == null) {
             return targetJSON.toJSONString();
         }
 
@@ -51,23 +50,23 @@ public class ExtJsonUtil {
         return srcJSON.toJSONString();
     }
 
-    public static JSONObject parseExtJson(String extJson)   {
+    public static JSONObject parseExtJson(String extJson) {
         try {
             return JSONObject.parseObject(extJson);
-        }catch (Exception e){
-            log.error("parse extInfo error!!",e);
+        } catch (Exception e) {
+            log.error("parse extInfo error!!", e);
             return null;
         }
     }
 
-    public static <T> T parseExtJson(String extJson,Class<T> clazz)   {
-        if(StringUtils.isEmpty(extJson)) {
+    public static <T> T parseExtJson(String extJson, Class<T> clazz) {
+        if (StringUtils.isEmpty(extJson)) {
             return null;
         }
         try {
-            return JSONObject.parseObject(extJson,clazz);
-        }catch (Exception e){
-            log.error("parse extInfo error!!",e);
+            return JSONObject.parseObject(extJson, clazz);
+        } catch (Exception e) {
+            log.error("parse extInfo error!!", e);
             return null;
         }
     }

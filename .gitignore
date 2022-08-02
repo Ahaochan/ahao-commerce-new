@@ -64,7 +64,8 @@ target/
 *.tar.gz
 
 ### logs ####
-/logs/
+logs/
+agent/logs
 
 ### temp ignore ###
 *.cache

@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * 校验缺品请求结果DTO
+ *
  * @author zhonghuashishan
  * @version 1.0
  */

@@ -8,7 +8,7 @@ import com.ruyuan.eshop.order.exception.OrderBizException;
 
 /**
  * <p>
- *  订单履约相关service
+ * 订单履约相关service
  * </p>
  *
  * @author zhonghuashishan
@@ -17,6 +17,7 @@ public interface OrderFulFillService {
 
     /**
      * 触发订单进行履约流程
+     *
      * @param orderId
      * @return
      */
@@ -24,6 +25,7 @@ public interface OrderFulFillService {
 
     /**
      * 通知订单物流配送结果接口
+     *
      * @return
      */
     void informOrderWmsShipResult(WmsShipDTO wmsShipDTO) throws OrderBizException;

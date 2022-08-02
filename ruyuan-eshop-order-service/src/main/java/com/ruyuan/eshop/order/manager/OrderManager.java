@@ -17,6 +17,7 @@ public interface OrderManager {
 
     /**
      * 支付回调更新订单状态
+     *
      * @param payCallbackRequest
      * @param orderInfoDO
      * @param orderPaymentDetailDO
@@ -28,6 +29,7 @@ public interface OrderManager {
 
     /**
      * 生成订单
+     *
      * @param createOrderRequest
      * @param productSkuList
      * @param calculateOrderAmountDTO

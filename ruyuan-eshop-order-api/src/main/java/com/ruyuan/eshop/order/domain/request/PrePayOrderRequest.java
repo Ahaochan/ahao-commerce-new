@@ -1,17 +1,15 @@
 package com.ruyuan.eshop.order.domain.request;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * @author zhonghuashishan
  * @version 1.0
  */
 @Data
-public class PrePayOrderRequest extends AbstractObject implements Serializable {
+public class PrePayOrderRequest implements Serializable {
 
     private static final long serialVersionUID = -634137320435888212L;
 

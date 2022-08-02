@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.order.domain.request;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,7 +10,7 @@ import java.util.Date;
  * @version 1.0
  */
 @Data
-public class RefundCallbackAfterSaleRequest extends AbstractObject implements Serializable {
+public class RefundCallbackAfterSaleRequest implements Serializable {
     /**
      * 退款状态
      */

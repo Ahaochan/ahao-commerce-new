@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.address.domain.dto;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -8,7 +7,7 @@ import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
-public class AddressDTO extends AbstractObject implements Serializable {
+public class AddressDTO implements Serializable {
 
     private static final long serialVersionUID = 1715257531729979175L;
 

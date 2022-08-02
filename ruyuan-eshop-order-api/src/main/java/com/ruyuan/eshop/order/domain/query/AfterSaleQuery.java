@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.order.domain.query;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -16,7 +15,7 @@ import java.util.Set;
  * @author zhonghuashishan
  */
 @Data
-public class AfterSaleQuery extends AbstractObject implements Serializable {
+public class AfterSaleQuery implements Serializable {
 
     private static final long serialVersionUID = -267981030081945581L;
 
@@ -45,7 +44,7 @@ public class AfterSaleQuery extends AbstractObject implements Serializable {
     private Set<Integer> afterSaleTypes;
     /**
      * 售后单号
-      */
+     */
     private Set<Long> afterSaleIds;
     /**
      * 订单号
@@ -62,23 +61,23 @@ public class AfterSaleQuery extends AbstractObject implements Serializable {
     /**
      * 创建时间-查询区间
      */
-    private Pair<Date,Date> createdTimeInterval;
+    private Pair<Date, Date> createdTimeInterval;
     /**
      * 售后申请时间-查询区间
      */
-    private Pair<Date,Date> applyTimeInterval;
+    private Pair<Date, Date> applyTimeInterval;
     /**
      * 售后客服审核时间-查询区间
      */
-    private Pair<Date,Date> reviewTimeInterval;
+    private Pair<Date, Date> reviewTimeInterval;
     /**
      * 退款支付时间-查询区间
      */
-    private Pair<Date,Date> refundPayTimeInterval;
+    private Pair<Date, Date> refundPayTimeInterval;
     /**
      * 退款金额-查询区间
      */
-    private Pair<Integer,Integer> refundAmountInterval;
+    private Pair<Integer, Integer> refundAmountInterval;
     /**
      * 页码；默认为1；
      */

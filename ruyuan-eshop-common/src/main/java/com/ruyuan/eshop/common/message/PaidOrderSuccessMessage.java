@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 /**
  * 订单完成支付消息
+ *
  * @author zhonghuashishan
  * @version 1.0
  */

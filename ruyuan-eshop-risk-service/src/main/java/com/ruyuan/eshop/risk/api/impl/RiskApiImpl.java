@@ -1,6 +1,7 @@
 package com.ruyuan.eshop.risk.api.impl;
 
 import com.ruyuan.eshop.common.core.JsonResult;
+import com.ruyuan.eshop.common.utils.LoggerFormat;
 import com.ruyuan.eshop.risk.api.RiskApi;
 import com.ruyuan.eshop.risk.domain.dto.CheckOrderRiskDTO;
 import com.ruyuan.eshop.risk.domain.request.CheckOrderRiskRequest;
@@ -17,10 +18,18 @@ public class RiskApiImpl implements RiskApi {
 
     @Override
     public JsonResult<CheckOrderRiskDTO> checkOrderRisk(CheckOrderRiskRequest checkOrderRiskRequest) {
+        log.info(LoggerFormat.build()
+                .remark("checkOrderRisk->request")
+                .data("request", checkOrderRiskRequest)
+                .finish());
         // 执行风控检查 TODO
         CheckOrderRiskDTO checkOrderRiskDTO = new CheckOrderRiskDTO();
         checkOrderRiskDTO.setResult(true);
         // 默认风控检查通过
+        log.info(LoggerFormat.build()
+                .remark("checkOrderRisk->response")
+                .data("response", checkOrderRiskDTO)
+                .finish());
         return JsonResult.buildSuccess(checkOrderRiskDTO);
     }
 }

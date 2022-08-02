@@ -35,16 +35,16 @@ public enum AmountTypeEnum {
         return msg;
     }
 
-    public static Map<Integer,String> toMap(){
+    public static Map<Integer, String> toMap() {
         Map<Integer, String> map = new HashMap<>(16);
-        for (AmountTypeEnum element : AmountTypeEnum.values() ){
-            map.put(element.getCode(),element.getMsg());
+        for (AmountTypeEnum element : AmountTypeEnum.values()) {
+            map.put(element.getCode(), element.getMsg());
         }
         return map;
     }
 
-    public static AmountTypeEnum getByCode(Integer code){
-        for(AmountTypeEnum element : AmountTypeEnum.values()){
+    public static AmountTypeEnum getByCode(Integer code) {
+        for (AmountTypeEnum element : AmountTypeEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }

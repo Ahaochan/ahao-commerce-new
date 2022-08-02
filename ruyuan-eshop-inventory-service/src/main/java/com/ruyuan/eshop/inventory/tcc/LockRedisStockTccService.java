@@ -8,6 +8,7 @@ import io.seata.rm.tcc.api.TwoPhaseBusinessAction;
 
 /**
  * 锁定redis库存 Seata TCC模式 service
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -22,7 +23,8 @@ public interface LockRedisStockTccService {
      */
     @TwoPhaseBusinessAction(name = "lockRedisStockTccService", commitMethod = "commit", rollbackMethod = "rollback")
     boolean deductStock(BusinessActionContext actionContext,
-                        @BusinessActionContextParameter(paramName = "deductStock") DeductStockDTO deductStock);
+                        @BusinessActionContextParameter(paramName = "deductStock") DeductStockDTO deductStock,
+                        @BusinessActionContextParameter(paramName = "traceId") String traceId);
 
 
     /**
@@ -35,6 +37,7 @@ public interface LockRedisStockTccService {
 
     /**
      * 回滚：增加销售库存（saleStockQuantity+saleQuantity）
+     *
      * @param actionContext
      * @return
      */

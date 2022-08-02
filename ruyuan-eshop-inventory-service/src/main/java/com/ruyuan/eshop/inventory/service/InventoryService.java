@@ -10,6 +10,7 @@ public interface InventoryService {
 
     /**
      * 扣减商品库存
+     *
      * @param deductProductStockRequest
      * @return
      */
@@ -22,6 +23,7 @@ public interface InventoryService {
 
     /**
      * 新增商品库存
+     *
      * @param request
      * @return
      */
@@ -29,6 +31,7 @@ public interface InventoryService {
 
     /**
      * 调整商品库存
+     *
      * @param request
      * @return
      */
@@ -36,6 +39,7 @@ public interface InventoryService {
 
     /**
      * 同步商品sku库存数据到缓存
+     *
      * @param request
      * @return
      */

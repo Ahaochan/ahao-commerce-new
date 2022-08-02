@@ -8,6 +8,7 @@ import com.ruyuan.eshop.order.exception.OrderBizException;
 
 /**
  * 订单缺品相关service
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -15,12 +16,14 @@ public interface OrderLackService {
 
     /**
      * 校验入参
+     *
      * @param request
      */
     CheckLackDTO checkRequest(LackRequest request) throws OrderBizException;
 
     /**
      * 订单是否已经发起过缺品
+     *
      * @param order
      * @return
      */
@@ -28,9 +31,10 @@ public interface OrderLackService {
 
     /**
      * 具体的缺品处理
+     *
      * @param request
      * @param checkLackDTO
      * @return
      */
-    LackDTO executeLackRequest(LackRequest request, CheckLackDTO checkLackDTO);
+    LackDTO executeLackRequest(LackRequest request, CheckLackDTO checkLackDTO) throws Exception;
 }

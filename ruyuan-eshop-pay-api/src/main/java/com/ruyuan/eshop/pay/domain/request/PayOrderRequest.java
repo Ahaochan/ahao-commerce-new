@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.pay.domain.request;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,7 +10,7 @@ import java.util.Date;
  * @version 1.0
  */
 @Data
-public class PayOrderRequest extends AbstractObject implements Serializable {
+public class PayOrderRequest implements Serializable {
 
     private static final long serialVersionUID = 3125438300418569860L;
 

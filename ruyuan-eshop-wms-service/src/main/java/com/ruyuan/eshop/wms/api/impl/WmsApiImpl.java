@@ -4,12 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.ruyuan.eshop.common.core.JsonResult;
-import com.ruyuan.eshop.common.utils.ObjectUtil;
 import com.ruyuan.eshop.common.utils.RandomUtil;
-import com.ruyuan.eshop.tms.api.TmsApi;
-import com.ruyuan.eshop.tms.domain.SendOutDTO;
-import com.ruyuan.eshop.tms.domain.SendOutRequest;
 import com.ruyuan.eshop.wms.api.WmsApi;
+import com.ruyuan.eshop.wms.converter.WmsConverter;
 import com.ruyuan.eshop.wms.dao.DeliveryOrderDAO;
 import com.ruyuan.eshop.wms.dao.DeliveryOrderItemDAO;
 import com.ruyuan.eshop.wms.domain.PickDTO;
@@ -18,14 +15,14 @@ import com.ruyuan.eshop.wms.domain.dto.ScheduleDeliveryResult;
 import com.ruyuan.eshop.wms.domain.entity.DeliveryOrderDO;
 import com.ruyuan.eshop.wms.domain.entity.DeliveryOrderItemDO;
 import com.ruyuan.eshop.wms.exception.WmsBizException;
-import com.ruyuan.eshop.wms.exception.WmsErrorCodeEnum;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author zhonghuashishan
@@ -33,7 +30,7 @@ import java.util.List;
  */
 
 @Slf4j
-@DubboService(version = "1.0.0", interfaceClass = WmsApi.class,retries = 0)
+@DubboService(version = "1.0.0", interfaceClass = WmsApi.class, retries = 0)
 public class WmsApiImpl implements WmsApi {
 
     @Autowired
@@ -42,13 +39,16 @@ public class WmsApiImpl implements WmsApi {
     @Autowired
     private DeliveryOrderItemDAO deliveryOrderItemDAO;
 
+    @Resource
+    private WmsConverter wmsConverter;
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public JsonResult<PickDTO> pickGoods(PickGoodsRequest request) {
-        log.info("捡货,orderId={},request={}",request.getOrderId(), JSONObject.toJSONString(request));
+        log.info("捡货,orderId={},request={}", request.getOrderId(), JSONObject.toJSONString(request));
 
         String wmsException = request.getWmsException();
-        if(StringUtils.isNotBlank(wmsException) && wmsException.equals("true")) {
+        if (StringUtils.isNotBlank(wmsException) && wmsException.equals("true")) {
             throw new WmsBizException("捡货异常！");
         }
 
@@ -66,64 +66,71 @@ public class WmsApiImpl implements WmsApi {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public JsonResult<Boolean> cancelPickGoods(String orderId) {
-        log.info("取消捡货,orderId={}",orderId);
+        log.info("取消捡货,orderId={}", orderId);
 
-        //1、查询出库单
+        // 1、查询出库单
         List<DeliveryOrderDO> deliveryOrders = deliveryOrderDAO.listByOrderId(orderId);
 
-        //2、移除出库单和条目
-        if(CollectionUtils.isNotEmpty(deliveryOrders)) {
-            for(DeliveryOrderDO order : deliveryOrders) {
-                List<DeliveryOrderItemDO> items = deliveryOrderItemDAO.listByDeliveryOrderId(order.getDeliveryOrderId());
-                for(DeliveryOrderItemDO item : items) {
-                    deliveryOrderItemDAO.removeById(item.getId());
-                }
+        if (CollectionUtils.isNotEmpty(deliveryOrders)) {
+            // 2、移除出库单
+            List<Long> ids = deliveryOrders.stream().map(DeliveryOrderDO::getId).collect(Collectors.toList());
+            deliveryOrderDAO.removeByIds(ids);
 
-                deliveryOrderDAO.removeById(order.getId());
+
+            // 3、移除条目
+            List<String> deliveryOrderIds = deliveryOrders.stream()
+                    .map(DeliveryOrderDO::getDeliveryOrderId).collect(Collectors.toList());
+            List<DeliveryOrderItemDO> items = deliveryOrderItemDAO
+                    .listByDeliveryOrderIds(deliveryOrderIds);
+            if(CollectionUtils.isNotEmpty(items)) {
+                ids = items.stream().map(DeliveryOrderItemDO::getId).collect(Collectors.toList());
+                deliveryOrderItemDAO.removeByIds(ids);
             }
         }
 
         return JsonResult.buildSuccess(true);
     }
 
+
+
     /**
      * 调度出库
+     *
      * @param request
      */
     private ScheduleDeliveryResult scheduleDelivery(PickGoodsRequest request) {
-        log.info("orderId={}的订单进行调度出库",request.getOrderId());
+        log.info("orderId={}的订单进行调度出库", request.getOrderId());
 
         //1、生成出库单ID
         String deliveryOrderId = genDeliveryOrderId();
 
         //2、生成出库单
-        DeliveryOrderDO deliveryOrder = request.clone(DeliveryOrderDO.class);
+        DeliveryOrderDO deliveryOrder = wmsConverter.convertDeliverOrderDO(request);
         deliveryOrder.setDeliveryOrderId(deliveryOrderId);
 
         //3、生成出库单条目
-        List<DeliveryOrderItemDO> deliveryOrderItems = ObjectUtil.convertList(request.getOrderItems(),
-                DeliveryOrderItemDO.class);
-        for(DeliveryOrderItemDO item : deliveryOrderItems) {
+        List<DeliveryOrderItemDO> deliveryOrderItems = wmsConverter.convertDeliverOrderItemDO(request.getOrderItems());
+        for (DeliveryOrderItemDO item : deliveryOrderItems) {
             item.setDeliveryOrderId(deliveryOrderId);
         }
 
         //4、sku调度出库
         // 这里仅仅只是模拟，假设有一个无限货物的仓库货柜(id = 1)
-        for(DeliveryOrderItemDO item : deliveryOrderItems) {
+        for (DeliveryOrderItemDO item : deliveryOrderItems) {
             item.setPickingCount(item.getSaleQuantity());
             item.setSkuContainerId(1);
         }
-        return new ScheduleDeliveryResult(deliveryOrder,deliveryOrderItems);
+        return new ScheduleDeliveryResult(deliveryOrder, deliveryOrderItems);
     }
 
     /**
      * 生成履约单id
+     *
      * @return
      */
     private String genDeliveryOrderId() {
         return RandomUtil.genRandomNumber(10);
     }
-
 
 
 }

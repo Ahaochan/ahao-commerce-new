@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.market.domain.request;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,7 +10,7 @@ import java.util.List;
  * @version 1.0
  */
 @Data
-public class CalculateOrderAmountRequest extends AbstractObject implements Serializable {
+public class CalculateOrderAmountRequest implements Serializable {
 
     private static final long serialVersionUID = 7867481234204617257L;
 
@@ -54,7 +53,7 @@ public class CalculateOrderAmountRequest extends AbstractObject implements Seria
      * 订单条目信息
      */
     @Data
-    public static class OrderItemRequest extends AbstractObject implements Serializable {
+    public static class OrderItemRequest implements Serializable {
 
         private static final long serialVersionUID = 752390422733973833L;
 
@@ -89,7 +88,7 @@ public class CalculateOrderAmountRequest extends AbstractObject implements Seria
      * 订单费用信息
      */
     @Data
-    public static class OrderAmountRequest extends AbstractObject implements Serializable {
+    public static class OrderAmountRequest implements Serializable {
 
         private static final long serialVersionUID = 3724180842774045151L;
 

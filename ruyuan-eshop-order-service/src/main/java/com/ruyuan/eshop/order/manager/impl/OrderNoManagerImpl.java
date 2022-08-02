@@ -34,7 +34,7 @@ public class OrderNoManagerImpl implements OrderNoManager {
     public String genOrderId(Integer orderNoType, String userId) {
         // 检查orderNoType是否正确
         OrderNoTypeEnum orderNoTypeEnum = OrderNoTypeEnum.getByCode(orderNoType);
-        if(orderNoTypeEnum == null) {
+        if (orderNoTypeEnum == null) {
             throw new OrderBizException(OrderErrorCodeEnum.ORDER_NO_TYPE_ERROR);
         }
         return orderNoType + getOrderIdKey(userId);
@@ -42,6 +42,7 @@ public class OrderNoManagerImpl implements OrderNoManager {
 
     /**
      * 获取订单ID
+     *
      * @param userId
      * @return
      */
@@ -51,6 +52,7 @@ public class OrderNoManagerImpl implements OrderNoManager {
 
     /**
      * 生成订单号的中间6位日期
+     *
      * @return
      */
     private String getDateTimeKey() {
@@ -59,6 +61,7 @@ public class OrderNoManagerImpl implements OrderNoManager {
 
     /**
      * 生成订单号中间的8位序列号
+     *
      * @return
      */
     private String getAutoNoKey() {
@@ -71,12 +74,13 @@ public class OrderNoManagerImpl implements OrderNoManager {
 
     /**
      * 截取用户ID的后三位
-     * @param  userId
+     *
+     * @param userId
      * @return
      */
     private String getUserIdKey(String userId) {
         // 如果userId的长度大于或等于3，则直接返回
-        if(userId.length() >= 3) {
+        if (userId.length() >= 3) {
             return userId.substring(userId.length() - 3);
         }
 

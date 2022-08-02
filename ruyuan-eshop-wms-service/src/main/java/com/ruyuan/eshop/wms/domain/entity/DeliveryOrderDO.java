@@ -1,23 +1,40 @@
 package com.ruyuan.eshop.wms.domain.entity;
 
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.ruyuan.eshop.common.domain.BaseEntity;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 出库单
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
 @Data
 @TableName("delivery_order")
-public class DeliveryOrderDO extends BaseEntity implements Serializable {
+public class DeliveryOrderDO implements Serializable {
 
     private static final long serialVersionUID = 1L;
+    /**
+     * 主键ID
+     */
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
 
+    /**
+     * 创建时间
+     */
+    @TableField(fill = FieldFill.INSERT)
+    private Date gmtCreate;
+
+    /**
+     * 更新时间
+     */
+    @TableField(fill = FieldFill.INSERT_UPDATE)
+    private Date gmtModified;
     /**
      * 接入方业务线标识  1, "自营商城"
      */
@@ -49,7 +66,7 @@ public class DeliveryOrderDO extends BaseEntity implements Serializable {
     private Integer payType;
 
     /**
-     *  付款总金额
+     * 付款总金额
      */
     private Integer payAmount;
 

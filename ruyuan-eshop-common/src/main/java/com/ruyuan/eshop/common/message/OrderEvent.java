@@ -9,6 +9,7 @@ import java.io.Serializable;
 
 /**
  * 正向订单通用事件
+ *
  * @author zhonghuashishan
  * @version 1.0
  */

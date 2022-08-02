@@ -8,6 +8,7 @@ import io.seata.rm.tcc.api.TwoPhaseBusinessAction;
 
 /**
  * 锁定mysql库存 Seata TCC模式 service
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -23,7 +24,8 @@ public interface LockMysqlStockTccService {
      */
     @TwoPhaseBusinessAction(name = "lockMysqlStockTccService", commitMethod = "commit", rollbackMethod = "rollback")
     boolean deductStock(BusinessActionContext actionContext,
-                        @BusinessActionContextParameter(paramName = "deductStock") DeductStockDTO deductStock);
+                        @BusinessActionContextParameter(paramName = "deductStock") DeductStockDTO deductStock,
+                        @BusinessActionContextParameter(paramName = "traceId") String traceId);
 
 
     /**
@@ -36,6 +38,7 @@ public interface LockMysqlStockTccService {
 
     /**
      * 回滚：增加销售库存（saleStockQuantity+saleQuantity）
+     *
      * @param actionContext
      * @return
      */

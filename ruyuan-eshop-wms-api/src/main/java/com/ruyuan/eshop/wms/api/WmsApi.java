@@ -6,6 +6,7 @@ import com.ruyuan.eshop.wms.domain.PickGoodsRequest;
 
 /**
  * 仓储系统api
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -13,6 +14,7 @@ public interface WmsApi {
 
     /**
      * 捡货
+     *
      * @param request
      * @return
      */
@@ -20,6 +22,7 @@ public interface WmsApi {
 
     /**
      * 取消捡货
+     *
      * @param orderId
      * @return
      */

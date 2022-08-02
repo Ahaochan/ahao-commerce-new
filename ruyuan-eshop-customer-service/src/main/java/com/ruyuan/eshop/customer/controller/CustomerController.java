@@ -9,7 +9,10 @@ import com.ruyuan.eshop.customer.exception.CustomerErrorCodeEnum;
 import com.ruyuan.eshop.customer.service.CustomerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * 订单售后流程controller
@@ -36,7 +39,7 @@ public class CustomerController {
         Long afterSaleId = customerReviewReturnGoodsRequest.getAfterSaleId();
         //  分布式锁
         String key = RedisLockKeyConstants.REFUND_KEY + afterSaleId;
-        boolean lock = redisLock.lock(key);
+        boolean lock = redisLock.tryLock(key);
         if (!lock) {
             throw new CustomerBizException(CustomerErrorCodeEnum.CUSTOMER_AUDIT_CANNOT_REPEAT);
         }

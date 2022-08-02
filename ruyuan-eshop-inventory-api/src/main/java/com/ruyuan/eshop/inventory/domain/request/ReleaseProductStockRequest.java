@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.inventory.domain.request;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -8,11 +7,12 @@ import java.util.List;
 
 /**
  * 释放商品库存入参
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
 @Data
-public class ReleaseProductStockRequest extends AbstractObject implements Serializable {
+public class ReleaseProductStockRequest implements Serializable {
 
     private static final long serialVersionUID = 8229493558996271243L;
 
@@ -27,7 +27,7 @@ public class ReleaseProductStockRequest extends AbstractObject implements Serial
     private List<OrderItemRequest> orderItemRequestList;
 
     @Data
-    public static class OrderItemRequest extends AbstractObject implements Serializable {
+    public static class OrderItemRequest implements Serializable {
 
         private static final long serialVersionUID = 6870559288334853954L;
 

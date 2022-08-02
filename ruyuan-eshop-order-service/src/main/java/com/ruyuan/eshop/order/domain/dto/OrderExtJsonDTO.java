@@ -4,6 +4,7 @@ import lombok.Data;
 
 /**
  * 订单扩展字段
+ *
  * @author zhonghuashishan
  * @version 1.0
  */

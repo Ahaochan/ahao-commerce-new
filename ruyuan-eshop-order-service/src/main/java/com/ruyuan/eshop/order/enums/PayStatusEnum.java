@@ -31,16 +31,16 @@ public enum PayStatusEnum {
         return msg;
     }
 
-    public static Map<Integer,String> toMap() {
+    public static Map<Integer, String> toMap() {
         Map<Integer, String> map = new HashMap<>(16);
-        for (PayStatusEnum element : PayStatusEnum.values() ){
-            map.put(element.getCode(),element.getMsg());
+        for (PayStatusEnum element : PayStatusEnum.values()) {
+            map.put(element.getCode(), element.getMsg());
         }
         return map;
     }
 
     public static PayStatusEnum getByCode(Integer code) {
-        for(PayStatusEnum element : PayStatusEnum.values()){
+        for (PayStatusEnum element : PayStatusEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }

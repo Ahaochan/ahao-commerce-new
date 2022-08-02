@@ -47,7 +47,7 @@ CREATE TABLE `product_stock_log` (
   `gmt_modified` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_sku_code_order_id` (`sku_code`,`order_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='库存扣减日志表'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='库存扣减日志表';
 
 SET FOREIGN_KEY_CHECKS = 1;
 

@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.order.domain.dto;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,7 +12,7 @@ import java.io.Serializable;
  * @author zhonghuashishan
  */
 @Data
-public class OrderAmountDetailDTO extends AbstractObject implements Serializable {
+public class OrderAmountDetailDTO implements Serializable {
 
     private static final long serialVersionUID = 5812183258654799741L;
 

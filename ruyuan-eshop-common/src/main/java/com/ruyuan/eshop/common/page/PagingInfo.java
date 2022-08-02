@@ -6,13 +6,13 @@ import java.util.List;
 
 /**
  * <p>
- *     分页查询结果
+ * 分页查询结果
  * </p>
  *
  * @author zhonghuashishan
  */
 @Data
-public class PagingInfo<T>  {
+public class PagingInfo<T> {
 
     /**
      * 页码
@@ -30,7 +30,7 @@ public class PagingInfo<T>  {
     /**
      * 起始位置
      */
-    private Integer startPos = (pageNo-1)*pageSize;
+    private Integer startPos = (pageNo - 1) * pageSize;
 
     private List<T> list;
 
@@ -43,7 +43,7 @@ public class PagingInfo<T>  {
         this.list = list;
     }
 
-    public static <T> PagingInfo toResponse(List<T> data,Long total,Integer currentPageNo,Integer currentPageSize){
+    public static <T> PagingInfo toResponse(List<T> data, Long total, Integer currentPageNo, Integer currentPageSize) {
         PagingInfo<T> pagingObj = new PagingInfo<>();
         pagingObj.setTotal(total);
         pagingObj.setList(data);

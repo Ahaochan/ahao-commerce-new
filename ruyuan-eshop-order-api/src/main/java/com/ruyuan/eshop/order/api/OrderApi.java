@@ -1,9 +1,7 @@
 package com.ruyuan.eshop.order.api;
 
 import com.ruyuan.eshop.common.core.JsonResult;
-import com.ruyuan.eshop.common.page.PagingInfo;
 import com.ruyuan.eshop.order.domain.dto.*;
-import com.ruyuan.eshop.order.domain.query.OrderQuery;
 import com.ruyuan.eshop.order.domain.request.*;
 
 /**
@@ -24,6 +22,7 @@ public interface OrderApi {
 
     /**
      * 提交订单接口
+     *
      * @param createOrderRequest 提交订单请求入参
      * @return 订单号
      */
@@ -32,6 +31,7 @@ public interface OrderApi {
 
     /**
      * 预支付订单接口
+     *
      * @param prePayOrderRequest 预支付订单请求入参
      * @return
      */
@@ -39,6 +39,7 @@ public interface OrderApi {
 
     /**
      * 支付回调接口
+     *
      * @param payCallbackRequest 支付系统回调入参
      * @return
      */
@@ -47,6 +48,7 @@ public interface OrderApi {
 
     /**
      * 移除订单
+     *
      * @param removeOrderRequest 移除订单请求入参
      * @return
      */
@@ -55,6 +57,7 @@ public interface OrderApi {
 
     /**
      * 修改地址
+     *
      * @param adjustDeliveryAddressRequest 修改地址请求入参
      * @return
      */

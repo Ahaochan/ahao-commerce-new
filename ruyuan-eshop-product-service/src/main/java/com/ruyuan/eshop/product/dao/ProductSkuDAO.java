@@ -6,6 +6,8 @@ import com.ruyuan.eshop.product.domain.entity.ProductSkuDO;
 import com.ruyuan.eshop.product.mapper.ProductSkuMapper;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * <p>
  * 商品sku记录表 Mapper 接口
@@ -18,6 +20,7 @@ public class ProductSkuDAO extends BaseDAO<ProductSkuMapper, ProductSkuDO> {
 
     /**
      * 根据skuCode获取商品信息
+     *
      * @param skuCode
      * @return
      */
@@ -25,6 +28,18 @@ public class ProductSkuDAO extends BaseDAO<ProductSkuMapper, ProductSkuDO> {
         QueryWrapper<ProductSkuDO> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("sku_code", skuCode);
         return getOne(queryWrapper);
+    }
+
+    /**
+     * 根据skuCode获取商品信息
+     *
+     * @param skuCodeList
+     * @return
+     */
+    public List<ProductSkuDO> listProductSkuByCode(List<String> skuCodeList) {
+        QueryWrapper<ProductSkuDO> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("sku_code", skuCodeList);
+        return list(queryWrapper);
     }
 
 }

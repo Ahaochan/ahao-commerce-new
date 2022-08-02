@@ -1,17 +1,17 @@
 package com.ruyuan.eshop.risk.domain.request;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
 
 /**
  * 订单风控检查入参
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
 @Data
-public class CheckOrderRiskRequest extends AbstractObject implements Serializable {
+public class CheckOrderRiskRequest implements Serializable {
 
     private static final long serialVersionUID = 122317037326617884L;
 

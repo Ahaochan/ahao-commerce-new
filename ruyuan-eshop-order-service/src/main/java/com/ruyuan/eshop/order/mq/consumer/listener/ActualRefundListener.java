@@ -29,7 +29,7 @@ public class ActualRefundListener implements MessageListenerConcurrently {
     @Override
     public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
         try {
-            for(MessageExt messageExt : list) {
+            for (MessageExt messageExt : list) {
                 String message = new String(messageExt.getBody());
                 ActualRefundMessage actualRefundMessage = JSONObject.parseObject(message, ActualRefundMessage.class);
                 log.info("ActualRefundConsumer message:{}", message);

@@ -5,6 +5,7 @@ import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
 
 /**
  * fulfull saga service
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -12,6 +13,7 @@ public interface FulfillSagaService {
 
     /**
      * 创建履约单
+     *
      * @param request
      * @return
      */
@@ -20,6 +22,7 @@ public interface FulfillSagaService {
 
     /**
      * 补偿创建履约单
+     *
      * @param request
      * @return
      */

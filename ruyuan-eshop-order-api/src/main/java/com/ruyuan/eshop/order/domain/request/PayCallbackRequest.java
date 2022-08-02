@@ -1,17 +1,17 @@
 package com.ruyuan.eshop.order.domain.request;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
 
 /**
  * 支付系统回调请求对象
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
 @Data
-public class PayCallbackRequest extends AbstractObject implements Serializable {
+public class PayCallbackRequest implements Serializable {
 
     private static final long serialVersionUID = 3685085492927992753L;
 

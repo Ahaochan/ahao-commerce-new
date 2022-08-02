@@ -23,6 +23,6 @@ public class MqProducerTest {
         PaidOrderSuccessMessage message = new PaidOrderSuccessMessage();
         message.setOrderId(orderId);
         String msgJson = JSON.toJSONString(message);
-        defaultProducer.sendMessage(RocketMqConstant.PAID_ORDER_SUCCESS_TOPIC, msgJson, "订单已完成支付");
+        defaultProducer.sendMessage(RocketMqConstant.PAID_ORDER_SUCCESS_TOPIC, msgJson, "订单已完成支付", null, orderId);
     }
 }

@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.order.domain.request;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,7 +11,7 @@ import java.io.Serializable;
  * @version 1.0
  */
 @Data
-public class RefundRequest extends AbstractObject implements Serializable {
+public class RefundRequest implements Serializable {
     private static final long serialVersionUID = 1L;
     /**
      * 订单号

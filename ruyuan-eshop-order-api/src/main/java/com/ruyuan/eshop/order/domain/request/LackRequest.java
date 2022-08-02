@@ -1,19 +1,18 @@
 package com.ruyuan.eshop.order.domain.request;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
 import java.util.Set;
 
 /**
  * 订单缺品请求
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
 @Data
-public class LackRequest extends AbstractObject implements Serializable {
+public class LackRequest implements Serializable {
 
     /**
      * 订单号

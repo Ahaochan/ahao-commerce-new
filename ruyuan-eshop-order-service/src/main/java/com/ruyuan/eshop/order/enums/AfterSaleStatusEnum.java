@@ -41,16 +41,16 @@ public enum AfterSaleStatusEnum {
         return msg;
     }
 
-    public static Map<Integer,String> toMap() {
-        Map<Integer,String> map = new HashMap<>(16);
-        for (AfterSaleStatusEnum element : AfterSaleStatusEnum.values() ){
-            map.put(element.getCode(),element.getMsg());
+    public static Map<Integer, String> toMap() {
+        Map<Integer, String> map = new HashMap<>(16);
+        for (AfterSaleStatusEnum element : AfterSaleStatusEnum.values()) {
+            map.put(element.getCode(), element.getMsg());
         }
         return map;
     }
 
     public static AfterSaleStatusEnum getByCode(Integer code) {
-        for(AfterSaleStatusEnum element : AfterSaleStatusEnum.values()){
+        for (AfterSaleStatusEnum element : AfterSaleStatusEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }

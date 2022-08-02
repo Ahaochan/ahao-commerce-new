@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.order.domain.request;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -9,12 +8,13 @@ import java.math.BigDecimal;
 
 /**
  * 调整订单配送地址
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
 @NoArgsConstructor
 @Data
-public class AdjustDeliveryAddressRequest extends AbstractObject implements Serializable {
+public class AdjustDeliveryAddressRequest implements Serializable {
 
     /**
      * 订单id

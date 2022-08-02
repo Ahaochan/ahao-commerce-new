@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.market.domain.dto;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,7 +10,7 @@ import java.util.List;
  * @version 1.0
  */
 @Data
-public class CalculateOrderAmountDTO extends AbstractObject implements Serializable {
+public class CalculateOrderAmountDTO implements Serializable {
 
     private static final long serialVersionUID = -6463448609836937620L;
 
@@ -29,7 +28,7 @@ public class CalculateOrderAmountDTO extends AbstractObject implements Serializa
      * 营销计算出来的费用信息
      */
     @Data
-    public static class OrderAmountDTO extends AbstractObject implements Serializable {
+    public static class OrderAmountDTO implements Serializable {
 
         private static final long serialVersionUID = 1643927513628038346L;
 
@@ -54,7 +53,7 @@ public class CalculateOrderAmountDTO extends AbstractObject implements Serializa
      * 营销计算出来的订单条目费用信息
      */
     @Data
-    public static class OrderAmountDetailDTO extends AbstractObject implements Serializable {
+    public static class OrderAmountDetailDTO implements Serializable {
 
         private static final long serialVersionUID = 2191438807902362511L;
 

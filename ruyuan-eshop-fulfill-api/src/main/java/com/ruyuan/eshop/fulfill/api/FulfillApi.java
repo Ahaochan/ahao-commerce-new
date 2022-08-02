@@ -1,8 +1,6 @@
 package com.ruyuan.eshop.fulfill.api;
 
 import com.ruyuan.eshop.common.core.JsonResult;
-import com.ruyuan.eshop.common.enums.OrderStatusChangeEnum;
-import com.ruyuan.eshop.fulfill.domain.event.BaseWmsShipEvent;
 import com.ruyuan.eshop.fulfill.domain.request.CancelFulfillRequest;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
 import com.ruyuan.eshop.fulfill.domain.request.TriggerOrderWmsShipEventRequest;
@@ -25,7 +23,7 @@ public interface FulfillApi {
 
     /**
      * 触发订单物流配送结果事件接口
-     *一个工具类接口，用于模拟触发"订单已出库事件"，"订单已配送事件"，"订单已签收事件"
+     * 一个工具类接口，用于模拟触发"订单已出库事件"，"订单已配送事件"，"订单已签收事件"
      *
      * @return
      */

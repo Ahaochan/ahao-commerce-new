@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.order.domain.query;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -11,11 +10,12 @@ import java.util.Set;
 
 /**
  * 订单列表查询请求
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
 @Data
-public class OrderQuery extends AbstractObject implements Serializable {
+public class OrderQuery implements Serializable {
 
     public static final Integer MAX_PAGE_SIZE = 100;
 
@@ -71,15 +71,15 @@ public class OrderQuery extends AbstractObject implements Serializable {
     /**
      * 创建时间-查询区间
      */
-    private Pair<Date,Date> createdTimeInterval;
+    private Pair<Date, Date> createdTimeInterval;
     /**
      * 支付时间-查询区间
      */
-    private Pair<Date,Date> payTimeInterval;
+    private Pair<Date, Date> payTimeInterval;
     /**
      * 支付金额-查询区间
      */
-    private Pair<Integer,Integer> payAmountInterval;
+    private Pair<Integer, Integer> payAmountInterval;
 
     /**
      * 页码

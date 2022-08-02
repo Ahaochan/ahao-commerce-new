@@ -1,13 +1,14 @@
 package com.ruyuan.eshop.pay.controller;
 
 import com.ruyuan.eshop.common.core.JsonResult;
-import com.ruyuan.eshop.order.api.AfterSaleApi;
 import com.ruyuan.eshop.order.domain.request.RefundCallbackRequest;
+import com.ruyuan.eshop.pay.remote.AfterSaleRemote;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.DubboReference;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.Date;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @author zhonghuashishan
@@ -18,8 +19,8 @@ import java.util.Date;
 @Slf4j
 public class PayController {
 
-    @DubboReference(version = "1.0.0")
-    private AfterSaleApi afterSaleApi;
+    @Autowired
+    private AfterSaleRemote afterSaleRemote;
 
     /**
      * 测试取消订单支付退款回调
@@ -40,6 +41,6 @@ public class PayController {
         payRefundCallbackRequest.setRefundFee(refundCallbackRequest.getRefundFee());
         payRefundCallbackRequest.setTotalFee(refundCallbackRequest.getTotalFee());
 
-        return afterSaleApi.refundCallback(payRefundCallbackRequest);
+        return afterSaleRemote.refundCallback(payRefundCallbackRequest);
     }
 }

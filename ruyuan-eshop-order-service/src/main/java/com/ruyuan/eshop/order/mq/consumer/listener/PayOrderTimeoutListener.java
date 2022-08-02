@@ -20,6 +20,7 @@ import java.util.List;
 
 /**
  * 监听 支付订单超时延迟消息
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -50,6 +51,10 @@ public class PayOrderTimeoutListener implements MessageListenerConcurrently {
 
                 //  查询当前数据库的订单实时状态
                 OrderInfoDO orderInfoDO = orderInfoDAO.getByOrderId(payOrderTimeoutDelayMessage.getOrderId());
+                if (orderInfoDO == null) {
+                    log.warn("订单不存在，orderId:{}", cancelOrderRequest.getOrderId());
+                    return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
+                }
                 Integer orderStatusDatabase = orderInfoDO.getOrderStatus();
                 if (!OrderStatusEnum.CREATED.getCode().equals(orderStatusDatabase)) {
                     //  订单实时状态不等于已创建

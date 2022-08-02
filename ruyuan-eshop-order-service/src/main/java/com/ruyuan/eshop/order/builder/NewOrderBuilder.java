@@ -3,15 +3,18 @@ package com.ruyuan.eshop.order.builder;
 import com.ruyuan.eshop.common.enums.AmountTypeEnum;
 import com.ruyuan.eshop.common.enums.DeleteStatusEnum;
 import com.ruyuan.eshop.common.enums.OrderOperateTypeEnum;
-import com.ruyuan.eshop.common.utils.ObjectUtil;
 import com.ruyuan.eshop.common.enums.OrderStatusEnum;
 import com.ruyuan.eshop.market.domain.dto.CalculateOrderAmountDTO;
 import com.ruyuan.eshop.order.config.OrderProperties;
+import com.ruyuan.eshop.order.converter.OrderConverter;
 import com.ruyuan.eshop.order.domain.dto.OrderAmountDTO;
 import com.ruyuan.eshop.order.domain.dto.OrderAmountDetailDTO;
 import com.ruyuan.eshop.order.domain.entity.*;
 import com.ruyuan.eshop.order.domain.request.CreateOrderRequest;
-import com.ruyuan.eshop.order.enums.*;
+import com.ruyuan.eshop.order.enums.CommentStatusEnum;
+import com.ruyuan.eshop.order.enums.OrderTypeEnum;
+import com.ruyuan.eshop.order.enums.PayStatusEnum;
+import com.ruyuan.eshop.order.enums.SnapshotTypeEnum;
 import com.ruyuan.eshop.product.domain.dto.ProductSkuDTO;
 import org.apache.commons.lang3.StringUtils;
 
@@ -24,11 +27,13 @@ import java.util.stream.Collectors;
 
 /**
  * 创建新订单的建造器
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
 public class NewOrderBuilder {
 
+    private OrderConverter orderConverter;
     private CreateOrderRequest createOrderRequest;
 
     private List<ProductSkuDTO> productSkuList;
@@ -42,16 +47,19 @@ public class NewOrderBuilder {
     public NewOrderBuilder(CreateOrderRequest createOrderRequest,
                            List<ProductSkuDTO> productSkuList,
                            CalculateOrderAmountDTO calculateOrderAmountDTO,
-                           OrderProperties orderProperties) {
+                           OrderProperties orderProperties,
+                           OrderConverter orderConverter) {
         this.createOrderRequest = createOrderRequest;
         this.productSkuList = productSkuList;
         this.calculateOrderAmountDTO = calculateOrderAmountDTO;
         this.fullOrderData = new FullOrderData();
         this.orderProperties = orderProperties;
+        this.orderConverter = orderConverter;
     }
 
     /**
      * 构建OrderInfoDO对象
+     *
      * @return
      */
     public NewOrderBuilder buildOrder() {
@@ -74,7 +82,7 @@ public class NewOrderBuilder {
 
         orderInfoDO.setPayAmount(orderAmountMap.get(AmountTypeEnum.REAL_PAY_AMOUNT.getCode()));
         List<CreateOrderRequest.PaymentRequest> paymentRequestList = createOrderRequest.getPaymentRequestList();
-        if(paymentRequestList != null && !paymentRequestList.isEmpty()) {
+        if (paymentRequestList != null && !paymentRequestList.isEmpty()) {
             orderInfoDO.setPayType(paymentRequestList.get(0).getPayType());
         }
         orderInfoDO.setCouponId(createOrderRequest.getCouponId());
@@ -91,6 +99,7 @@ public class NewOrderBuilder {
 
     /**
      * 构建OrderItemDO对象
+     *
      * @return
      */
     public NewOrderBuilder buildOrderItems() {
@@ -99,7 +108,7 @@ public class NewOrderBuilder {
         List<CreateOrderRequest.OrderItemRequest> orderItemRequestList = createOrderRequest.getOrderItemRequestList();
         List<OrderItemDO> orderItemDOList = new ArrayList<>();
         int num = 0;
-        for(ProductSkuDTO productSkuDTO : productSkuList) {
+        for (ProductSkuDTO productSkuDTO : productSkuList) {
             OrderItemDO orderItemDO = new OrderItemDO();
 
             orderItemDO.setOrderId(orderId);
@@ -109,8 +118,8 @@ public class NewOrderBuilder {
             orderItemDO.setProductImg(productSkuDTO.getProductImg());
             orderItemDO.setProductName(productSkuDTO.getProductName());
             orderItemDO.setSkuCode(productSkuDTO.getSkuCode());
-            for(CreateOrderRequest.OrderItemRequest orderItemRequest : orderItemRequestList) {
-                if(orderItemRequest.getSkuCode().equals(productSkuDTO.getSkuCode())) {
+            for (CreateOrderRequest.OrderItemRequest orderItemRequest : orderItemRequestList) {
+                if (orderItemRequest.getSkuCode().equals(productSkuDTO.getSkuCode())) {
                     orderItemDO.setSaleQuantity(orderItemRequest.getSaleQuantity());
                     break;
                 }
@@ -120,20 +129,20 @@ public class NewOrderBuilder {
 
             // 商品项目实际支付金额，默认是originAmount，但是有优惠抵扣的时候需要分摊
             int realPayAmount = 0;
-            List<OrderAmountDetailDTO> orderItemAmountList = ObjectUtil.convertList(calculateOrderAmountDTO.getOrderAmountDetail(), OrderAmountDetailDTO.class);
+            List<OrderAmountDetailDTO> orderItemAmountList = orderConverter.convertOrderAmountDetail(calculateOrderAmountDTO.getOrderAmountDetail());
 
             // 判断是否存在优惠抵扣费用
             orderItemAmountList = orderItemAmountList.stream().filter(item -> item.getSkuCode().equals(productSkuDTO.getSkuCode()))
                     .collect(Collectors.toList());
-            if(!orderItemAmountList.isEmpty()) {
+            if (!orderItemAmountList.isEmpty()) {
                 Map<Integer, OrderAmountDetailDTO> orderAmountDetailMap = orderItemAmountList.stream()
                         .collect(Collectors.toMap(OrderAmountDetailDTO::getAmountType, Function.identity()));
-                if(orderAmountDetailMap.get(AmountTypeEnum.COUPON_DISCOUNT_AMOUNT.getCode()) != null) {
+                if (orderAmountDetailMap.get(AmountTypeEnum.COUPON_DISCOUNT_AMOUNT.getCode()) != null) {
                     realPayAmount = orderItemDO.getOriginAmount() - orderAmountDetailMap.get(
                             AmountTypeEnum.COUPON_DISCOUNT_AMOUNT.getCode()).getAmount();
                 }
             }
-            if(realPayAmount > 0) {
+            if (realPayAmount > 0) {
                 orderItemDO.setPayAmount(realPayAmount);
             } else {
                 orderItemDO.setPayAmount(orderItemDO.getOriginAmount());
@@ -149,22 +158,24 @@ public class NewOrderBuilder {
 
     /**
      * 获取orderItemId后缀值
+     *
      * @param orderId
      * @param num
      * @return
      */
     private String genOrderItemId(String orderId, Integer num) {
-        if(num < 10) {
+        if (num < 10) {
             return orderId + "_00" + num;
         }
-        if(num < 100) {
+        if (num < 100) {
             return orderId + "_0" + num;
         }
-        return  "_" + num;
+        return "_" + num;
     }
 
     /**
      * 构建OrderDeliveryDetailDO对象
+     *
      * @return
      */
     public NewOrderBuilder buildOrderDeliveryDetail() {
@@ -187,12 +198,13 @@ public class NewOrderBuilder {
 
     /**
      * 构建OrderPaymentDetailDO对象
+     *
      * @return
      */
     public NewOrderBuilder buildOrderPaymentDetail() {
         List<CreateOrderRequest.PaymentRequest> paymentRequestList = createOrderRequest.getPaymentRequestList();
         List<OrderPaymentDetailDO> orderPaymentDetailDOList = new ArrayList<>();
-        for(CreateOrderRequest.PaymentRequest paymentRequest : paymentRequestList) {
+        for (CreateOrderRequest.PaymentRequest paymentRequest : paymentRequestList) {
             OrderPaymentDetailDO orderPaymentDetailDO = new OrderPaymentDetailDO();
             orderPaymentDetailDO.setOrderId(createOrderRequest.getOrderId());
             orderPaymentDetailDO.setAccountType(paymentRequest.getAccountType());
@@ -214,12 +226,13 @@ public class NewOrderBuilder {
 
     /**
      * 构建OrderAmountDO对象
+     *
      * @return
      */
     public NewOrderBuilder buildOrderAmount() {
-        List<OrderAmountDTO> orderAmountDTOList = ObjectUtil.convertList(calculateOrderAmountDTO.getOrderAmountList(), OrderAmountDTO.class);
+        List<OrderAmountDTO> orderAmountDTOList = orderConverter.convertOrderAmountDTO(calculateOrderAmountDTO.getOrderAmountList());
         List<OrderAmountDO> orderAmountDOList = new ArrayList<>();
-        for(OrderAmountDTO orderAmountDTO : orderAmountDTOList) {
+        for (OrderAmountDTO orderAmountDTO : orderAmountDTOList) {
             OrderAmountDO orderAmountDO = new OrderAmountDO();
             orderAmountDO.setOrderId(createOrderRequest.getOrderId());
             orderAmountDO.setAmountType(orderAmountDTO.getAmountType());
@@ -232,17 +245,18 @@ public class NewOrderBuilder {
 
     /**
      * 构建OrderAmountDetailDO对象
+     *
      * @return
      */
     public NewOrderBuilder buildOrderAmountDetail() {
-        List<OrderAmountDetailDTO> orderItemAmountList = ObjectUtil.convertList(calculateOrderAmountDTO.getOrderAmountDetail(), OrderAmountDetailDTO.class);
+        List<OrderAmountDetailDTO> orderItemAmountList = orderConverter.convertOrderAmountDetail(calculateOrderAmountDTO.getOrderAmountDetail());
         List<OrderAmountDetailDO> orderAmountDetailDOList = new ArrayList<>();
-        for(OrderAmountDetailDTO orderAmountDetailDTO : orderItemAmountList) {
+        for (OrderAmountDetailDTO orderAmountDetailDTO : orderItemAmountList) {
             OrderAmountDetailDO orderAmountDetailDO = new OrderAmountDetailDO();
             orderAmountDetailDO.setOrderId(createOrderRequest.getOrderId());
             orderAmountDetailDO.setProductType(orderAmountDetailDTO.getProductType());
-            for(OrderItemDO orderItemDO : fullOrderData.getOrderItemDOList()) {
-                if(orderItemDO.getSkuCode().equals(orderAmountDetailDTO.getSkuCode())) {
+            for (OrderItemDO orderItemDO : fullOrderData.getOrderItemDOList()) {
+                if (orderItemDO.getSkuCode().equals(orderAmountDetailDTO.getSkuCode())) {
                     orderAmountDetailDO.setOrderItemId(orderItemDO.getOrderItemId());
                     orderAmountDetailDO.setProductId(orderItemDO.getProductId());
                 }
@@ -261,6 +275,7 @@ public class NewOrderBuilder {
 
     /**
      * 构建OrderOperateLogDO对象
+     *
      * @return
      */
     public NewOrderBuilder buildOperateLog() {
@@ -276,13 +291,14 @@ public class NewOrderBuilder {
 
     /**
      * 构建OrderSnapshot对象
+     *
      * @return
      */
     public NewOrderBuilder buildOrderSnapshot() {
         String orderId = createOrderRequest.getOrderId();
         String couponId = createOrderRequest.getCouponId();
         List<OrderSnapshotDO> orderOperateLogDOList = new ArrayList<>();
-        if(StringUtils.isNotEmpty(couponId)) {
+        if (StringUtils.isNotEmpty(couponId)) {
             // 优惠券信息
             OrderSnapshotDO orderCouponSnapshotDO = new OrderSnapshotDO();
             orderCouponSnapshotDO.setOrderId(orderId);

@@ -5,6 +5,7 @@ import com.ruyuan.eshop.common.exception.BaseErrorCodeEnum;
 /**
  * 异常错误码枚举值
  * 前三位代表服务，后三位代表功能错误码
+ *
  * @author zhonghuashishan
  * @version 1.0
  */

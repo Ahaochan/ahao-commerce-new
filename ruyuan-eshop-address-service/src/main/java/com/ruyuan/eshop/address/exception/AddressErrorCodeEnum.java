@@ -3,7 +3,6 @@ package com.ruyuan.eshop.address.exception;
 import com.ruyuan.eshop.common.exception.BaseErrorCodeEnum;
 
 /**
- *
  * @author zhonghuashishan
  * @version 1.0
  */

@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.fulfill.domain.request;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Tolerate;
@@ -11,14 +10,14 @@ import java.util.List;
 
 /**
  * <p>
- *  接受订单履约请求
+ * 接受订单履约请求
  * </p>
  *
  * @author zhonghuashishan
  */
 @Data
 @Builder
-public class ReceiveFulfillRequest extends AbstractObject implements Serializable {
+public class ReceiveFulfillRequest implements Serializable {
 
     private static final long serialVersionUID = 5936230879742243911L;
 
@@ -103,7 +102,7 @@ public class ReceiveFulfillRequest extends AbstractObject implements Serializabl
     private Integer payType;
 
     /**
-     *  付款总金额
+     * 付款总金额
      */
     private Integer payAmount;
 

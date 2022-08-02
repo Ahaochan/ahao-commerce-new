@@ -1,10 +1,8 @@
 package com.ruyuan.eshop.order.config;
 
-import io.swagger.models.auth.In;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.bind.annotation.PostMapping;
 
 /**
  * @author zhonghuashishan

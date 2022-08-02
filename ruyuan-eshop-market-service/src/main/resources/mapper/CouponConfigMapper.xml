@@ -22,7 +22,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, coupon_config_id, name, type, amount, condition_amount, valid_start_time, valid_end_time, give_out_count, received_count, give_out_type, status, gmt_create, gmt_modified
+        id
+        , coupon_config_id, name, type, amount, condition_amount, valid_start_time, valid_end_time, give_out_count, received_count, give_out_type, status, gmt_create, gmt_modified
     </sql>
 
 </mapper>

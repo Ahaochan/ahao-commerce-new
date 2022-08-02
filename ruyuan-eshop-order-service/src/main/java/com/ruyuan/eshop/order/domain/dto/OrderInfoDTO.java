@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.order.domain.dto;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -13,7 +12,7 @@ import java.util.Date;
  * @version 1.0
  */
 @Data
-public class OrderInfoDTO extends AbstractObject implements Serializable {
+public class OrderInfoDTO implements Serializable {
     private static final long serialVersionUID = 1L;
     /**
      * 接入方业务线标识  1, "自营商城"

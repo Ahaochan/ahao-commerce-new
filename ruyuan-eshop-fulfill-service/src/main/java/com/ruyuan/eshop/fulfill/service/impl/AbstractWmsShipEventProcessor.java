@@ -19,7 +19,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 /**
- *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -39,7 +38,7 @@ public abstract class AbstractWmsShipEventProcessor implements OrderWmsShipEvent
         String body = buildMsgBody(request);
 
         //3、发送消息
-        sendMessage(body,request.getOrderId());
+        sendMessage(body, request.getOrderId());
     }
 
     /**
@@ -49,8 +48,8 @@ public abstract class AbstractWmsShipEventProcessor implements OrderWmsShipEvent
 
     protected abstract String buildMsgBody(TriggerOrderWmsShipEventRequest request);
 
-    private void sendMessage(String body,String orderId) {
-        if(StringUtils.isNotBlank(body)) {
+    private void sendMessage(String body, String orderId) {
+        if (StringUtils.isNotBlank(body)) {
             Message message = new Message();
             message.setTopic(RocketMqConstant.ORDER_WMS_SHIP_RESULT_TOPIC);
             message.setBody(body.getBytes(StandardCharsets.UTF_8));
@@ -88,6 +87,7 @@ public abstract class AbstractWmsShipEventProcessor implements OrderWmsShipEvent
 
     /**
      * hash
+     *
      * @param orderId
      * @return
      */

@@ -40,15 +40,15 @@ public enum AfterSaleTypeDetailEnum {
     }
 
     public static Map<Integer, String> toMap() {
-        Map<Integer,String> map = new HashMap<>(16);
-        for (AfterSaleTypeDetailEnum element : AfterSaleTypeDetailEnum.values() ){
-            map.put(element.getCode(),element.getMsg());
+        Map<Integer, String> map = new HashMap<>(16);
+        for (AfterSaleTypeDetailEnum element : AfterSaleTypeDetailEnum.values()) {
+            map.put(element.getCode(), element.getMsg());
         }
         return map;
     }
 
     public static AfterSaleTypeDetailEnum getByCode(Integer code) {
-        for(AfterSaleTypeDetailEnum element : AfterSaleTypeDetailEnum.values()){
+        for (AfterSaleTypeDetailEnum element : AfterSaleTypeDetailEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }

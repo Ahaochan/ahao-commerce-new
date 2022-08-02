@@ -61,7 +61,7 @@ public class AfterSaleController {
         //  分布式锁
         String orderId = returnGoodsOrderRequest.getOrderId();
         String key = RedisLockKeyConstants.REFUND_KEY + orderId;
-        boolean lock = redisLock.lock(key);
+        boolean lock = redisLock.tryLock(key);
         if (!lock) {
             throw new OrderBizException(OrderErrorCodeEnum.PROCESS_AFTER_SALE_RETURN_GOODS);
         }

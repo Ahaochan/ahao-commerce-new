@@ -13,8 +13,8 @@ import java.util.Set;
  */
 public enum AfterSaleTypeEnum {
 
-    RETURN_MONEY(1,"退款"),
-    RETURN_GOODS(2,"退货");
+    RETURN_MONEY(1, "退款"),
+    RETURN_GOODS(2, "退货");
 
 
     private Integer code;
@@ -34,16 +34,16 @@ public enum AfterSaleTypeEnum {
         return msg;
     }
 
-    public static Map<Integer,String> toMap() {
-        Map<Integer,String> map = new HashMap<>(16);
-        for (AfterSaleTypeEnum element : AfterSaleTypeEnum.values() ){
-            map.put(element.getCode(),element.getMsg());
+    public static Map<Integer, String> toMap() {
+        Map<Integer, String> map = new HashMap<>(16);
+        for (AfterSaleTypeEnum element : AfterSaleTypeEnum.values()) {
+            map.put(element.getCode(), element.getMsg());
         }
         return map;
     }
 
     public static AfterSaleTypeEnum getByCode(Integer code) {
-        for(AfterSaleTypeEnum element : AfterSaleTypeEnum.values()){
+        for (AfterSaleTypeEnum element : AfterSaleTypeEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }

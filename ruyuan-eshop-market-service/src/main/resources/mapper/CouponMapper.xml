@@ -17,7 +17,8 @@
 
     <!-- 通用查询结果列 -->
     <sql id="Base_Column_List">
-        id, coupon_id, coupon_config_id,  user_id, is_used, used_time, amount, gmt_create, gmt_modified
+        id
+        , coupon_id, coupon_config_id,  user_id, is_used, used_time, amount, gmt_create, gmt_modified
     </sql>
 
 </mapper>

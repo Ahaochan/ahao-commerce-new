@@ -1,10 +1,8 @@
 package com.ruyuan.eshop.customer.domain.request;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 客服审核退货申请入参
@@ -13,7 +11,7 @@ import java.util.Date;
  * @version 1.0
  */
 @Data
-public class CustomerReviewReturnGoodsRequest extends AbstractObject implements Serializable {
+public class CustomerReviewReturnGoodsRequest implements Serializable {
     private static final long serialVersionUID = -4113897073742442896L;
 
     /**

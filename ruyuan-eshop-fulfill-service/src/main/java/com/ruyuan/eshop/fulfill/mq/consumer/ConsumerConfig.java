@@ -1,10 +1,9 @@
 package com.ruyuan.eshop.fulfill.mq.consumer;
 
-import com.ruyuan.eshop.fulfill.mq.config.RocketMQProperties;
-import com.ruyuan.eshop.fulfill.mq.consumer.listener.CancelFulfillTopicListener;
 import com.ruyuan.eshop.fulfill.mq.consumer.listener.TriggerOrderFulfillTopicListener;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.spring.autoconfigure.RocketMQProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,6 +23,7 @@ public class ConsumerConfig {
 
     /**
      * 触发订单履约消息消费者
+     *
      * @param triggerOrderFulfillTopicListener
      * @return
      * @throws MQClientException
@@ -35,24 +35,6 @@ public class ConsumerConfig {
         consumer.setNamesrvAddr(rocketMQProperties.getNameServer());
         consumer.subscribe(TRIGGER_ORDER_FULFILL_TOPIC, "*");
         consumer.registerMessageListener(triggerOrderFulfillTopicListener);
-        consumer.start();
-        return consumer;
-    }
-
-
-    /**
-     * 取消履约消息消费者
-     * @param cancelFulfillTopicListener
-     * @return
-     * @throws MQClientException
-     */
-    @Bean("cancelFulfillConsumer")
-    public DefaultMQPushConsumer cancelFulfillConsumer(CancelFulfillTopicListener cancelFulfillTopicListener)
-            throws MQClientException {
-        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(CANCEL_FULFILL_CONSUMER_GROUP);
-        consumer.setNamesrvAddr(rocketMQProperties.getNameServer());
-        consumer.subscribe(CANCEL_FULFILL_TOPIC, "*");
-        consumer.registerMessageListener(cancelFulfillTopicListener);
         consumer.start();
         return consumer;
     }

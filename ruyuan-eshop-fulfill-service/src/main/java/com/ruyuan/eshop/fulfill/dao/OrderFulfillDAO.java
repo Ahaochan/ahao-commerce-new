@@ -19,39 +19,42 @@ public class OrderFulfillDAO extends BaseDAO<OrderFulfillMapper, OrderFulfillDO>
 
     /**
      * 保存物流单号
+     *
      * @param fulfillId
      * @param logisticsCode
      */
     public boolean saveLogisticsCode(String fulfillId, String logisticsCode) {
         LambdaUpdateWrapper<OrderFulfillDO> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper
-                .set(OrderFulfillDO::getLogisticsCode,logisticsCode)
-                .eq(OrderFulfillDO::getFulfillId,fulfillId);
+                .set(OrderFulfillDO::getLogisticsCode, logisticsCode)
+                .eq(OrderFulfillDO::getFulfillId, fulfillId);
         return update(updateWrapper);
     }
 
     /**
      * 查询履约单
+     *
      * @param orderId
      * @return
      */
     public OrderFulfillDO getOne(String orderId) {
         LambdaQueryWrapper<OrderFulfillDO> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(OrderFulfillDO::getOrderId,orderId);
+        queryWrapper.eq(OrderFulfillDO::getOrderId, orderId);
         return baseMapper.selectOne(queryWrapper);
     }
 
     /**
      * 更新配送员信息
+     *
      * @return
      */
-    public boolean updateDeliverer(String fulfillId,String delivererNo, String delivererName, String delivererPhone) {
+    public boolean updateDeliverer(String fulfillId, String delivererNo, String delivererName, String delivererPhone) {
         LambdaUpdateWrapper<OrderFulfillDO> updateWrapper = new LambdaUpdateWrapper<>();
         updateWrapper
-                .set(OrderFulfillDO::getDelivererNo,delivererNo)
-                .set(OrderFulfillDO::getDelivererName,delivererName)
-                .set(OrderFulfillDO::getDelivererPhone,delivererPhone)
-                .eq(OrderFulfillDO::getFulfillId,fulfillId);
+                .set(OrderFulfillDO::getDelivererNo, delivererNo)
+                .set(OrderFulfillDO::getDelivererName, delivererName)
+                .set(OrderFulfillDO::getDelivererPhone, delivererPhone)
+                .eq(OrderFulfillDO::getFulfillId, fulfillId);
         return update(updateWrapper);
     }
 }

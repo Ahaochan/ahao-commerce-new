@@ -32,15 +32,15 @@ public enum DeliveryTypeEnum {
     }
 
     public static Map<Integer, String> toMap() {
-        Map<Integer,String> map = new HashMap<>(16);
-        for (DeliveryTypeEnum element : DeliveryTypeEnum.values() ){
-            map.put(element.getCode(),element.getMsg());
+        Map<Integer, String> map = new HashMap<>(16);
+        for (DeliveryTypeEnum element : DeliveryTypeEnum.values()) {
+            map.put(element.getCode(), element.getMsg());
         }
         return map;
     }
 
     public static DeliveryTypeEnum getByCode(Integer code) {
-        for(DeliveryTypeEnum element : DeliveryTypeEnum.values()){
+        for (DeliveryTypeEnum element : DeliveryTypeEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }

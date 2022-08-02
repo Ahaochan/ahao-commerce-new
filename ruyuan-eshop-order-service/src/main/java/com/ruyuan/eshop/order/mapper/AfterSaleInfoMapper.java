@@ -21,6 +21,7 @@ public interface AfterSaleInfoMapper extends BaseMapper<AfterSaleInfoDO> {
 
     /**
      * 售后单分页查询
+     *
      * @param query
      * @return
      */

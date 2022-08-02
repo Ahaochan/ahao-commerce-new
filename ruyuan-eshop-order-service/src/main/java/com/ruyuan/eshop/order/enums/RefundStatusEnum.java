@@ -33,16 +33,16 @@ public enum RefundStatusEnum {
         return msg;
     }
 
-    public static Map<Integer,String> toMap() {
+    public static Map<Integer, String> toMap() {
         Map<Integer, String> map = new HashMap<>(16);
-        for (RefundStatusEnum element : RefundStatusEnum.values() ){
-            map.put(element.getCode(),element.getMsg());
+        for (RefundStatusEnum element : RefundStatusEnum.values()) {
+            map.put(element.getCode(), element.getMsg());
         }
         return map;
     }
 
     public static RefundStatusEnum getByCode(Integer code) {
-        for(RefundStatusEnum element : RefundStatusEnum.values()){
+        for (RefundStatusEnum element : RefundStatusEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }

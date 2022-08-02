@@ -24,14 +24,15 @@ public class AreaDAO extends BaseDAO<AreaMapper, AreaDO> {
 
     /**
      * 查询地区
+     *
      * @param areaCodes
      * @param area
      * @return
      */
     public List<AreaDO> listAreas(Set<String> areaCodes, String area) {
         LambdaQueryWrapper<AreaDO> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(StringUtils.isNotBlank(area),AreaDO::getName,area)
-                .in(CollectionUtils.isNotEmpty(areaCodes),AreaDO::getCode,areaCodes);
+        queryWrapper.eq(StringUtils.isNotBlank(area), AreaDO::getName, area)
+                .in(CollectionUtils.isNotEmpty(areaCodes), AreaDO::getCode, areaCodes);
         return list(queryWrapper);
     }
 }

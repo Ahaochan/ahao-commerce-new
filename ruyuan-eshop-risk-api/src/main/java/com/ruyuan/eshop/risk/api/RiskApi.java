@@ -6,6 +6,7 @@ import com.ruyuan.eshop.risk.domain.request.CheckOrderRiskRequest;
 
 /**
  * 风控服务API
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -13,6 +14,7 @@ public interface RiskApi {
 
     /**
      * 订单风控检查
+     *
      * @param checkOrderRiskRequest
      * @return
      */

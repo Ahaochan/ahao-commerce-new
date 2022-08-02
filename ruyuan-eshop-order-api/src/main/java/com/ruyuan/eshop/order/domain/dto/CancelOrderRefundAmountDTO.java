@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.order.domain.dto;
 
-import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,7 +11,7 @@ import java.io.Serializable;
  * @version 1.0
  */
 @Data
-public class CancelOrderRefundAmountDTO extends AbstractObject implements Serializable {
+public class CancelOrderRefundAmountDTO implements Serializable {
     private static final long serialVersionUID = 2078305514048894973L;
     /**
      * 订单号

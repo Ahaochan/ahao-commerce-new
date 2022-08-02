@@ -5,6 +5,7 @@ import java.util.Map;
 
 /**
  * 支付类型枚举
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -31,15 +32,15 @@ public enum PayTypeEnum {
     }
 
     public static Map<Integer, String> toMap() {
-        Map<Integer,String> map = new HashMap<>(16);
-        for (PayTypeEnum element : PayTypeEnum.values() ){
-            map.put(element.getCode(),element.getMsg());
+        Map<Integer, String> map = new HashMap<>(16);
+        for (PayTypeEnum element : PayTypeEnum.values()) {
+            map.put(element.getCode(), element.getMsg());
         }
         return map;
     }
 
     public static PayTypeEnum getByCode(Integer code) {
-        for(PayTypeEnum element : PayTypeEnum.values()){
+        for (PayTypeEnum element : PayTypeEnum.values()) {
             if (code.equals(element.getCode())) {
                 return element;
             }
