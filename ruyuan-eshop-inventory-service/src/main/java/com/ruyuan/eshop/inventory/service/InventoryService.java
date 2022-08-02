@@ -1,7 +1,6 @@
 package com.ruyuan.eshop.inventory.service;
 
-import com.ruyuan.eshop.inventory.domain.request.LockProductStockRequest;
-import com.ruyuan.eshop.inventory.domain.request.ReleaseProductStockRequest;
+import com.ruyuan.eshop.inventory.domain.request.*;
 
 /**
  * @author zhonghuashishan
@@ -10,15 +9,35 @@ import com.ruyuan.eshop.inventory.domain.request.ReleaseProductStockRequest;
 public interface InventoryService {
 
     /**
-     * 锁定商品库存
-     * @param lockProductStockRequest
+     * 扣减商品库存
+     * @param deductProductStockRequest
      * @return
      */
-    Boolean lockProductStock(LockProductStockRequest lockProductStockRequest);
+    Boolean deductProductStock(DeductProductStockRequest deductProductStockRequest);
 
     /**
      * 释放商品库存
      */
     Boolean releaseProductStock(ReleaseProductStockRequest releaseProductStockRequest);
 
+    /**
+     * 新增商品库存
+     * @param request
+     * @return
+     */
+    Boolean addProductStock(AddProductStockRequest request);
+
+    /**
+     * 调整商品库存
+     * @param request
+     * @return
+     */
+    Boolean modifyProductStock(ModifyProductStockRequest request);
+
+    /**
+     * 同步商品sku库存数据到缓存
+     * @param request
+     * @return
+     */
+    Boolean syncStockToCache(SyncStockToCacheRequest request);
 }

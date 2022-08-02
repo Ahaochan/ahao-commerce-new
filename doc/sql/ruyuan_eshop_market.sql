@@ -1,9 +1,7 @@
 CREATE database if NOT EXISTS `ruyuan_eshop_market` default character set utf8 collate utf8_general_ci;
 use `ruyuan_eshop_market`;
 
-
 SET NAMES utf8;
-
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
@@ -23,13 +21,18 @@ CREATE TABLE `market_coupon` (
   PRIMARY KEY (`id`) USING BTREE,
   UNIQUE KEY `uk_coupon_id_user_id` (`coupon_config_id`,`user_id`) USING BTREE,
   KEY `idx_user_account_id` (`user_id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8 COMMENT='优惠券领取记录表';
+) ENGINE=InnoDB AUTO_INCREMENT=14 DEFAULT CHARSET=utf8 COMMENT='优惠券领取记录表';
 
 -- ----------------------------
 -- Records of market_coupon
 -- ----------------------------
 BEGIN;
-INSERT INTO `market_coupon` VALUES (6, '1001001', '2001001', '100', 1, '2021-12-01 09:20:33', 500, '2021-11-26 14:29:43', '2021-11-26 14:29:51');
+INSERT INTO `market_coupon` VALUES (6, '1001001', '2001001', '100', 1, '2021-12-12 12:15:03', 500, '2021-11-26 14:29:43', '2021-12-12 12:15:03');
+INSERT INTO `market_coupon` VALUES (9, '1001002', '2001001', '101', 1, '2021-12-08 21:15:34', 500, '2021-11-26 14:29:43', '2021-12-08 21:15:34');
+INSERT INTO `market_coupon` VALUES (10, '1001003', '2001001', '102', 1, '2021-12-08 22:58:56', 500, '2021-11-26 14:29:43', '2021-12-08 22:58:56');
+INSERT INTO `market_coupon` VALUES (11, '1001004', '2001001', '103', 1, '2021-12-09 20:11:16', 500, '2021-11-26 14:29:43', '2021-12-09 20:11:16');
+INSERT INTO `market_coupon` VALUES (12, '1001005', '2001001', '104', 1, '2021-12-10 11:36:47', 500, '2021-11-26 14:29:43', '2021-12-10 11:36:47');
+INSERT INTO `market_coupon` VALUES (13, '1001006', '2001001', '105', 1, '2021-12-10 12:23:57', 500, '2021-11-26 14:29:43', '2021-12-10 12:23:57');
 COMMIT;
 
 -- ----------------------------
@@ -93,6 +96,6 @@ CREATE TABLE `undo_log` (
   `log_modified` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `ux_undo_log` (`xid`,`branch_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
 SET FOREIGN_KEY_CHECKS = 1;

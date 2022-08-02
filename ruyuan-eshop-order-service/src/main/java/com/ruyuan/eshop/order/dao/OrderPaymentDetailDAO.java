@@ -33,6 +33,17 @@ public class OrderPaymentDetailDAO extends BaseDAO<OrderPaymentDetailMapper, Ord
         return list(queryWrapper);
     }
 
+    /**
+     * 根据多个订单号查询支付明细
+     *
+     * @param orderIds
+     * @return
+     */
+    public List<OrderPaymentDetailDO> listByOrderIds(List<String> orderIds) {
+        LambdaQueryWrapper<OrderPaymentDetailDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.in(OrderPaymentDetailDO::getOrderId, orderIds);
+        return list(queryWrapper);
+    }
 
     /**
      * 查询订单支付明细

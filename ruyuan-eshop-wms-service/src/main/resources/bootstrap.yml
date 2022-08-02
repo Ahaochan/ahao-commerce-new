@@ -12,3 +12,5 @@ spring:
             refresh: true
         server-addr: localhost:8848
         file-extension: yaml
+        username: nacos
+        password: nacos

@@ -1,7 +1,9 @@
 package com.ruyuan.eshop.order.controller;
 
+import com.ruyuan.eshop.common.constants.RedisLockKeyConstants;
 import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.common.page.PagingInfo;
+import com.ruyuan.eshop.common.redis.RedisLock;
 import com.ruyuan.eshop.order.api.AfterSaleApi;
 import com.ruyuan.eshop.order.api.AfterSaleQueryApi;
 import com.ruyuan.eshop.order.domain.dto.AfterSaleOrderDetailDTO;
@@ -12,6 +14,8 @@ import com.ruyuan.eshop.order.domain.request.CancelOrderRequest;
 import com.ruyuan.eshop.order.domain.request.LackRequest;
 import com.ruyuan.eshop.order.domain.request.ReturnGoodsOrderRequest;
 import com.ruyuan.eshop.order.domain.request.RevokeAfterSaleRequest;
+import com.ruyuan.eshop.order.exception.OrderBizException;
+import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
 import com.ruyuan.eshop.order.service.OrderAfterSaleService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
@@ -38,6 +42,9 @@ public class AfterSaleController {
     @DubboReference(version = "1.0.0")
     private AfterSaleQueryApi afterSaleQueryApi;
 
+    @Autowired
+    private RedisLock redisLock;
+
     /**
      * 用户手动取消订单
      */
@@ -46,13 +53,23 @@ public class AfterSaleController {
         return orderAfterSaleService.cancelOrder(cancelOrderRequest);
     }
 
-
     /**
      * 用户发起退货售后
      */
     @PostMapping("/applyAfterSale")
     public JsonResult<Boolean> applyAfterSale(@RequestBody ReturnGoodsOrderRequest returnGoodsOrderRequest) {
-        return orderAfterSaleService.processApplyAfterSale(returnGoodsOrderRequest);
+        //  分布式锁
+        String orderId = returnGoodsOrderRequest.getOrderId();
+        String key = RedisLockKeyConstants.REFUND_KEY + orderId;
+        boolean lock = redisLock.lock(key);
+        if (!lock) {
+            throw new OrderBizException(OrderErrorCodeEnum.PROCESS_AFTER_SALE_RETURN_GOODS);
+        }
+        try {
+            return orderAfterSaleService.processApplyAfterSale(returnGoodsOrderRequest);
+        } finally {
+            redisLock.unlock(key);
+        }
     }
 
     /**

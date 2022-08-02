@@ -67,7 +67,7 @@ public class OrderDeliveryDetailDAO extends BaseDAO<OrderDeliveryDetailMapper, O
     }
 
     /**
-     * 更新签收配送员信息
+     * 更新配送员信息
      * @param id
      * @return
      */

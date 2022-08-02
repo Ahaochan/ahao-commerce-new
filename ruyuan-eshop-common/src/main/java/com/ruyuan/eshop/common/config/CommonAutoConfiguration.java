@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Import;
  * @version 1.0
  */
 @Configuration
-@Import(value = {WebConfiguration.class, RedisConfig.class, SpringApplicationContext.class})
+@Import(value = {WebConfiguration.class, RedisConfig.class, SpringApplicationContext.class,MybatisPlusConfig.class})
 public class CommonAutoConfiguration {
 
 }

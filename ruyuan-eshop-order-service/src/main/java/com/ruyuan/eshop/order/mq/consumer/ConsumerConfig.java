@@ -120,4 +120,35 @@ public class ConsumerConfig {
         return consumer;
     }
 
+    /**
+     * 释放资产消息消费者
+     * @param testMqListener
+     * @return
+     * @throws MQClientException
+     */
+    @Bean("testConsumer")
+    public DefaultMQPushConsumer testConsumer(TestMqListener testMqListener)
+            throws MQClientException {
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("test_mq_consumer_group");
+        consumer.setNamesrvAddr(rocketMQProperties.getNameServer());
+        consumer.subscribe("test_topic", "*");
+        consumer.registerMessageListener(testMqListener);
+        consumer.start();
+        return consumer;
+    }
+
+    /**
+     * 释放资产消息消费者
+     */
+    @Bean("auditPassReleaseAssetsConsumer")
+    public DefaultMQPushConsumer auditPassReleaseAssetsConsumer(AuditPassReleaseAssetsListener auditPassReleaseAssetsListener)
+            throws MQClientException {
+        DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(CUSTOMER_AUDIT_PASS_RELEASE_ASSETS_CONSUMER_GROUP);
+        consumer.setNamesrvAddr(rocketMQProperties.getNameServer());
+        consumer.subscribe(CUSTOMER_AUDIT_PASS_RELEASE_ASSETS_TOPIC, "*");
+        consumer.registerMessageListener(auditPassReleaseAssetsListener);
+        consumer.start();
+        return consumer;
+    }
+
 }

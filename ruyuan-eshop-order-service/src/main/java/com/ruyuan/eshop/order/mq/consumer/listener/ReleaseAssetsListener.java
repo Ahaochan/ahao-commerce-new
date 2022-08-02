@@ -1,9 +1,11 @@
 package com.ruyuan.eshop.order.mq.consumer.listener;
 
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.base.Strings;
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
-import com.ruyuan.eshop.inventory.domain.request.CancelOrderReleaseProductStockRequest;
-import com.ruyuan.eshop.market.domain.request.CancelOrderReleaseUserCouponRequest;
+import com.ruyuan.eshop.common.enums.OrderStatusEnum;
+import com.ruyuan.eshop.inventory.domain.request.ReleaseProductStockRequest;
+import com.ruyuan.eshop.market.domain.request.ReleaseUserCouponRequest;
 import com.ruyuan.eshop.order.dao.OrderItemDAO;
 import com.ruyuan.eshop.order.domain.dto.OrderInfoDTO;
 import com.ruyuan.eshop.order.domain.entity.OrderItemDO;
@@ -17,11 +19,12 @@ import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 监听 释放资产消息
+ *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -38,46 +41,73 @@ public class ReleaseAssetsListener implements MessageListenerConcurrently {
     @Override
     public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
         try {
-            for(MessageExt messageExt : list) {
+            for (MessageExt messageExt : list) {
+                // 1、消费到释放资产message
                 String message = new String(messageExt.getBody());
-                log.info("ReleaseAssetsConsumer message:{}", message);
-                CancelOrderAssembleRequest cancelOrderAssembleRequest = JSONObject.parseObject(message,
-                        CancelOrderAssembleRequest.class);
-
-                //  发送取消订单退款请求MQ
-                defaultProducer.sendMessage(RocketMqConstant.CANCEL_REFUND_REQUEST_TOPIC,
-                        JSONObject.toJSONString(cancelOrderAssembleRequest), "取消订单退款");
-
-                //  发送释放库存MQ
+                log.info("ReleaseAssetsListener message:{}", message);
+                CancelOrderAssembleRequest cancelOrderAssembleRequest = JSONObject.parseObject(message, CancelOrderAssembleRequest.class);
                 OrderInfoDTO orderInfoDTO = cancelOrderAssembleRequest.getOrderInfoDTO();
-                CancelOrderReleaseProductStockRequest cancelOrderReleaseProductStockRequest =
-                        buildSkuList(orderInfoDTO, orderItemDAO);
+
+                // 2、发送取消订单退款请求MQ
+                if (orderInfoDTO.getOrderStatus() > OrderStatusEnum.CREATED.getCode()) {
+                    defaultProducer.sendMessage(RocketMqConstant.CANCEL_REFUND_REQUEST_TOPIC,
+                            JSONObject.toJSONString(cancelOrderAssembleRequest), "取消订单退款");
+                }
+
+                // 3、发送释放库存MQ
+                ReleaseProductStockRequest releaseProductStockRequest = buildReleaseProductStock(orderInfoDTO, orderItemDAO);
                 defaultProducer.sendMessage(RocketMqConstant.CANCEL_RELEASE_INVENTORY_TOPIC,
-                        JSONObject.toJSONString(cancelOrderReleaseProductStockRequest), "取消订单释放库存");
+                        JSONObject.toJSONString(releaseProductStockRequest), "取消订单释放库存");
 
-                //  发送释放优惠券MQ
-                CancelOrderReleaseUserCouponRequest cancelOrderReleaseUserCouponRequest =
-                        orderInfoDTO.clone(CancelOrderReleaseUserCouponRequest.class);
-                defaultProducer.sendMessage(RocketMqConstant.CANCEL_RELEASE_PROPERTY_TOPIC,
-                        JSONObject.toJSONString(cancelOrderReleaseUserCouponRequest), "取消订单释放优惠券");
+                // 4、发送释放优惠券MQ
+                if (!Strings.isNullOrEmpty(orderInfoDTO.getCouponId())) {
+                    ReleaseUserCouponRequest releaseUserCouponRequest = buildReleaseUserCoupon(orderInfoDTO);
+                    defaultProducer.sendMessage(RocketMqConstant.CANCEL_RELEASE_PROPERTY_TOPIC,
+                            JSONObject.toJSONString(releaseUserCouponRequest), "取消订单释放优惠券");
+                }
             }
-
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
-
         } catch (Exception e) {
             log.error("consumer error", e);
             return ConsumeConcurrentlyStatus.RECONSUME_LATER;
         }
     }
 
-    private CancelOrderReleaseProductStockRequest buildSkuList(OrderInfoDTO orderInfoDTO, OrderItemDAO orderItemDAO) {
-        List<OrderItemDO> orderItemDOList = orderItemDAO.listByOrderId(orderInfoDTO.getOrderId());
-        List skuList = orderItemDOList.stream().map(OrderItemDO::getSkuCode).collect(Collectors.toList());
-
-        CancelOrderReleaseProductStockRequest cancelOrderReleaseProductStockRequest = new CancelOrderReleaseProductStockRequest();
-        cancelOrderReleaseProductStockRequest.setSkuCodeList(skuList);
-
-        return cancelOrderReleaseProductStockRequest;
+    /**
+     * 组装释放优惠券数据
+     *
+     * @return
+     */
+    private ReleaseUserCouponRequest buildReleaseUserCoupon(OrderInfoDTO orderInfoDTO) {
+        ReleaseUserCouponRequest releaseUserCouponRequest = new ReleaseUserCouponRequest();
+        releaseUserCouponRequest.setCouponId(orderInfoDTO.getCouponId());
+        releaseUserCouponRequest.setUserId(orderInfoDTO.getUserId());
+        releaseUserCouponRequest.setOrderId(orderInfoDTO.getOrderId());
+        return releaseUserCouponRequest;
     }
 
+    /**
+     * 组装释放库存数据
+     */
+    private ReleaseProductStockRequest buildReleaseProductStock(OrderInfoDTO orderInfoDTO, OrderItemDAO orderItemDAO) {
+        String orderId = orderInfoDTO.getOrderId();
+        List<ReleaseProductStockRequest.OrderItemRequest> orderItemRequestList = new ArrayList<>();
+
+        //  查询订单条目
+        ReleaseProductStockRequest.OrderItemRequest orderItemRequest;
+        List<OrderItemDO> orderItemDOList = orderItemDAO.listByOrderId(orderId);
+        for (OrderItemDO orderItemDO : orderItemDOList) {
+            orderItemRequest = new ReleaseProductStockRequest.OrderItemRequest();
+            orderItemRequest.setSkuCode(orderItemDO.getSkuCode());
+            orderItemRequest.setSaleQuantity(orderItemDO.getSaleQuantity());
+
+            orderItemRequestList.add(orderItemRequest);
+        }
+
+        ReleaseProductStockRequest releaseProductStockRequest = new ReleaseProductStockRequest();
+        releaseProductStockRequest.setOrderId(orderInfoDTO.getOrderId());
+        releaseProductStockRequest.setOrderItemRequestList(orderItemRequestList);
+
+        return releaseProductStockRequest;
+    }
 }

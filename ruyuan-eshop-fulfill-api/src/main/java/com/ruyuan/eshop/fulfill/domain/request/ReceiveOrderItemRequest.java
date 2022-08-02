@@ -1,5 +1,6 @@
 package com.ruyuan.eshop.fulfill.domain.request;
 
+import com.ruyuan.eshop.common.core.AbstractObject;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.Tolerate;
@@ -15,7 +16,9 @@ import java.io.Serializable;
  */
 @Data
 @Builder
-public class ReceiveOrderItemRequest implements Serializable {
+public class ReceiveOrderItemRequest extends AbstractObject implements Serializable {
+
+    private static final long serialVersionUID = -8262799982698267071L;
 
     /**
      * 商品id

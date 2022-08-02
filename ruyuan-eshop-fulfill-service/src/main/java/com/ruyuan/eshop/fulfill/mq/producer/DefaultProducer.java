@@ -1,13 +1,20 @@
 package com.ruyuan.eshop.fulfill.mq.producer;
 
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
+import com.ruyuan.eshop.fulfill.exception.FulfillBizException;
+import com.ruyuan.eshop.fulfill.exception.FulfillErrorCodeEnum;
 import com.ruyuan.eshop.fulfill.mq.config.RocketMQProperties;
 import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.DefaultMQProducer;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.client.producer.SendStatus;
+import org.apache.rocketmq.common.message.Message;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * 默认的普通的mq消息生产者（只能发普通消息，不能发事务消息）
@@ -50,6 +57,40 @@ public class DefaultProducer {
      */
     public void shutdown(){
         this.producer.shutdown();
+    }
+
+    /**
+     * 发送消息
+     *
+     * @param topic   topic
+     * @param message 消息
+     */
+    public void sendMessage(String topic, String message, String type) {
+        sendMessage(topic, message, -1, type);
+    }
+
+    /**
+     * 发送消息
+     *
+     * @param topic   topic
+     * @param message 消息
+     */
+    public void sendMessage(String topic, String message, Integer delayTimeLevel, String type) {
+        Message msg = new Message(topic, message.getBytes(StandardCharsets.UTF_8));
+        try {
+            if (delayTimeLevel > 0) {
+                msg.setDelayTimeLevel(delayTimeLevel);
+            }
+            SendResult send = producer.send(msg);
+            if (SendStatus.SEND_OK == send.getSendStatus()) {
+                log.info("发送MQ消息成功, type:{}, message:{}", type, message);
+            } else {
+                throw new FulfillBizException(send.getSendStatus().toString());
+            }
+        } catch (Exception e) {
+            log.error("发送MQ消息失败：", e);
+            throw new FulfillBizException(FulfillErrorCodeEnum.SEND_MQ_FAILED);
+        }
     }
 
 }

@@ -1,15 +1,17 @@
 package com.ruyuan.eshop.market.api.impl;
 
+import com.ruyuan.eshop.common.constants.RedisLockKeyConstants;
 import com.ruyuan.eshop.common.core.JsonResult;
+import com.ruyuan.eshop.common.redis.RedisLock;
 import com.ruyuan.eshop.market.api.MarketApi;
 import com.ruyuan.eshop.market.domain.dto.CalculateOrderAmountDTO;
 import com.ruyuan.eshop.market.domain.dto.UserCouponDTO;
 import com.ruyuan.eshop.market.domain.query.UserCouponQuery;
 import com.ruyuan.eshop.market.domain.request.CalculateOrderAmountRequest;
-import com.ruyuan.eshop.market.domain.request.CancelOrderReleaseUserCouponRequest;
 import com.ruyuan.eshop.market.domain.request.LockUserCouponRequest;
 import com.ruyuan.eshop.market.domain.request.ReleaseUserCouponRequest;
 import com.ruyuan.eshop.market.exception.MarketBizException;
+import com.ruyuan.eshop.market.exception.MarketErrorCodeEnum;
 import com.ruyuan.eshop.market.service.CouponService;
 import com.ruyuan.eshop.market.service.MarketService;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,9 @@ public class MarketApiImpl implements MarketApi {
 
     @Autowired
     private MarketService marketService;
+
+    @Autowired
+    private RedisLock redisLock;
 
     @Override
     public JsonResult<UserCouponDTO> getUserCoupon(UserCouponQuery userCouponQuery) {
@@ -64,7 +69,16 @@ public class MarketApiImpl implements MarketApi {
      */
     @Override
     public JsonResult<Boolean> releaseUserCoupon(ReleaseUserCouponRequest releaseUserCouponRequest) {
+        log.info("开始执行回滚优惠券,couponId:{}", releaseUserCouponRequest.getCouponId());
+        //  分布式锁
+        String couponId = releaseUserCouponRequest.getCouponId();
+        String key = RedisLockKeyConstants.RELEASE_COUPON_KEY + couponId;
+        boolean lock = redisLock.lock(key);
+        if (!lock) {
+            throw new MarketBizException(MarketErrorCodeEnum.RELEASE_COUPON_FAILED);
+        }
         try {
+            //  执行释放优惠券
             Boolean result = couponService.releaseUserCoupon(releaseUserCouponRequest);
             return JsonResult.buildSuccess(result);
         } catch (MarketBizException e) {
@@ -73,6 +87,8 @@ public class MarketApiImpl implements MarketApi {
         } catch (Exception e) {
             log.error("system error", e);
             return JsonResult.buildError(e.getMessage());
+        } finally {
+            redisLock.unlock(key);
         }
     }
 
@@ -96,9 +112,4 @@ public class MarketApiImpl implements MarketApi {
         }
     }
 
-    @Override
-    public JsonResult<Boolean> cancelOrderReleaseCoupon(CancelOrderReleaseUserCouponRequest cancelOrderReleaseUserCouponRequest) {
-        log.info("回退优惠券,orderId:{}",cancelOrderReleaseUserCouponRequest.getOrderId());
-        return JsonResult.buildSuccess(true);
-    }
 }

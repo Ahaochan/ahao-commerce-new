@@ -56,7 +56,7 @@ public class AfterSaleQueryServiceImpl implements AfterSaleQueryService {
         checkIntSetAllowableValues(query.getAfterSaleTypes(),AfterSaleTypeEnum.allowableValues(),"afterSaleTypes");
 
 
-        Integer maxSize = query.MAX_PAGE_SIZE;
+        Integer maxSize = AfterSaleQuery.MAX_PAGE_SIZE;
         checkSetMaxSize(query.getAfterSaleIds(),maxSize,"afterSaleIds");
         checkSetMaxSize(query.getOrderIds(),maxSize,"orderIds");
         checkSetMaxSize(query.getUserIds(),maxSize,"userIds");

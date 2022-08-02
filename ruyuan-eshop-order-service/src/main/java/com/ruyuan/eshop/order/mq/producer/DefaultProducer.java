@@ -6,9 +6,9 @@ import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
 import com.ruyuan.eshop.order.mq.config.RocketMQProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.exception.MQClientException;
-import org.apache.rocketmq.client.producer.DefaultMQProducer;
 import org.apache.rocketmq.client.producer.SendResult;
 import org.apache.rocketmq.client.producer.SendStatus;
+import org.apache.rocketmq.client.producer.TransactionMQProducer;
 import org.apache.rocketmq.common.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import java.nio.charset.StandardCharsets;
 
 /**
- * 默认的普通的mq消息生产者（只能发普通消息，不能发事务消息）
  *
  * @author zhonghuashishan
  * @version 1.0
@@ -25,11 +24,11 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class DefaultProducer {
 
-    private final DefaultMQProducer producer;
+    private final TransactionMQProducer producer;
 
     @Autowired
     public DefaultProducer(RocketMQProperties rocketMQProperties) {
-        producer = new DefaultMQProducer(RocketMqConstant.ORDER_DEFAULT_PRODUCER_GROUP);
+        producer = new TransactionMQProducer(RocketMqConstant.ORDER_DEFAULT_PRODUCER_GROUP);
         producer.setNamesrvAddr(rocketMQProperties.getNameServer());
         start();
     }
@@ -86,4 +85,7 @@ public class DefaultProducer {
         }
     }
 
+    public TransactionMQProducer getProducer() {
+        return producer;
+    }
 }

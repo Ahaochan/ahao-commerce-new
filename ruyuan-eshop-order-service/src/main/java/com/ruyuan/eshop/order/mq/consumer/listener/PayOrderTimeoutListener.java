@@ -36,7 +36,7 @@ public class PayOrderTimeoutListener implements MessageListenerConcurrently {
     @Override
     public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
         try {
-            for(MessageExt messageExt : list) {
+            for (MessageExt messageExt : list) {
                 String message = new String(messageExt.getBody());
                 PayOrderTimeoutDelayMessage payOrderTimeoutDelayMessage = JSON.parseObject(message, PayOrderTimeoutDelayMessage.class);
                 // 消费延迟消息，执行关单逻辑
@@ -51,12 +51,12 @@ public class PayOrderTimeoutListener implements MessageListenerConcurrently {
                 //  查询当前数据库的订单实时状态
                 OrderInfoDO orderInfoDO = orderInfoDAO.getByOrderId(payOrderTimeoutDelayMessage.getOrderId());
                 Integer orderStatusDatabase = orderInfoDO.getOrderStatus();
-                if(!OrderStatusEnum.CREATED.getCode().equals(orderStatusDatabase)) {
+                if (!OrderStatusEnum.CREATED.getCode().equals(orderStatusDatabase)) {
                     //  订单实时状态不等于已创建
                     return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
                 }
                 //  当前时间 小于 订单实际支付截止时间
-                if(new Date().before(orderInfoDO.getExpireTime())) {
+                if (new Date().before(orderInfoDO.getExpireTime())) {
                     return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
                 }
 

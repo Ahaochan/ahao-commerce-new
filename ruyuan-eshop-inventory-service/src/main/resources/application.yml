@@ -11,6 +11,18 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+        username: nacos
+        password: nacos
+    sentinel:
+      transport:
+        dashboard: 127.0.0.1:8080
+        port: 18001
+
+  redis:
+    host: localhost
+    port: 6379
+    password: 123456
+    timeout: 3000
 
 server:
   port: 8001
@@ -28,10 +40,12 @@ dubbo:
   provider:
     threads: 800
     actives: 200
+  cloud:
+    subscribed-services: ruyuan-eshop-inventory
 
 mybatis-plus:
   configuration:
-    # log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     map-underscore-to-camel-case: true
   mapper-locations: classpath:mapper/*.xml
 

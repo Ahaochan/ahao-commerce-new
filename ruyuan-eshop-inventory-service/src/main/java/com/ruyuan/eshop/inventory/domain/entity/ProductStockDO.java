@@ -22,7 +22,7 @@ public class ProductStockDO extends BaseEntity implements Serializable {
     /**
      * 商品sku编号
      */
-    private Long skuCode;
+    private String skuCode;
 
     /**
      * 销售库存
@@ -30,7 +30,7 @@ public class ProductStockDO extends BaseEntity implements Serializable {
     private Long saleStockQuantity;
 
     /**
-     * 锁定库存
+     * 已销售库存
      */
-    private Long lockedStockQuantity;
+    private Long saledStockQuantity;
 }

@@ -15,6 +15,7 @@ public enum MarketErrorCodeEnum implements BaseErrorCodeEnum {
     USER_COUPON_CONFIG_IS_NULL("300003", "优惠券活动配置记录不存在"),
     SEND_MQ_FAILED("300004", "发送MQ消息失败"),
     CONSUME_MQ_FAILED("300005", "消费MQ消息失败"),
+    RELEASE_COUPON_FAILED("300006", "释放优惠券失败"),
     ;
 
     private String errorCode;

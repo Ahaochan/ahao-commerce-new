@@ -1,9 +1,7 @@
 CREATE database if NOT EXISTS `ruyuan_eshop_product` default character set utf8 collate utf8_general_ci;
 use `ruyuan_eshop_product`;
 
-
 SET NAMES utf8;
-
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------

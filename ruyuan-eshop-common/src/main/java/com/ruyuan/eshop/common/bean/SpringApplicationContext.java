@@ -33,4 +33,14 @@ public class SpringApplicationContext {
         return context.getBean(clazz);
     }
 
+    /**
+     * 获取bean
+     *
+     * @param beanName bean名称
+     * @return bean实例
+     */
+    public Object getBean(String beanName) {
+        return context.getBean(beanName);
+    }
+
 }

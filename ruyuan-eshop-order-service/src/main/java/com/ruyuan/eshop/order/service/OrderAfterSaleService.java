@@ -2,8 +2,6 @@ package com.ruyuan.eshop.order.service;
 
 import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.common.message.ActualRefundMessage;
-import com.ruyuan.eshop.customer.domain.request.CustomerReviewReturnGoodsRequest;
-import com.ruyuan.eshop.order.domain.entity.AfterSaleRefundDO;
 import com.ruyuan.eshop.order.domain.request.*;
 
 
@@ -28,7 +26,7 @@ public interface OrderAfterSaleService {
     /**
      * 取消订单逻辑
      */
-    void executeCancelOrder(CancelOrderRequest cancelOrderRequest, String orderId);
+    JsonResult<Boolean> executeCancelOrder(CancelOrderRequest cancelOrderRequest, String orderId);
 
     /**
      * 取消订单/超时未支付取消 执行 退款前计算金额、记录售后信息等准备工作
@@ -41,7 +39,7 @@ public interface OrderAfterSaleService {
     JsonResult<Boolean> refundMoney(ActualRefundMessage actualRefundMessage);
 
     /**
-     * 取消订单支付退款回调 入口
+     * 支付退款回调 入口
      */
     JsonResult<Boolean> receivePaymentRefundCallback(RefundCallbackRequest payRefundCallbackRequest);
 
@@ -49,11 +47,6 @@ public interface OrderAfterSaleService {
      * 处理售后申请 入口
      */
     JsonResult<Boolean> processApplyAfterSale(ReturnGoodsOrderRequest returnGoodsOrderRequest);
-
-    /**
-     * 接收客服审核结果 入口
-     */
-    JsonResult<Boolean> receiveCustomerAuditResult(CustomerReviewReturnGoodsRequest customerReviewReturnGoodsRequest);
 
     /**
      * 发送退款短信
@@ -65,10 +58,24 @@ public interface OrderAfterSaleService {
      */
     JsonResult<Boolean> sendRefundAppMessage(String orderId);
 
-
     /**
      * 撤销售后申请
      */
     void revokeAfterSale(RevokeAfterSaleRequest request);
+
+    /**
+     * 接收客服审核拒绝结果 入口
+     */
+    void receiveCustomerAuditReject(CustomerAuditAssembleRequest customerAuditAssembleResult);
+
+    /**
+     * 接收客服审核通过结果 入口
+     */
+    void receiveCustomerAuditAccept(CustomerAuditAssembleRequest customerAuditAssembleResult);
+
+    /**
+     * 查询售后信息的客服审核状态
+     */
+    Integer findCustomerAuditAfterSaleStatus(Long afterSaleId);
 
 }

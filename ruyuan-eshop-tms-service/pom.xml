@@ -30,17 +30,6 @@
                     <groupId>org.redisson</groupId>
                     <artifactId>redisson</artifactId>
                 </exclusion>
-
-                <exclusion>
-                    <groupId>com.baomidou</groupId>
-                    <artifactId>mybatis-plus-boot-starter</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
-                </exclusion>
-
             </exclusions>
         </dependency>
 

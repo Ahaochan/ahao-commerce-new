@@ -1,7 +1,7 @@
 CREATE database if NOT EXISTS `ruyuan_eshop_address` default character set utf8 collate utf8_general_ci;
 use `ruyuan_eshop_address`;
 
-SET NAMES utf8mb4;
+SET NAMES utf8;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ----------------------------
@@ -21,7 +21,7 @@ CREATE TABLE `area` (
   KEY `idx_code` (`code`) USING BTREE,
   KEY `idx_name` (`name`) USING BTREE,
   KEY `idx_city_code` (`city_code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3679 DEFAULT CHARSET=utf8 COMMENT='地区设置';
+) ENGINE=InnoDB AUTO_INCREMENT=2013 DEFAULT CHARSET=utf8 COMMENT='地区设置';
 
 -- ----------------------------
 -- Records of area
@@ -133,7 +133,7 @@ CREATE TABLE `city` (
   KEY `idx_code` (`code`) USING BTREE,
   KEY `idx_name` (`name`) USING BTREE,
   KEY `idx_province_code` (`province_code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=391 DEFAULT CHARSET=utf8 COMMENT='城市设置';
+) ENGINE=InnoDB AUTO_INCREMENT=256 DEFAULT CHARSET=utf8 COMMENT='城市设置';
 
 -- ----------------------------
 -- Records of city
@@ -177,7 +177,7 @@ CREATE TABLE `province` (
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_code` (`code`) USING BTREE,
   KEY `idx_name` (`name`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=35 DEFAULT CHARSET=utf8 COMMENT='省份设置';
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8 COMMENT='省份设置';
 
 -- ----------------------------
 -- Records of province
@@ -206,7 +206,7 @@ CREATE TABLE `street` (
   KEY `idx_code` (`code`) USING BTREE,
   KEY `idx_name` (`name`) USING BTREE,
   KEY `idx_area_code` (`area_code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=42361 DEFAULT CHARSET=utf8 COMMENT='街道设置';
+) ENGINE=InnoDB AUTO_INCREMENT=29647 DEFAULT CHARSET=utf8 COMMENT='街道设置';
 
 -- ----------------------------
 -- Records of street

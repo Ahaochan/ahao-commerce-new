@@ -1,7 +1,9 @@
 package com.ruyuan.eshop.order.service;
 
 
+import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
 import com.ruyuan.eshop.order.domain.dto.WmsShipDTO;
+import com.ruyuan.eshop.order.domain.entity.OrderInfoDO;
 import com.ruyuan.eshop.order.exception.OrderBizException;
 
 /**
@@ -25,4 +27,7 @@ public interface OrderFulFillService {
      * @return
      */
     void informOrderWmsShipResult(WmsShipDTO wmsShipDTO) throws OrderBizException;
+
+
+    ReceiveFulfillRequest buildReceiveFulFillRequest(OrderInfoDO orderInfo);
 }

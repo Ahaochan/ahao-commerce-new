@@ -3,7 +3,7 @@ package com.ruyuan.eshop.market.mq.consumer.listener;
 import com.alibaba.fastjson.JSONObject;
 import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.market.api.MarketApi;
-import com.ruyuan.eshop.market.domain.request.CancelOrderReleaseUserCouponRequest;
+import com.ruyuan.eshop.market.domain.request.ReleaseUserCouponRequest;
 import com.ruyuan.eshop.market.exception.MarketBizException;
 import com.ruyuan.eshop.market.exception.MarketErrorCodeEnum;
 import lombok.extern.slf4j.Slf4j;
@@ -34,10 +34,10 @@ public class ReleasePropertyListener implements MessageListenerConcurrently {
             for (MessageExt msg : list) {
                 String content = new String(msg.getBody(), StandardCharsets.UTF_8);
                 log.info("ReleasePropertyConsumer message:{}", content);
-                CancelOrderReleaseUserCouponRequest cancelOrderReleaseUserCouponRequest
-                        = JSONObject.parseObject(content, CancelOrderReleaseUserCouponRequest.class);
 
-                JsonResult<Boolean> jsonResult = marketApi.cancelOrderReleaseCoupon(cancelOrderReleaseUserCouponRequest);
+                ReleaseUserCouponRequest releaseUserCouponRequest = JSONObject.parseObject(content, ReleaseUserCouponRequest.class);
+                //  释放优惠券
+                JsonResult<Boolean> jsonResult = marketApi.releaseUserCoupon(releaseUserCouponRequest);
                 if (!jsonResult.getSuccess()) {
                     throw new MarketBizException(MarketErrorCodeEnum.CONSUME_MQ_FAILED);
                 }

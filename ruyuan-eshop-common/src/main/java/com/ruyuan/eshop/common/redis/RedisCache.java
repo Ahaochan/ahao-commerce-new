@@ -2,7 +2,10 @@ package com.ruyuan.eshop.common.redis;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.data.redis.core.script.RedisScript;
 
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -55,4 +58,47 @@ public class RedisCache {
         return redisTemplate.delete(key);
     }
 
+    /**
+     * 判断hash key是否存在
+     * @param key
+     * @return
+     */
+    public boolean hExists(String key) {
+        return hGetAll(key).isEmpty();
+    }
+
+    /**
+     * 获取hash变量中的键值对
+     * 对应redis hgetall 命令
+     * @param key
+     * @return
+     */
+    public Map<String,String> hGetAll(String key) {
+        return redisTemplate.opsForHash().entries(key);
+    }
+
+    /**
+     * 以map集合的形式添加hash键值对
+     * @param key
+     * @param map
+     */
+    public void hPutAll(String key,Map<String, String> map) {
+        redisTemplate.opsForHash().putAll(key,map);
+    }
+
+    /**
+     * 执行lua脚本
+     * @param script
+     * @param keys
+     * @param args
+     * @param <T>
+     * @return
+     */
+    public <T> T execute(RedisScript<T> script, List<String> keys,String... args) {
+        return (T)redisTemplate.execute(script,keys,args);
+    }
+
+    public RedisTemplate getRedisTemplate() {
+        return redisTemplate;
+    }
 }

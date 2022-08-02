@@ -1,28 +1,24 @@
 package com.ruyuan.eshop.order.service.impl;
 
 import com.ruyuan.eshop.common.bean.SpringApplicationContext;
-import com.ruyuan.eshop.common.core.JsonResult;
+import com.ruyuan.eshop.common.enums.AmountTypeEnum;
 import com.ruyuan.eshop.common.enums.OrderStatusChangeEnum;
 import com.ruyuan.eshop.common.enums.OrderStatusEnum;
-import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulFillRequest;
+import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveOrderItemRequest;
-import com.ruyuan.eshop.fulfill.api.FulfillApi;
 import com.ruyuan.eshop.order.dao.*;
 import com.ruyuan.eshop.order.domain.dto.WmsShipDTO;
 import com.ruyuan.eshop.order.domain.entity.OrderAmountDO;
 import com.ruyuan.eshop.order.domain.entity.OrderDeliveryDetailDO;
 import com.ruyuan.eshop.order.domain.entity.OrderInfoDO;
 import com.ruyuan.eshop.order.domain.entity.OrderItemDO;
-import com.ruyuan.eshop.common.enums.AmountTypeEnum;
 import com.ruyuan.eshop.order.exception.OrderBizException;
-import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
 import com.ruyuan.eshop.order.service.OrderFulFillService;
 import com.ruyuan.eshop.order.wms.OrderDeliveredProcessor;
 import com.ruyuan.eshop.order.wms.OrderOutStockedProcessor;
 import com.ruyuan.eshop.order.wms.OrderSignedProcessor;
 import com.ruyuan.eshop.order.wms.OrderWmsShipResultProcessor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,13 +35,13 @@ public class OrderFulFillServiceImpl implements OrderFulFillService {
     private OrderInfoDAO orderInfoDAO;
 
     @Autowired
-    private OrderDeliveryDetailDAO orderDeliveryDetailDAO;
-
-    @Autowired
     private OrderItemDAO orderItemDAO;
 
     @Autowired
     private OrderAmountDAO orderAmountDAO;
+
+    @Autowired
+    private OrderDeliveryDetailDAO orderDeliveryDetailDAO;
 
     @Autowired
     private OrderOperateLogFactory orderOperateLogFactory;
@@ -55,12 +51,6 @@ public class OrderFulFillServiceImpl implements OrderFulFillService {
 
     @Autowired
     private SpringApplicationContext springApplicationContext;
-
-    /**
-     * 履约服务
-     */
-    @DubboReference(version = "1.0.0", retries = 0)
-    private FulfillApi fulfillApi;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -78,20 +68,12 @@ public class OrderFulFillServiceImpl implements OrderFulFillService {
             return;
         }
 
-        //3、推送订单至履约系统
-        JsonResult<Boolean> jsonResult = fulfillApi.receiveOrderFulFill(buildReceiveFulFillRequest(order));
-        if(!jsonResult.getSuccess()) {
-            log.error("push order to fulfill-system error,orderId={}",order.getOrderId());
-            throw new OrderBizException(OrderErrorCodeEnum.ORDER_FULFILL_ERROR);
-        }
-
-        //4、更新订单状态为：“已履约”
+        //3、更新订单状态为：“已履约”
         orderInfoDAO.updateOrderStatus(orderId,OrderStatusEnum.PAID.getCode(), OrderStatusEnum.FULFILL.getCode());
 
-        //5、并插入一条订单变更记录
+        //4、并插入一条订单变更记录
         orderOperateLogDAO.save(orderOperateLogFactory.get(order, OrderStatusChangeEnum.ORDER_FULFILLED));
 
-        //todo 二期用事务消息，解决：推送履约系统成功，但是执行本地事物失败的场景
     }
 
     @Override
@@ -105,13 +87,13 @@ public class OrderFulFillServiceImpl implements OrderFulFillService {
         }
     }
 
-
     /**
      * 构建接受订单履约请求
      * @param orderInfo
      * @return
      */
-    private ReceiveFulFillRequest buildReceiveFulFillRequest(OrderInfoDO orderInfo) {
+    @Override
+    public ReceiveFulfillRequest buildReceiveFulFillRequest(OrderInfoDO orderInfo) {
 
         OrderDeliveryDetailDO orderDeliveryDetail = orderDeliveryDetailDAO.getByOrderId(orderInfo.getOrderId());
         List<OrderItemDO> orderItems = orderItemDAO.listByOrderId(orderInfo.getOrderId());
@@ -120,7 +102,8 @@ public class OrderFulFillServiceImpl implements OrderFulFillService {
                 , AmountTypeEnum.SHIPPING_AMOUNT.getCode());
 
         //构造请求
-        ReceiveFulFillRequest request = ReceiveFulFillRequest.builder()
+        ReceiveFulfillRequest request = ReceiveFulfillRequest.builder()
+                .businessIdentifier(orderInfo.getBusinessIdentifier())
                 .orderId(orderInfo.getOrderId())
                 .sellerId(orderInfo.getSellerId())
                 .userId(orderInfo.getUserId())
@@ -130,7 +113,7 @@ public class OrderFulFillServiceImpl implements OrderFulFillService {
                 .receiverProvince(orderDeliveryDetail.getProvince())
                 .receiverCity(orderDeliveryDetail.getCity())
                 .receiverArea(orderDeliveryDetail.getArea())
-                .receiverStreetAddress(orderDeliveryDetail.getStreet())
+                .receiverStreet(orderDeliveryDetail.getStreet())
                 .receiverDetailAddress(orderDeliveryDetail.getDetailAddress())
                 .receiverLat(orderDeliveryDetail.getLat())
                 .receiverLon(orderDeliveryDetail.getLon())

@@ -9,8 +9,8 @@ import java.util.Map;
  */
 public enum CouponUsedStatusEnum {
 
-    UN_USED(0, "已使用"),
-    USED(1, "未使用");
+    UN_USED(0, "未使用"),
+    USED(1, "已使用");
 
 
     private Integer code;

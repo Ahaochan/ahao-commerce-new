@@ -60,7 +60,7 @@ public class PayApiImpl implements PayApi {
 
     @Override
     public Boolean executeRefund(PayRefundRequest payRefundRequest) {
-        log.info("调用支付接口执行退款");
+        log.info("调用支付接口执行退款,订单号:{},售后单号:{}", payRefundRequest.getOrderId(), payRefundRequest.getAfterSaleId());
         return true;
     }
 

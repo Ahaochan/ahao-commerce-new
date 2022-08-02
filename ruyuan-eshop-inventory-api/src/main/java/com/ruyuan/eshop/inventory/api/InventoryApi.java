@@ -1,8 +1,7 @@
 package com.ruyuan.eshop.inventory.api;
 
 import com.ruyuan.eshop.common.core.JsonResult;
-import com.ruyuan.eshop.inventory.domain.request.CancelOrderReleaseProductStockRequest;
-import com.ruyuan.eshop.inventory.domain.request.LockProductStockRequest;
+import com.ruyuan.eshop.inventory.domain.request.DeductProductStockRequest;
 import com.ruyuan.eshop.inventory.domain.request.ReleaseProductStockRequest;
 
 /**
@@ -12,15 +11,15 @@ import com.ruyuan.eshop.inventory.domain.request.ReleaseProductStockRequest;
 public interface InventoryApi {
 
     /**
-     * 锁定商品库存
+     * 扣减商品库存
      *
-     * @param lockProductStockRequest
+     * @param deductProductStockRequest
      * @return
      */
-    JsonResult<Boolean> lockProductStock(LockProductStockRequest lockProductStockRequest);
+    JsonResult<Boolean> deductProductStock(DeductProductStockRequest deductProductStockRequest);
 
     /**
      * 取消订单 释放商品库存
      */
-    JsonResult<Boolean> cancelOrderReleaseProductStock(CancelOrderReleaseProductStockRequest cancelOrderReleaseProductStockRequest);
+    JsonResult<Boolean> cancelOrderReleaseProductStock(ReleaseProductStockRequest releaseProductStockRequest);
 }

@@ -13,6 +13,10 @@ spring:
         server-addr: localhost:8848
         username: nacos
         password: nacos
+    sentinel:
+      transport:
+        dashboard: 127.0.0.1:8080
+        port: 18005
 
   redis:
     host: localhost
@@ -36,6 +40,8 @@ dubbo:
   provider:
     threads: 800
     actives: 200
+  cloud:
+    subscribed-services: ruyuan-eshop-order,ruyuan-eshop-product,ruyuan-eshop-market,ruyuan-eshop-inventory,ruyuan-eshop-pay,ruyuan-eshop-customer,ruyuan-eshop-risk,ruyuan-eshop-address,ruyuan-eshop-fulfill,ruyuan-eshop-wms,ruyuan-eshop-tms
 
 mybatis-plus:
   configuration:

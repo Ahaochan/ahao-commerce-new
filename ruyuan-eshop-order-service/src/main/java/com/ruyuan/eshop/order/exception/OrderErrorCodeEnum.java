@@ -57,6 +57,7 @@ public enum OrderErrorCodeEnum implements BaseErrorCodeEnum {
     ORDER_PRE_PAY_ERROR("105042", "订单支付发生错误"),
     ORDER_PRE_PAY_EXPIRE_ERROR("105042", "已经超过支付订单的截止时间"),
     ORDER_PAY_CALLBACK_ERROR("105043", "订单支付回调发生错误"),
+    ORDER_PAY_CALLBACK_SEND_MQ_ERROR("105043", "订单支付完成发送消息失败"),
     ORDER_INFO_IS_NULL("105044", "订单信息不存在"),
     ORDER_CALLBACK_PAY_AMOUNT_ERROR("105045", "订单支付金额错误"),
     ORDER_CANCEL_PAY_CALLBACK_ERROR("105046", "接收到支付回调时，订单已经取消"),
@@ -114,9 +115,16 @@ public enum OrderErrorCodeEnum implements BaseErrorCodeEnum {
     REFUND_MONEY_REPEAT("105089", "执行退款操作重复"),
     ORDER_CANNOT_REPEAT_OPERATE("105090", "当前订单不能重复操作"),
     PROCESS_APPLY_AFTER_SALE_CANNOT_REPEAT("105091", "不能重复发起售后"),
-    CUSTOMER_AUDIT_CANNOT_REPEAT("105092", "不能重复发起客服审核"),
+    CUSTOMER_AUDIT_CANNOT_REPEAT("105092", "不能重复处理客服审核信息"),
     AFTER_SALE_ITEM_CANNOT_NULL("105093", "售后商品信息不能为空"),
-
+    CUSTOMER_AUDIT_RESULT_IS_NULL("105094", "处理客服审核结果不能为空"),
+    INSERT_ORDER_TRANSACTION_MQ_ERROR("105095", "生成订单失败"),
+    CURRENT_ORDER_STATUS_CANNOT_CANCEL("105096", "当前订单状态不允许取消"),
+    SEND_TRANSACTION_MQ_FAILED("105097", "发送MQ事务消息失败"),
+    UPDATE_ORDER_INFO_AND_SAVE_ORDER_LOG_FAILED("105098", "更新订单信息和保存订单操作日志失败"),
+    CANCEL_ORDER_PROCESS_FAILED("105099", "取消订单过程执行失败"),
+    REFUND_MONEY_RELEASE_COUPON_FAILED("105100", "实际退款释放优惠券失败"),
+    SEND_AUDIT_PASS_RELEASE_ASSETS_FAILED("105101", "发送审核通过释放资产topic失败"),
 
     /**
      * 通用异常

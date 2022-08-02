@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.market.service.impl;
 
-import com.ruyuan.eshop.common.exception.CommonErrorCodeEnum;
 import com.ruyuan.eshop.common.utils.ParamCheckUtil;
 import com.ruyuan.eshop.market.dao.CouponDAO;
 import com.ruyuan.eshop.market.dao.CouponConfigDAO;
@@ -15,7 +14,6 @@ import com.ruyuan.eshop.market.exception.MarketBizException;
 import com.ruyuan.eshop.market.exception.MarketErrorCodeEnum;
 import com.ruyuan.eshop.market.service.CouponService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,14 +45,14 @@ public class CouponServiceImpl implements CouponService {
 
         // 判断用户优惠券是否存在
         CouponDO couponDO = couponDAO.getUserCoupon(userId, couponId);
-        if(couponDO == null) {
+        if (couponDO == null) {
             throw new MarketBizException(MarketErrorCodeEnum.USER_COUPON_IS_NULL);
         }
         String couponConfigId = couponDO.getCouponConfigId();
 
         // 判断优惠券活动配置信息是否存在
         CouponConfigDO couponConfigDO = couponConfigDAO.getByCouponConfigId(couponConfigId);
-        if(couponConfigDO == null) {
+        if (couponConfigDO == null) {
             throw new MarketBizException(MarketErrorCodeEnum.USER_COUPON_CONFIG_IS_NULL);
         }
         UserCouponDTO userCouponDTO = new UserCouponDTO();
@@ -118,6 +116,10 @@ public class CouponServiceImpl implements CouponService {
         String userId = releaseUserCouponRequest.getUserId();
         String couponId = releaseUserCouponRequest.getCouponId();
         CouponDO couponAchieve = couponDAO.getUserCoupon(userId, couponId);
+        if (CouponUsedStatusEnum.UN_USED.getCode().equals(couponAchieve.getUsed())) {
+            log.info("当前用户未使用优惠券,不用回退,userId:{},couponId:{}", userId, couponId);
+            return true;
+        }
         couponAchieve.setUsed(CouponUsedStatusEnum.UN_USED.getCode());
         couponAchieve.setUsedTime(null);
         couponDAO.updateById(couponAchieve);

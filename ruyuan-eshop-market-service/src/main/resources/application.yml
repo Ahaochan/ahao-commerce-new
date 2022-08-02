@@ -11,6 +11,18 @@ spring:
     nacos:
       discovery:
         server-addr: localhost:8848
+        username: nacos
+        password: nacos
+    sentinel:
+      transport:
+        dashboard: 127.0.0.1:8080
+        port: 18001
+  redis:
+    host: 47.102.157.169
+    port: 6379
+    password: 123456
+    timeout: 3000
+
 
 server:
   port: 8003
@@ -28,6 +40,8 @@ dubbo:
   provider:
     threads: 800
     actives: 200
+  cloud:
+    subscribed-services: ruyuan-eshop-market
 
 mybatis-plus:
   configuration:

@@ -5,7 +5,6 @@ import com.ruyuan.eshop.market.domain.dto.CalculateOrderAmountDTO;
 import com.ruyuan.eshop.market.domain.dto.UserCouponDTO;
 import com.ruyuan.eshop.market.domain.query.UserCouponQuery;
 import com.ruyuan.eshop.market.domain.request.CalculateOrderAmountRequest;
-import com.ruyuan.eshop.market.domain.request.CancelOrderReleaseUserCouponRequest;
 import com.ruyuan.eshop.market.domain.request.LockUserCouponRequest;
 import com.ruyuan.eshop.market.domain.request.ReleaseUserCouponRequest;
 
@@ -43,8 +42,4 @@ public interface MarketApi {
      */
     JsonResult<CalculateOrderAmountDTO> calculateOrderAmount(CalculateOrderAmountRequest calculateOrderAmountRequest);
 
-    /**
-     * 售后回退优惠券
-     */
-    JsonResult<Boolean> cancelOrderReleaseCoupon(CancelOrderReleaseUserCouponRequest cancelOrderReleaseUserCouponRequest);
 }

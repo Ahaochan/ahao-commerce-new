@@ -12,6 +12,7 @@ import java.util.Date;
  */
 @Data
 public class CancelFulfillRequest extends AbstractObject implements Serializable {
+
     private static final long serialVersionUID = 1424041818089810831L;
 
     /**

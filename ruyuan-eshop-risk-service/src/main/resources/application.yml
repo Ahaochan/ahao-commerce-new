@@ -7,6 +7,10 @@ spring:
         server-addr: localhost:8848
         username: nacos
         password: nacos
+    sentinel:
+      transport:
+        dashboard: 127.0.0.1:8080
+        port: 18010
 
 server:
   port: 8010
@@ -24,3 +28,5 @@ dubbo:
   provider:
     threads: 800
     actives: 200
+  cloud:
+    subscribed-services: ruyuan-eshop-risk

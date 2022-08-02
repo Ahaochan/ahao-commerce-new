@@ -25,4 +25,9 @@ public class ReleaseUserCouponRequest extends AbstractObject implements Serializ
      */
     private String couponId;
 
+    /**
+     * 订单ID
+     */
+    private String orderId;
+
 }

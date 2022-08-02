@@ -30,23 +30,24 @@
                     <groupId>org.redisson</groupId>
                     <artifactId>redisson</artifactId>
                 </exclusion>
-
-                <exclusion>
-                    <groupId>com.baomidou</groupId>
-                    <artifactId>mybatis-plus-boot-starter</artifactId>
-                </exclusion>
-
-                <exclusion>
-                    <groupId>mysql</groupId>
-                    <artifactId>mysql-connector-java</artifactId>
-                </exclusion>
-
             </exclusions>
         </dependency>
 
         <dependency>
             <groupId>com.ruyuan.eshop</groupId>
             <artifactId>ruyuan-eshop-wms-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ruyuan.eshop</groupId>
+            <artifactId>ruyuan-eshop-order-api</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.ruyuan.eshop</groupId>
+            <artifactId>ruyuan-eshop-tms-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 

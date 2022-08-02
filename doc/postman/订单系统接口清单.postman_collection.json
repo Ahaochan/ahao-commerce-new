@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "6ba947ab-80d4-4731-925c-ee8ea9ec3ff9",
+		"_postman_id": "45b7a4ce-7060-4db5-8050-58a30cf445cf",
 		"name": "订单系统接口清单",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -44,7 +44,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"orderId\":1021120632909569100,\n    \"businessIdentifier\":1,\n    \"openid\":null,\n    \"userId\":100,\n    \"orderType\":1,\n    \"sellerId\":101,\n    \"userRemark\":\"test reamark\",\n    \"couponId\":\"1001001\",\n    \"deliveryType\":1,\n    \"province\":\"110000\",\n    \"city\":\"110100\",\n    \"area\":\"110105\",\n    \"street\":\"110101007\",\n    \"detailAddress\":\"北京路10号\",\n    \"lon\":100.10000,\n    \"lat\":1010.201010,\n    \"receiverName\":\"张三\",\n    \"receiverPhone\":\"13434545545\",\n    \"userAddressId\":\"1010\",\n    \"addressCode\":\"1010100\",\n    \"regionId\":\"10002020\",\n    \"shippingAreaId\":\"101010212\",\n    \"clientIp\":\"34.53.12.34\",\n    \"deviceId\":\"45sf2354adfw245\",\n    \"orderItemRequestList\":[\n        {\n            \"productType\":1,\n            \"saleQuantity\":10,\n            \"skuCode\":\"10101010\"\n        },\n        {\n            \"productType\":1,\n            \"saleQuantity\":1,\n            \"skuCode\":\"10101011\"\n        }\n    ],\n    \"orderAmountRequestList\":[\n        {\n            \"amountType\":10,\n            \"amount\":10100\n        },\n        {\n            \"amountType\":20,\n            \"amount\":500\n        },\n        {\n            \"amountType\":30,\n            \"amount\":0\n        },\n        {\n            \"amountType\":50,\n            \"amount\":9600\n        }\n    ],\n    \"paymentRequestList\":[\n        {\n            \"payType\":10,\n            \"accountType\":1\n        }\n    ]\n}",
+							"raw": "{\n    \"orderId\":1021121337153297100,\n    \"businessIdentifier\":1,\n    \"openid\":null,\n    \"userId\":100,\n    \"orderType\":1,\n    \"sellerId\":101,\n    \"userRemark\":\"test reamark\",\n    \"couponId\":\"1001001\",\n    \"deliveryType\":1,\n    \"province\":\"110000\",\n    \"city\":\"110100\",\n    \"area\":\"110105\",\n    \"street\":\"110101007\",\n    \"detailAddress\":\"北京路10号\",\n    \"lon\":100.10000,\n    \"lat\":1010.201010,\n    \"receiverName\":\"张三\",\n    \"receiverPhone\":\"13434545545\",\n    \"userAddressId\":\"1010\",\n    \"addressCode\":\"1010100\",\n    \"regionId\":\"10002020\",\n    \"shippingAreaId\":\"101010212\",\n    \"clientIp\":\"34.53.12.34\",\n    \"deviceId\":\"45sf2354adfw245\",\n    \"orderItemRequestList\":[\n        {\n            \"productType\":1,\n            \"saleQuantity\":10,\n            \"skuCode\":\"10101010\"\n        },\n        {\n            \"productType\":1,\n            \"saleQuantity\":1,\n            \"skuCode\":\"10101011\"\n        }\n    ],\n    \"orderAmountRequestList\":[\n        {\n            \"amountType\":10,\n            \"amount\":10100\n        },\n        {\n            \"amountType\":20,\n            \"amount\":500\n        },\n        {\n            \"amountType\":30,\n            \"amount\":0\n        },\n        {\n            \"amountType\":50,\n            \"amount\":9600\n        }\n    ],\n    \"paymentRequestList\":[\n        {\n            \"payType\":10,\n            \"accountType\":1\n        }\n    ]\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -73,7 +73,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"userId\":\"100\",\n    \"businessIdentifier\":1,\n    \"payType\":10,\n    \"orderId\":\"1021120632909569100\",\n    \"payAmount\":\"9600\",\n    \"callbackUrl\":\"http://pay.ruyuan.com/order/callbackUrl\",\n    \"callbackFailUrl\":\"http://pay.ruyuan.com/order/callbackFailUrl\",\n    \"openid\":null,\n    \"subject\":\"新鲜水果\",\n    \"itemInfo\":\"test\"\n}",
+							"raw": "{\n    \"userId\":\"100\",\n    \"businessIdentifier\":1,\n    \"payType\":10,\n    \"orderId\":\"1021121337153297100\",\n    \"payAmount\":\"9600\",\n    \"callbackUrl\":\"http://pay.ruyuan.com/order/callbackUrl\",\n    \"callbackFailUrl\":\"http://pay.ruyuan.com/order/callbackFailUrl\",\n    \"openid\":null,\n    \"subject\":\"新鲜水果\",\n    \"itemInfo\":\"test\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -102,7 +102,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"orderId\":\"1021120632909569100\",\n    \"payAccount\":\"demopay@qq.com\",\n    \"payAmount\":\"9600\",\n    \"outTradeNo\":\"0360406257224885731\",\n    \"payType\":10,\n    \"merchantId\":\"43523123122343\",\n    \"payChannel\":\"WeChatPay\",\n    \"appid\":\"wx207d34495e348e0c\"\n}",
+							"raw": "{\n    \"orderId\":\"1021121337153297100\",\n    \"payAccount\":\"demopay@qq.com\",\n    \"payAmount\":\"9600\",\n    \"outTradeNo\":\"2883761786611116217\",\n    \"payType\":10,\n    \"merchantId\":\"43523123122343\",\n    \"payChannel\":\"WeChatPay\",\n    \"appid\":\"wx207d34495e348e0c\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -349,6 +349,44 @@
 								"order",
 								"test",
 								"adjustDeliveryAddress"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "触发接收订单履约",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{host}}:8005/order/test/triggerReceiveOrderFulFill?orderId=1011250000000010000",
+							"host": [
+								"{{host}}"
+							],
+							"port": "8005",
+							"path": [
+								"order",
+								"test",
+								"triggerReceiveOrderFulFill"
+							],
+							"query": [
+								{
+									"key": "orderId",
+									"value": "1011250000000010000"
+								}
 							]
 						}
 					},
@@ -636,6 +674,98 @@
 									"key": "afterSaleId",
 									"value": "2011240000000016234"
 								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "库存服务接口",
+			"item": [
+				{
+					"name": "新增商品库存",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"skuCode\":\"test002\",\n    \"saleStockQuantity\":\"100\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8001/inventory/addProductStock",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"inventory",
+								"addProductStock"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "调整商品库存",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"skuCode\":\"test002\",\n    \"stockIncremental\":\"1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8001/inventory/modifyProductStock",
+							"host": [
+								"localhost"
+							],
+							"port": "8001",
+							"path": [
+								"inventory",
+								"modifyProductStock"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "同步mysql中的库存到redis",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"skuCode\":10101010\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "47.100.171.165:8001/inventory/syncStockToCache",
+							"host": [
+								"47",
+								"100",
+								"171",
+								"165"
+							],
+							"port": "8001",
+							"path": [
+								"inventory",
+								"syncStockToCache"
 							]
 						}
 					},

@@ -18,6 +18,8 @@ import java.util.Set;
 @Data
 public class AfterSaleQuery extends AbstractObject implements Serializable {
 
+    private static final long serialVersionUID = -267981030081945581L;
+
     public static final Integer MAX_PAGE_SIZE = 100;
 
     /**

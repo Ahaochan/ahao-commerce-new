@@ -63,4 +63,14 @@ public class AfterSaleItemDAO extends BaseDAO<AfterSaleItemMapper, AfterSaleItem
         queryWrapper.eq(AfterSaleItemDO::getAfterSaleId, afterSaleId);
         return getOne(queryWrapper);
     }
+
+    /**
+     * 查询出不包含当前afterSaleId的售后条目
+     */
+    public List<AfterSaleItemDO> listNotContainCurrentAfterSaleId(String orderId, Long afterSaleId) {
+        LambdaQueryWrapper<AfterSaleItemDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(AfterSaleItemDO::getOrderId, orderId);
+        queryWrapper.notIn(AfterSaleItemDO::getAfterSaleId, afterSaleId);
+        return list(queryWrapper);
+    }
 }

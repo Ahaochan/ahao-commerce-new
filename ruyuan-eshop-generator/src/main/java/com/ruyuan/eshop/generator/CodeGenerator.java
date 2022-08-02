@@ -15,10 +15,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+
 /**
  * 执行 main 方法控制台输入模块表名回车自动生成对应项目目录中
- *
- * @author songdong
+ * 
+ * @author zhonghuashishan
+ * @version 1.0
  */
 public class CodeGenerator {
 

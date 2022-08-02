@@ -33,17 +33,16 @@ public class CustomerController {
      */
     @PostMapping("/audit")
     public JsonResult<Boolean> audit(@RequestBody CustomerReviewReturnGoodsRequest customerReviewReturnGoodsRequest) {
-        String orderId = customerReviewReturnGoodsRequest.getOrderId();
+        Long afterSaleId = customerReviewReturnGoodsRequest.getAfterSaleId();
         //  分布式锁
-        String key = RedisLockKeyConstants.REFUND_KEY + orderId;
+        String key = RedisLockKeyConstants.REFUND_KEY + afterSaleId;
         boolean lock = redisLock.lock(key);
         if (!lock) {
-            throw new CustomerBizException(CustomerErrorCodeEnum.CUSTOMER_AUDIT_REPEAT);
+            throw new CustomerBizException(CustomerErrorCodeEnum.CUSTOMER_AUDIT_CANNOT_REPEAT);
         }
         try {
-            //  模拟客服数据
-            customerService.customerAudit(customerReviewReturnGoodsRequest);
-            return JsonResult.buildSuccess(true);
+            //  客服审核
+            return customerService.customerAudit(customerReviewReturnGoodsRequest);
         } catch (Exception e) {
             log.error("system error", e);
             return JsonResult.buildError(e.getMessage());

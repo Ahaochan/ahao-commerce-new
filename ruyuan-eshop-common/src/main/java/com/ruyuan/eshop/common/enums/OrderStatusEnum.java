@@ -111,13 +111,12 @@ public enum OrderStatusEnum {
     }
 
     /**
-     * 可以发起缺品的状态(支付之后，配送之前)
+     * 可以发起缺品的状态(已出库)
      * @return
      */
     public static Set<Integer> canLack() {
-        Set<Integer> validStatus = allowableValues();
-        validStatus.remove(FULFILL.code);
-        validStatus.remove(OUT_STOCK.code);
-        return validStatus;
+        Set<Integer> canLackStatus = new HashSet<>();
+        canLackStatus.add(OUT_STOCK.code);
+        return canLackStatus;
     }
 }

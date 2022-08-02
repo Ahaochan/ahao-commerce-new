@@ -14,6 +14,7 @@ import com.ruyuan.eshop.order.domain.query.OrderQuery;
 import com.ruyuan.eshop.order.enums.*;
 import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
 import com.ruyuan.eshop.order.service.AfterSaleQueryService;
+import com.ruyuan.eshop.order.service.OrderLackService;
 import com.ruyuan.eshop.order.service.OrderQueryService;
 import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +52,9 @@ public class OrderQueryServiceImpl implements OrderQueryService {
 
     @Autowired
     private AfterSaleQueryService afterSaleQueryService;
+
+    @Autowired
+    private OrderLackService orderLackService;
 
 
     @Override
@@ -149,7 +153,7 @@ public class OrderQueryServiceImpl implements OrderQueryService {
 
         //9、查询缺品退款信息
         List<OrderLackItemDTO> lackItems = null;
-        if(isLack(orderInfo)) {
+        if(orderLackService.isOrderLacked(orderInfo)) {
             lackItems = afterSaleQueryService.getOrderLackItemInfo(orderId);
         }
 
@@ -165,19 +169,6 @@ public class OrderQueryServiceImpl implements OrderQueryService {
                 .orderSnapshots(orderSnapshots)
                 .lackItems(lackItems)
                 .build();
-    }
-
-    /**
-     * 是否缺品
-     * @param order
-     * @return
-     */
-    private boolean isLack(OrderInfoDO order) {
-        OrderExtJsonDTO orderExtJson = ExtJsonUtil.parseExtJson(order.getExtJson(),OrderExtJsonDTO.class);
-        if(null != orderExtJson) {
-            return orderExtJson.getLackFlag();
-        }
-        return false;
     }
 
 }

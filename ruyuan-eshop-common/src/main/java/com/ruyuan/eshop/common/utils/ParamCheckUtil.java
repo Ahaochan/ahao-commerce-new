@@ -34,6 +34,13 @@ public class ParamCheckUtil {
         }
     }
 
+    public static void checkObjectNull(Object o, BaseErrorCodeEnum baseErrorCodeEnum, Object... arguments) throws BaseBizException {
+        if (Objects.nonNull(o)) {
+            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(),arguments);
+        }
+    }
+
+
     public static void checkStringNonEmpty(String s) throws BaseBizException {
         if (StringUtils.isBlank(s)) {
             throw new BaseBizException(CommonErrorCodeEnum.SERVER_ILLEGAL_ARGUMENT_ERROR);
@@ -53,6 +60,12 @@ public class ParamCheckUtil {
     }
 
     public static void checkIntMin(Integer i, int min, BaseErrorCodeEnum baseErrorCodeEnum,Object... arguments) throws BaseBizException {
+        if (Objects.isNull(i) || i<min) {
+            throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(),arguments);
+        }
+    }
+
+    public static void checkLongMin(Long i, Long min, BaseErrorCodeEnum baseErrorCodeEnum,Object... arguments) throws BaseBizException {
         if (Objects.isNull(i) || i<min) {
             throw new BaseBizException(baseErrorCodeEnum.getErrorCode(), baseErrorCodeEnum.getErrorMsg(),arguments);
         }

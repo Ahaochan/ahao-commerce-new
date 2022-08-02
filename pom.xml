@@ -42,6 +42,7 @@
         <module>ruyuan-eshop-address-service</module>
         <module>ruyuan-eshop-address-api</module>
         <module>ruyuan-eshop-generator</module>
+        <module>ruyuan-eshop-gateway</module>
     </modules>
 
     <dependencyManagement>

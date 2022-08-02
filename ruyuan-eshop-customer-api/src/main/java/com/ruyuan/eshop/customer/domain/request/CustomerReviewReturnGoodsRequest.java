@@ -14,8 +14,8 @@ import java.util.Date;
  */
 @Data
 public class CustomerReviewReturnGoodsRequest extends AbstractObject implements Serializable {
+    private static final long serialVersionUID = -4113897073742442896L;
 
-    private static final long serialVersionUID = 5541950604615013941L;
     /**
      * 售后id
      */

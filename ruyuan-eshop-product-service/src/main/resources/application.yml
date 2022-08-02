@@ -7,11 +7,16 @@ spring:
     url: jdbc:mysql://localhost:3306/ruyuan_eshop_product?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai
     username: root
     password: root
-
   cloud:
     nacos:
       discovery:
         server-addr: localhost:8848
+        username: nacos
+        password: nacos
+    sentinel:
+      transport:
+        dashboard: 127.0.0.1:8080
+        port: 18002
 
 server:
   port: 8002
@@ -29,6 +34,8 @@ dubbo:
   provider:
     threads: 800
     actives: 200
+  cloud:
+    subscribed-services: ruyuan-eshop-product
 
 mybatis-plus:
   configuration:
