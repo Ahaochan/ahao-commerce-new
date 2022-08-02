@@ -154,6 +154,7 @@ public class OrderQueryServiceImpl implements OrderQueryService {
         // 构建条件查询
         BoolQueryBuilder boolQueryBuilder = buildBoolQueryBuilder(query);
         searchSourceBuilder.query(boolQueryBuilder);
+        // 如果要进行分页，一般来说都必须进行排序
 
         // 设置排序
         setSort(searchSourceBuilder, query);

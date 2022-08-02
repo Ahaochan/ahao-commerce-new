@@ -133,6 +133,7 @@ public class OrderTestController {
 
     /**
      * 订单列表查询 v2 toB
+     * 针对M端的全量订单查询，userid这个条件别指定就可以了
      */
     @PostMapping("/v2/toB/listOrders")
     public JsonResult<PagingInfo<OrderDetailDTO>> listOrdersV2ToB(@RequestBody OrderQuery query) {

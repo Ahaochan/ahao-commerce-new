@@ -125,12 +125,18 @@ public class EsOrderFullDataAddHandler extends EsAbstractHandler {
         setEsIdOfOrderAmount(esOrderAmounts);
         esOrderFullData.addAll(esOrderAmounts);
 
-        // 7、将订单全量数据同步到es里面去
+        // 7、将订单全量数据同步到es里面去，会把订单明细数据全量的备份一份到ES里去，这块其实是不可取的
+        // bad case，一般来说是不能这么去玩儿的
         esClientService.bulkIndex(esOrderFullData);
 
         // 8、构建orderListQueryIndex并同步到es
+        // 订单分页查询索引，订单分页查询，要是去进行多表关联的，订单、订单配送、订单条目、订单支付，很多数据是要进行多表关联的
+        // 再根据一堆的条件进行复杂的搜索和查询
+        // 分页
+        // 专门用来进行搜索的索引，索引是一个大宽表，我们多个表里所有用于搜索的字段，都要放到这个索引里去
         List<OrderListQueryIndex> orderListQueryIndices =
                 esOrderListQueryIndexHandler.buildOrderListQueryIndex(orders, orderDeliveryDetails, orderItems, orderPaymentDetails);
         esOrderListQueryIndexHandler.sycToEs(orderListQueryIndices);
     }
+
 }

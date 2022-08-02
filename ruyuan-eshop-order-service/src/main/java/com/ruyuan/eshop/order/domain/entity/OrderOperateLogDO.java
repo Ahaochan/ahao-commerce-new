@@ -18,7 +18,7 @@ import java.util.Date;
  * @author zhonghuashishan
  */
 @Data
-@Document("order_operate_log")
+@Document("order_operate_log") // 我们要把写入mongodb的数据打上一些注解标注
 public class OrderOperateLogDO implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -34,7 +34,6 @@ public class OrderOperateLogDO implements Serializable {
      */
     @Field(value = "gmt_create")
     private Date gmtCreate;
-
     /**
      * 更新时间
      */

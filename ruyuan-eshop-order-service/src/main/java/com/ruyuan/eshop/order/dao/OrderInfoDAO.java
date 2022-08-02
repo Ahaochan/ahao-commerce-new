@@ -36,7 +36,7 @@ public class OrderInfoDAO extends BaseDAO<OrderInfoMapper, OrderInfoDO> {
     private OrderInfoMapper orderInfoMapper;
 
     /**
-     * 根据订单号查询订单号
+     * 根据订单号查询订单
      */
     public List<OrderInfoDO> listByOrderIds(List<String> orderIds) {
         LambdaQueryWrapper<OrderInfoDO> queryWrapper = new LambdaQueryWrapper<>();
@@ -76,7 +76,7 @@ public class OrderInfoDAO extends BaseDAO<OrderInfoMapper, OrderInfoDO> {
 
 
     /**
-     * 根据父订单号更新订单
+     * 根据订单号更新订单
      */
     public boolean updateBatchByOrderIds(OrderInfoDO orderInfoDO, List<String> orderIds) {
         LambdaUpdateWrapper<OrderInfoDO> updateWrapper = new LambdaUpdateWrapper<>();
