@@ -96,4 +96,5 @@ public class AutoCancelExpiredOrderTask {
         //解决取模可能为负数的情况
         return orderId.hashCode() & Integer.MAX_VALUE;
     }
+
 }

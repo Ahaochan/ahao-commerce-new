@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
 import com.ruyuan.eshop.common.enums.OrderStatusChangeEnum;
 import com.ruyuan.eshop.common.message.OrderEvent;
+import com.ruyuan.eshop.common.mq.MQMessage;
 import com.ruyuan.eshop.fulfill.domain.request.TriggerOrderWmsShipEventRequest;
 import com.ruyuan.eshop.fulfill.mq.producer.DefaultProducer;
 import com.ruyuan.eshop.fulfill.service.OrderWmsShipEventProcessor;
@@ -50,7 +51,7 @@ public abstract class AbstractWmsShipEventProcessor implements OrderWmsShipEvent
 
     private void sendMessage(String body, String orderId) {
         if (StringUtils.isNotBlank(body)) {
-            Message message = new Message();
+            Message message = new MQMessage();
             message.setTopic(RocketMqConstant.ORDER_WMS_SHIP_RESULT_TOPIC);
             message.setBody(body.getBytes(StandardCharsets.UTF_8));
             try {

@@ -2,6 +2,7 @@ package com.ruyuan.eshop.inventory.mq.consumer.listener;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ruyuan.eshop.common.core.JsonResult;
+import com.ruyuan.eshop.common.mq.AbstractMessageListenerConcurrently;
 import com.ruyuan.eshop.inventory.api.InventoryApi;
 import com.ruyuan.eshop.inventory.domain.request.ReleaseProductStockRequest;
 import com.ruyuan.eshop.inventory.exception.InventoryBizException;
@@ -10,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
-import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.stereotype.Component;
 
@@ -25,13 +25,13 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class ReleaseInventoryListener implements MessageListenerConcurrently {
+public class ReleaseInventoryListener extends AbstractMessageListenerConcurrently {
 
     @DubboReference(version = "1.0.0")
     private InventoryApi inventoryApi;
 
     @Override
-    public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
+    public ConsumeConcurrentlyStatus onMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
         try {
             for (MessageExt msg : list) {
                 String content = new String(msg.getBody(), StandardCharsets.UTF_8);

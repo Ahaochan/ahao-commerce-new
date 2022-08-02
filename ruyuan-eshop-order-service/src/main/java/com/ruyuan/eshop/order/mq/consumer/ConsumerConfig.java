@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import static com.ruyuan.eshop.common.constants.RocketMqConstant.*;
 
 /**
+ * 消费者组件配置
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -62,7 +63,6 @@ public class ConsumerConfig {
             throws MQClientException {
         DefaultMQPushConsumer consumer = new DefaultMQPushConsumer(RocketMqConstant.REQUEST_CONSUMER_GROUP);
         consumer.setNamesrvAddr(rocketMQProperties.getNameServer());
-
         consumer.subscribe(RocketMqConstant.CANCEL_REFUND_REQUEST_TOPIC, "*");
         consumer.registerMessageListener(cancelRefundListener);
         consumer.start();

@@ -5,7 +5,8 @@ import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.common.utils.ParamCheckUtil;
 import com.ruyuan.eshop.product.api.ProductApi;
 import com.ruyuan.eshop.product.domain.dto.ProductSkuDTO;
-import com.ruyuan.eshop.product.domain.query.ProductSkuQuery;
+import com.ruyuan.eshop.product.domain.query.GetProductSkuQuery;
+import com.ruyuan.eshop.product.domain.query.ListProductSkuQuery;
 import com.ruyuan.eshop.product.exception.ProductBizException;
 import com.ruyuan.eshop.product.service.ProductSkuService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,13 +29,13 @@ public class ProductApiImpl implements ProductApi {
     private ProductSkuService productSkuService;
 
     @Override
-    public JsonResult<ProductSkuDTO> getProductSku(ProductSkuQuery productSkuQuery) {
+    public JsonResult<ProductSkuDTO> getProductSku(GetProductSkuQuery productSkuQuery) {
         try {
             ParamCheckUtil.checkObjectNonNull(productSkuQuery);
-            List<String> skuCodeList = productSkuQuery.getSkuCodeList();
-            ParamCheckUtil.checkCollectionNonEmpty(skuCodeList);
+            String skuCode = productSkuQuery.getSkuCode();
+            ParamCheckUtil.checkStringNonEmpty(skuCode);
 
-            ProductSkuDTO productSkuDTO = productSkuService.getProductSkuByCode(skuCodeList.get(0));
+            ProductSkuDTO productSkuDTO = productSkuService.getProductSkuByCode(skuCode);
             log.info("productSkuDTO={},productSkuQuery={}"
                     , JSONObject.toJSONString(productSkuDTO), JSONObject.toJSONString(productSkuQuery));
             return JsonResult.buildSuccess(productSkuDTO);
@@ -48,7 +49,7 @@ public class ProductApiImpl implements ProductApi {
     }
 
     @Override
-    public JsonResult<List<ProductSkuDTO>> listProductSku(ProductSkuQuery productSkuQuery) {
+    public JsonResult<List<ProductSkuDTO>> listProductSku(ListProductSkuQuery productSkuQuery) {
         try {
             ParamCheckUtil.checkObjectNonNull(productSkuQuery);
             List<String> skuCodeList = productSkuQuery.getSkuCodeList();

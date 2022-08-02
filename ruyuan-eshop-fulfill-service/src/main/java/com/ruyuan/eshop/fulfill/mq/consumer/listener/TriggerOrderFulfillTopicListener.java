@@ -2,12 +2,12 @@ package com.ruyuan.eshop.fulfill.mq.consumer.listener;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.ruyuan.eshop.common.mq.AbstractMessageListenerConcurrently;
 import com.ruyuan.eshop.fulfill.domain.request.ReceiveFulfillRequest;
 import com.ruyuan.eshop.fulfill.service.FulfillService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
-import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,7 +22,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class TriggerOrderFulfillTopicListener implements MessageListenerConcurrently {
+public class TriggerOrderFulfillTopicListener extends AbstractMessageListenerConcurrently {
 
     /**
      * 履约服务
@@ -31,7 +31,7 @@ public class TriggerOrderFulfillTopicListener implements MessageListenerConcurre
     private FulfillService fulfillService;
 
     @Override
-    public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list,
+    public ConsumeConcurrentlyStatus onMessage(List<MessageExt> list,
                                                     ConsumeConcurrentlyContext consumeConcurrentlyContext) {
         try {
             for (MessageExt messageExt : list) {

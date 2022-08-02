@@ -16,6 +16,5 @@ public interface AfterSaleManager {
     /**
      * 取消订单操作 记录售后信息
      */
-    void insertCancelOrderAfterSale(CancelOrderAssembleRequest cancelOrderAssembleRequest, Integer afterSaleStatus,
-                                    OrderInfoDO orderInfoDO, String afterSaleId);
+    void insertCancelOrderAfterSale(CancelOrderAssembleRequest cancelOrderAssembleRequest, Integer afterSaleStatus);
 }

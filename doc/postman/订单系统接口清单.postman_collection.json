@@ -1,7 +1,7 @@
 {
 	"info": {
-		"_postman_id": "256aaa09-da9d-4ef4-95c0-0d5152fca7bc",
-		"name": "订单系统接口清单",
+		"_postman_id": "fa5561c7-ce22-47ab-b345-9e716216941b",
+		"name": "订单系统接口清单 Copy",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -611,7 +611,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8005/afterSale/lockItem",
+							"raw": "http://localhost:8005/afterSale/lackItem",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -619,7 +619,7 @@
 							"port": "8005",
 							"path": [
 								"afterSale",
-								"lockItem"
+								"lackItem"
 							]
 						}
 					},
@@ -801,77 +801,6 @@
 									"key": "skuCode",
 									"value": "skuCode002"
 								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "获取库存信息-压测",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"orderId\":\"orderId001\",\n    \"orderItemRequestList\":[\n        {\n            \"saleQuantity\":10,\n            \"skuCode\":\"10101010\"\n        },\n        {\n            \"saleQuantity\":1,\n            \"skuCode\":\"10101011\"\n        }\n    ]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "106.15.191.229:8001/inventory/getStockInfo?skuCode=skuCode002",
-							"host": [
-								"106",
-								"15",
-								"191",
-								"229"
-							],
-							"port": "8001",
-							"path": [
-								"inventory",
-								"getStockInfo"
-							],
-							"query": [
-								{
-									"key": "skuCode",
-									"value": "skuCode002"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "新增商品库存-压测",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"skuCode\":\"test002\",\n    \"saleStockQuantity\":\"100\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "106.15.191.229:8001/inventory/addProductStock",
-							"host": [
-								"106",
-								"15",
-								"191",
-								"229"
-							],
-							"port": "8001",
-							"path": [
-								"inventory",
-								"addProductStock"
 							]
 						}
 					},

@@ -8,6 +8,14 @@ import lombok.Getter;
 @Getter
 public enum OrderStatusChangeEnum {
     /**
+     * 订单已创建
+     */
+    ORDER_CREATED(OrderStatusEnum.NULL, OrderStatusEnum.CREATED, OrderOperateTypeEnum.NEW_ORDER),
+    /**
+     * 订单已支付
+     */
+    ORDER_PAID(OrderStatusEnum.PAID, OrderStatusEnum.FULFILL, OrderOperateTypeEnum.PAID_ORDER),
+    /**
      * 订单已履约
      */
     ORDER_FULFILLED(OrderStatusEnum.PAID, OrderStatusEnum.FULFILL, OrderOperateTypeEnum.PUSH_ORDER_FULFILL),

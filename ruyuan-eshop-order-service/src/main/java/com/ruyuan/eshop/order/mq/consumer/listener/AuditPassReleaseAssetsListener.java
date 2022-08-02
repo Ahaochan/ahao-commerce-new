@@ -3,6 +3,7 @@ package com.ruyuan.eshop.order.mq.consumer.listener;
 import com.alibaba.fastjson.JSONObject;
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
 import com.ruyuan.eshop.common.message.ActualRefundMessage;
+import com.ruyuan.eshop.common.mq.AbstractMessageListenerConcurrently;
 import com.ruyuan.eshop.inventory.domain.request.ReleaseProductStockRequest;
 import com.ruyuan.eshop.order.converter.OrderConverter;
 import com.ruyuan.eshop.order.domain.dto.ReleaseProductStockDTO;
@@ -11,7 +12,6 @@ import com.ruyuan.eshop.order.mq.producer.DefaultProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
-import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,7 +27,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class AuditPassReleaseAssetsListener implements MessageListenerConcurrently {
+public class AuditPassReleaseAssetsListener extends AbstractMessageListenerConcurrently {
 
     @Autowired
     private DefaultProducer defaultProducer;
@@ -36,7 +36,7 @@ public class AuditPassReleaseAssetsListener implements MessageListenerConcurrent
     private OrderConverter orderConverter;
 
     @Override
-    public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
+    public ConsumeConcurrentlyStatus onMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
         try {
             for (MessageExt messageExt : list) {
                 // 1、消费到释放资产message

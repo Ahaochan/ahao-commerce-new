@@ -40,7 +40,7 @@ public class CodeGenerator {
     /**
      * 数据库链接配置
      */
-    private final static String jdbcUrl = "jdbc:mysql://47.102.157.169:3306/ruyuan_eshop_address?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai";
+    private final static String jdbcUrl = "jdbc:mysql://localhost:3306/ruyuan_eshop_address?useUnicode=true&characterEncoding=utf-8&useSSL=false&serverTimezone=Asia/Shanghai";
     private final static String jdbcUserName = "root";
     private final static String jdbcPwd = "root";
     private final static String moduleName = "address";

@@ -90,7 +90,6 @@ public class MarketServiceImpl implements MarketService {
         // 优惠券抵扣金额
         Integer discountAmount = 0;
         if (StringUtils.isNotEmpty(couponId)) {
-            // 锁定优惠券
             CouponDO couponDO = getCouponAchieve(userId, couponId);
             discountAmount = couponDO.getAmount();
         }
@@ -126,36 +125,41 @@ public class MarketServiceImpl implements MarketService {
             orderAmountDetailDTOList.add(originPayAmountDetail);
 
             // 优惠券抵扣金额
-            CalculateOrderAmountDTO.OrderAmountDetailDTO couponDiscountAmountDetail;
-            if (++index < totalNum) {
-                // 订单条目分摊的优惠金额
-                double partDiscountAmount = Integer.valueOf(discountAmount
-                        * orderItemRequest.getSalePrice() * orderItemRequest.getSaleQuantity()).doubleValue()
-                        / Integer.valueOf(totalProductAmount).doubleValue();
+            CalculateOrderAmountDTO.OrderAmountDetailDTO couponDiscountAmountDetail = null;
+            if(discountAmount > 0) {
+                if (++index < totalNum) {
+                    // 订单条目分摊的优惠金额
+                    double partDiscountAmount = Integer.valueOf(discountAmount
+                            * orderItemRequest.getSalePrice() * orderItemRequest.getSaleQuantity()).doubleValue()
+                            / Integer.valueOf(totalProductAmount).doubleValue();
 
-                // 遇到小数则向上取整
-                double curDiscountAmount = Math.ceil(partDiscountAmount);
-                couponDiscountAmountDetail =
-                        createOrderAmountDetailDTO(orderId,
-                                AmountTypeEnum.COUPON_DISCOUNT_AMOUNT.getCode(),
-                                Double.valueOf(curDiscountAmount).intValue(),
-                                null,
-                                orderItemRequest);
+                    // 遇到小数则向上取整
+                    double curDiscountAmount = Math.ceil(partDiscountAmount);
+                    couponDiscountAmountDetail =
+                            createOrderAmountDetailDTO(orderId,
+                                    AmountTypeEnum.COUPON_DISCOUNT_AMOUNT.getCode(),
+                                    Double.valueOf(curDiscountAmount).intValue(),
+                                    null,
+                                    orderItemRequest);
 
-                notLastItemTotalDiscountAmount += couponDiscountAmountDetail.getAmount();
-            } else {
-                // 最后一条item的优惠金额等于总优惠金额-前面所有item分摊的优惠总额
-                couponDiscountAmountDetail =
-                        createOrderAmountDetailDTO(orderId,
-                                AmountTypeEnum.COUPON_DISCOUNT_AMOUNT.getCode(),
-                                discountAmount - notLastItemTotalDiscountAmount,
-                                null,
-                                orderItemRequest);
+                    notLastItemTotalDiscountAmount += couponDiscountAmountDetail.getAmount();
+                } else {
+                    // 最后一条item的优惠金额等于总优惠金额-前面所有item分摊的优惠总额
+                    couponDiscountAmountDetail =
+                            createOrderAmountDetailDTO(orderId,
+                                    AmountTypeEnum.COUPON_DISCOUNT_AMOUNT.getCode(),
+                                    discountAmount - notLastItemTotalDiscountAmount,
+                                    null,
+                                    orderItemRequest);
+                }
+                orderAmountDetailDTOList.add(couponDiscountAmountDetail);
             }
-            orderAmountDetailDTOList.add(couponDiscountAmountDetail);
 
             // 实付金额
-            Integer realPayAmount = originPayAmountDetail.getAmount() - couponDiscountAmountDetail.getAmount();
+            Integer realPayAmount = originPayAmountDetail.getAmount();
+            if(couponDiscountAmountDetail != null) {
+                realPayAmount = realPayAmount - couponDiscountAmountDetail.getAmount();
+            }
             CalculateOrderAmountDTO.OrderAmountDetailDTO realPayAmountDetail =
                     createOrderAmountDetailDTO(orderId,
                             AmountTypeEnum.REAL_PAY_AMOUNT.getCode(),

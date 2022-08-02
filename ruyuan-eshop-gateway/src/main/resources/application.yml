@@ -7,6 +7,48 @@ spring:
         server-addr: localhost:8848
         username: nacos
         password: nacos
+    sentinel:
+      transport:
+        dashboard: 127.0.0.1:8080
+        port: 19000
+      # 使用nacos做持久化
+      datasource:
+        # gateway api配置
+        gw-api-group:
+          nacos:
+            server-addr: localhost:8848
+            namespace: sentinel
+            group-id: SENTINEL_GROUP
+            data-id: ${spring.application.name}-gateway-api-rules.json
+            data-type: json
+            rule-type: gw-api-group
+        # gateway流控配置
+        gw-flow:
+          nacos:
+            server-addr: localhost:8848
+            namespace: sentinel
+            group-id: SENTINEL_GROUP
+            data-id: ${spring.application.name}-gateway-flow-rules.json
+            data-type: json
+            rule-type: gw-flow
+        # 熔断降级配置
+        degrade:
+          nacos:
+            server-addr: localhost:8848
+            namespace: sentinel
+            group-id: SENTINEL_GROUP
+            data-id: ${spring.application.name}-degrade-rules.json
+            data-type: json
+            rule-type: degrade
+        # 系统规则
+        system:
+          nacos:
+            server-addr: localhost:8848
+            namespace: sentinel
+            group-id: SENTINEL_GROUP
+            data-id: ${spring.application.name}-system-rules.json
+            data-type: json
+            rule-type: system
 
     gateway:
       routes:

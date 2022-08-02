@@ -1,5 +1,6 @@
 package com.ruyuan.eshop.order.api.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ruyuan.eshop.common.constants.RedisLockKeyConstants;
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
@@ -7,6 +8,7 @@ import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.common.enums.CustomerAuditResult;
 import com.ruyuan.eshop.common.enums.CustomerAuditSourceEnum;
 import com.ruyuan.eshop.common.message.ActualRefundMessage;
+import com.ruyuan.eshop.common.mq.MQMessage;
 import com.ruyuan.eshop.common.redis.RedisLock;
 import com.ruyuan.eshop.common.utils.ParamCheckUtil;
 import com.ruyuan.eshop.customer.domain.request.CustomerReceiveAfterSaleRequest;
@@ -25,11 +27,12 @@ import com.ruyuan.eshop.order.domain.request.*;
 import com.ruyuan.eshop.order.enums.AfterSaleStatusEnum;
 import com.ruyuan.eshop.order.exception.OrderBizException;
 import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
-import com.ruyuan.eshop.order.mq.producer.DefaultProducer;
+import com.ruyuan.eshop.order.mq.producer.CustomerAuditPassSendReleaseAssetsProducer;
 import com.ruyuan.eshop.order.service.OrderAfterSaleService;
 import com.ruyuan.eshop.order.service.OrderLackService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
+import org.apache.rocketmq.client.exception.MQClientException;
 import org.apache.rocketmq.client.producer.LocalTransactionState;
 import org.apache.rocketmq.client.producer.TransactionListener;
 import org.apache.rocketmq.client.producer.TransactionMQProducer;
@@ -66,13 +69,13 @@ public class AfterSaleApiImpl implements AfterSaleApi {
     private AfterSaleItemDAO afterSaleItemDAO;
 
     @Autowired
-    private DefaultProducer defaultProducer;
-
-    @Autowired
     private OrderItemDAO orderItemDAO;
 
     @Autowired
     private AfterSaleRefundDAO afterSaleRefundDAO;
+
+    @Autowired
+    private CustomerAuditPassSendReleaseAssetsProducer customerAuditPassSendReleaseAssetsProducer;
 
     /**
      * 取消订单/超时未支付取消
@@ -91,7 +94,7 @@ public class AfterSaleApiImpl implements AfterSaleApi {
     }
 
     @Override
-    public JsonResult<LackDTO> lockItem(LackRequest request) {
+    public JsonResult<LackDTO> lackItem(LackRequest request) {
         log.info("request={}", JSONObject.toJSONString(request));
         try {
 
@@ -101,7 +104,8 @@ public class AfterSaleApiImpl implements AfterSaleApi {
 
             //2、加锁防并发
             String lockKey = RedisLockKeyConstants.LACK_REQUEST_KEY + request.getOrderId();
-            if (!redisLock.tryLock(lockKey)) {
+            boolean isLocked = redisLock.tryLock(lockKey);
+            if (!isLocked) {
                 throw new OrderBizException(OrderErrorCodeEnum.ORDER_NOT_ALLOW_TO_LACK);
             }
             //3、参数校验
@@ -149,46 +153,63 @@ public class AfterSaleApiImpl implements AfterSaleApi {
             }
             //  4、组装释放库存参数
             AuditPassReleaseAssetsRequest auditPassReleaseAssetsRequest = buildAuditPassReleaseAssets(afterSaleItemDO, customerAuditAssembleResult, orderId);
-            //  5、组装事务MQ消息
-            TransactionMQProducer producer = defaultProducer.getProducer();
-            producer.setTransactionListener(new TransactionListener() {
-                @Override
-                public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
-                    try {
-                        //  更新 审核通过 售后信息
-                        orderAfterSaleService.receiveCustomerAuditAccept(customerAuditAssembleResult);
-                        return LocalTransactionState.COMMIT_MESSAGE;
-                    } catch (Exception e) {
-                        log.error("system error", e);
-                        return LocalTransactionState.ROLLBACK_MESSAGE;
-                    }
-                }
-
-                @Override
-                public LocalTransactionState checkLocalTransaction(MessageExt msg) {
-                    Integer customerAuditAfterSaleStatus = orderAfterSaleService
-                            .findCustomerAuditAfterSaleStatus(customerAuditAssembleResult.getAfterSaleId());
-                    if (AfterSaleStatusEnum.REVIEW_PASS.getCode().equals(customerAuditAfterSaleStatus)) {
-                        return LocalTransactionState.COMMIT_MESSAGE;
-                    }
-                    return LocalTransactionState.ROLLBACK_MESSAGE;
-                }
-            });
-
-            try {
-                Message message = new Message(RocketMqConstant.CUSTOMER_AUDIT_PASS_RELEASE_ASSETS_TOPIC,
-                        JSONObject.toJSONString(auditPassReleaseAssetsRequest).getBytes(StandardCharsets.UTF_8));
-                // 6、发送事务MQ消息 客服审核通过后释放权益资产
-                TransactionSendResult result = producer.sendMessageInTransaction(message, auditPassReleaseAssetsRequest);
-                if (!result.getLocalTransactionState().equals(LocalTransactionState.COMMIT_MESSAGE)) {
-                    throw new OrderBizException(OrderErrorCodeEnum.SEND_AUDIT_PASS_RELEASE_ASSETS_FAILED);
-                }
-                return JsonResult.buildSuccess(true);
-            } catch (Exception e) {
-                throw new OrderBizException(OrderErrorCodeEnum.SEND_TRANSACTION_MQ_FAILED);
-            }
+            //  5、发送客服审核通过释放权益资产事务MQ
+            sendAuditPassReleaseAssets(customerAuditAssembleResult, auditPassReleaseAssetsRequest);
         }
         return JsonResult.buildSuccess(true);
+    }
+
+    private void sendAuditPassReleaseAssets(CustomerAuditAssembleRequest customerAuditAssembleResult,
+                                            AuditPassReleaseAssetsRequest auditPassReleaseAssetsRequest) {
+        try {
+            TransactionMQProducer transactionMQProducer = customerAuditPassSendReleaseAssetsProducer.getProducer();
+            setSendAuditPassReleaseAssetsListener(transactionMQProducer);
+            sendAuditPassReleaseAssetsSuccessMessage(transactionMQProducer,
+                    customerAuditAssembleResult, auditPassReleaseAssetsRequest);
+        } catch (Exception e) {
+            throw new OrderBizException(OrderErrorCodeEnum.SEND_TRANSACTION_MQ_FAILED);
+        }
+    }
+
+    private void sendAuditPassReleaseAssetsSuccessMessage(TransactionMQProducer transactionMQProducer,
+                                                          CustomerAuditAssembleRequest customerAuditAssembleResult,
+                                                          AuditPassReleaseAssetsRequest auditPassReleaseAssetsRequest
+    ) throws MQClientException {
+        Message message = new MQMessage(RocketMqConstant.CUSTOMER_AUDIT_PASS_RELEASE_ASSETS_TOPIC,
+                JSONObject.toJSONString(auditPassReleaseAssetsRequest).getBytes(StandardCharsets.UTF_8));
+        TransactionSendResult result = transactionMQProducer.sendMessageInTransaction(message, customerAuditAssembleResult);
+        if (!result.getLocalTransactionState().equals(LocalTransactionState.COMMIT_MESSAGE)) {
+            throw new OrderBizException(OrderErrorCodeEnum.SEND_AUDIT_PASS_RELEASE_ASSETS_FAILED);
+        }
+    }
+
+    private void setSendAuditPassReleaseAssetsListener(TransactionMQProducer transactionMQProducer) {
+        transactionMQProducer.setTransactionListener(new TransactionListener() {
+            @Override
+            public LocalTransactionState executeLocalTransaction(Message msg, Object arg) {
+                try {
+                    CustomerAuditAssembleRequest finalCustomerAuditAssembleResult = (CustomerAuditAssembleRequest) arg;
+                    //  更新 审核通过 售后信息
+                    orderAfterSaleService.receiveCustomerAuditAccept(finalCustomerAuditAssembleResult);
+                    return LocalTransactionState.COMMIT_MESSAGE;
+                } catch (Exception e) {
+                    log.error("system error", e);
+                    return LocalTransactionState.ROLLBACK_MESSAGE;
+                }
+            }
+
+            @Override
+            public LocalTransactionState checkLocalTransaction(MessageExt msg) {
+                AuditPassReleaseAssetsRequest message = JSON.parseObject(
+                        new String(msg.getBody(), StandardCharsets.UTF_8), AuditPassReleaseAssetsRequest.class);
+                Integer customerAuditAfterSaleStatus = orderAfterSaleService
+                        .findCustomerAuditAfterSaleStatus(message.getActualRefundMessage().getAfterSaleId());
+                if (AfterSaleStatusEnum.REVIEW_PASS.getCode().equals(customerAuditAfterSaleStatus)) {
+                    return LocalTransactionState.COMMIT_MESSAGE;
+                }
+                return LocalTransactionState.ROLLBACK_MESSAGE;
+            }
+        });
     }
 
     /**
@@ -215,7 +236,6 @@ public class AfterSaleApiImpl implements AfterSaleApi {
 
         //  实际退款数据
         ActualRefundMessage actualRefundMessage = new ActualRefundMessage();
-        actualRefundMessage.setAfterSaleRefundId(customerAuditAssembleResult.getAfterSaleRefundId());
         actualRefundMessage.setOrderId(customerAuditAssembleResult.getOrderId());
         actualRefundMessage.setAfterSaleId(customerAuditAssembleResult.getAfterSaleId());
 

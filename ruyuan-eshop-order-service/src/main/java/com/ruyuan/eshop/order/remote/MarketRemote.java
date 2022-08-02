@@ -1,5 +1,6 @@
 package com.ruyuan.eshop.order.remote;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.market.api.MarketApi;
 import com.ruyuan.eshop.market.domain.dto.CalculateOrderAmountDTO;
@@ -30,6 +31,7 @@ public class MarketRemote {
      * @param calculateOrderPriceRequest
      * @return
      */
+    @SentinelResource(value = "MarketRemote:calculateOrderAmount")
     public CalculateOrderAmountDTO calculateOrderAmount(CalculateOrderAmountRequest calculateOrderPriceRequest) {
         JsonResult<CalculateOrderAmountDTO> jsonResult = marketApi.calculateOrderAmount(calculateOrderPriceRequest);
         // 检查价格计算结果
@@ -44,6 +46,7 @@ public class MarketRemote {
      * @param lockUserCouponRequest
      * @return
      */
+    @SentinelResource(value = "MarketRemote:lockUserCoupon")
     public Boolean lockUserCoupon(LockUserCouponRequest lockUserCouponRequest) {
         JsonResult<Boolean> jsonResult = marketApi.lockUserCoupon(lockUserCouponRequest);
         // 检查锁定用户优惠券结果

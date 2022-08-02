@@ -5,6 +5,7 @@ import com.ruyuan.eshop.common.constants.RedisLockKeyConstants;
 import com.ruyuan.eshop.common.enums.OrderStatusChangeEnum;
 import com.ruyuan.eshop.common.exception.BaseBizException;
 import com.ruyuan.eshop.common.message.OrderEvent;
+import com.ruyuan.eshop.common.mq.AbstractMessageListenerConcurrently;
 import com.ruyuan.eshop.common.redis.RedisLock;
 import com.ruyuan.eshop.fulfill.domain.event.OrderDeliveredWmsEvent;
 import com.ruyuan.eshop.fulfill.domain.event.OrderOutStockWmsEvent;
@@ -14,9 +15,7 @@ import com.ruyuan.eshop.order.domain.dto.WmsShipDTO;
 import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
 import com.ruyuan.eshop.order.service.OrderFulFillService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.rocketmq.client.consumer.listener.ConsumeOrderlyContext;
-import org.apache.rocketmq.client.consumer.listener.ConsumeOrderlyStatus;
-import org.apache.rocketmq.client.consumer.listener.MessageListenerOrderly;
+import org.apache.rocketmq.client.consumer.listener.*;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -31,7 +30,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class OrderWmsShipResultListener implements MessageListenerOrderly {
+public class OrderWmsShipResultListener extends AbstractMessageListenerConcurrently {
 
     @Autowired
     private RedisLock redisLock;
@@ -43,7 +42,7 @@ public class OrderWmsShipResultListener implements MessageListenerOrderly {
     private WmsShipDtoConverter wmsShipDtoConverter;
 
     @Override
-    public ConsumeOrderlyStatus consumeMessage(List<MessageExt> list, ConsumeOrderlyContext consumeOrderlyContext) {
+    public ConsumeConcurrentlyStatus onMessage(List<MessageExt> list, ConsumeConcurrentlyContext context) {
         OrderEvent orderEvent;
         try {
 
@@ -75,10 +74,11 @@ public class OrderWmsShipResultListener implements MessageListenerOrderly {
                 }
             }
 
-            return ConsumeOrderlyStatus.SUCCESS;
+            return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
         } catch (Exception e) {
-            // 处理业务逻辑失败！ Suspend current queue a moment
-            return ConsumeOrderlyStatus.SUSPEND_CURRENT_QUEUE_A_MOMENT;
+            // 处理业务逻辑失败
+            log.error("订单物流配送结果消息处理失败", e);
+            return ConsumeConcurrentlyStatus.RECONSUME_LATER;
         }
     }
 

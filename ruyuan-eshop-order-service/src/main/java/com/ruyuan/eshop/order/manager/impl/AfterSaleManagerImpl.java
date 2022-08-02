@@ -1,5 +1,6 @@
 package com.ruyuan.eshop.order.manager.impl;
 
+import com.google.common.collect.Lists;
 import com.ruyuan.eshop.common.enums.AfterSaleTypeDetailEnum;
 import com.ruyuan.eshop.common.enums.AfterSaleTypeEnum;
 import com.ruyuan.eshop.common.enums.OrderOperateTypeEnum;
@@ -122,8 +123,11 @@ public class AfterSaleManagerImpl implements AfterSaleManager {
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void insertCancelOrderAfterSale(CancelOrderAssembleRequest cancelOrderAssembleRequest, Integer afterSaleStatus,
-                                           OrderInfoDO orderInfoDO, String afterSaleId) {
+    public void insertCancelOrderAfterSale(CancelOrderAssembleRequest cancelOrderAssembleRequest, Integer afterSaleStatus) {
+        String orderId = cancelOrderAssembleRequest.getOrderId();
+        OrderInfoDO orderInfoDO = orderInfoDAO.getByOrderId(orderId);
+        String afterSaleId = cancelOrderAssembleRequest.getAfterSaleId();
+
         OrderInfoDTO orderInfoDTO = cancelOrderAssembleRequest.getOrderInfoDTO();
         //  取消订单过程中的 申请退款金额 和 实际退款金额 都是实付退款金额 金额相同
         AfterSaleInfoDO afterSaleInfoDO = new AfterSaleInfoDO();
@@ -136,7 +140,6 @@ public class AfterSaleManagerImpl implements AfterSaleManager {
         cancelOrderAssembleRequest.setAfterSaleId(afterSaleId);
 
         //  2、新增售后条目表
-        String orderId = cancelOrderAssembleRequest.getOrderId();
         List<OrderItemDTO> orderItemDTOList = cancelOrderAssembleRequest.getOrderItemDTOList();
         insertAfterSaleItemTable(orderId, orderItemDTOList, afterSaleId);
 
@@ -185,8 +188,8 @@ public class AfterSaleManagerImpl implements AfterSaleManager {
     }
 
     private void insertAfterSaleItemTable(String orderId, List<OrderItemDTO> orderItemDTOList, String afterSaleId) {
-        List<AfterSaleItemDO> itemDOList = new ArrayList<>();
-        orderItemDTOList.forEach(orderItem -> {
+        List<AfterSaleItemDO> itemDOList = Lists.newArrayList();
+        for (OrderItemDTO orderItem : orderItemDTOList) {
             AfterSaleItemDO afterSaleItemDO = new AfterSaleItemDO();
             afterSaleItemDO.setAfterSaleId(Long.valueOf(afterSaleId));
             afterSaleItemDO.setOrderId(orderId);
@@ -198,7 +201,7 @@ public class AfterSaleManagerImpl implements AfterSaleManager {
             afterSaleItemDO.setApplyRefundAmount(orderItem.getOriginAmount());
             afterSaleItemDO.setRealRefundAmount(orderItem.getPayAmount());
             itemDOList.add(afterSaleItemDO);
-        });
+        }
         afterSaleItemDAO.saveBatch(itemDOList);
     }
 

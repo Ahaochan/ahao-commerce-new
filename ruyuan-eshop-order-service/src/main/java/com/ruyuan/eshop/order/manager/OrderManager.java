@@ -15,17 +15,6 @@ import java.util.List;
  */
 public interface OrderManager {
 
-    /**
-     * 支付回调更新订单状态
-     *
-     * @param payCallbackRequest
-     * @param orderInfoDO
-     * @param orderPaymentDetailDO
-     */
-    void updateOrderStatusPaid(PayCallbackRequest payCallbackRequest,
-                               OrderInfoDO orderInfoDO,
-                               OrderPaymentDetailDO orderPaymentDetailDO);
-
 
     /**
      * 生成订单
@@ -35,5 +24,12 @@ public interface OrderManager {
      * @param calculateOrderAmountDTO
      */
     void createOrder(CreateOrderRequest createOrderRequest, List<ProductSkuDTO> productSkuList, CalculateOrderAmountDTO calculateOrderAmountDTO);
+
+    /**
+     * 支付回调更新订单状态
+     *
+     * @param orderInfoDO
+     */
+    void updateOrderStatusWhenPayCallback(OrderInfoDO orderInfoDO);
 
 }

@@ -27,8 +27,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Service
+/**
+ * <p>
+ * 订单履约相关service
+ * </p>
+ *
+ * @author zhonghuashishan
+ */
 @Slf4j
+@Service
 public class OrderFulFillServiceImpl implements OrderFulFillService {
 
     @Autowired

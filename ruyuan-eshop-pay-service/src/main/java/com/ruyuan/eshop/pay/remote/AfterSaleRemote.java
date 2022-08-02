@@ -1,9 +1,11 @@
 package com.ruyuan.eshop.pay.remote;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.order.api.AfterSaleApi;
 import com.ruyuan.eshop.order.domain.request.RefundCallbackRequest;
 import com.ruyuan.eshop.pay.exception.PayBizException;
+import com.ruyuan.eshop.pay.remote.fallback.AfterSaleRemoteFallback;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,7 @@ public class AfterSaleRemote {
     /**
      * 取消订单支付退款回调
      */
+    @SentinelResource(value = "AfterSaleRemote:refundCallback", fallbackClass = AfterSaleRemoteFallback.class, fallback = "refundCallbackFallback")
     public JsonResult<Boolean> refundCallback(RefundCallbackRequest payRefundCallbackRequest) {
         JsonResult<Boolean> jsonResult = afterSaleApi.refundCallback(payRefundCallbackRequest);
         if (!jsonResult.getSuccess()) {

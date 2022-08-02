@@ -1,6 +1,7 @@
 package com.ruyuan.eshop.order.manager.impl;
 
 import com.ruyuan.eshop.common.utils.DateFormatUtil;
+import com.ruyuan.eshop.common.utils.LoggerFormat;
 import com.ruyuan.eshop.common.utils.NumberUtil;
 import com.ruyuan.eshop.order.domain.entity.OrderAutoNoDO;
 import com.ruyuan.eshop.order.enums.OrderNoTypeEnum;
@@ -8,6 +9,7 @@ import com.ruyuan.eshop.order.exception.OrderBizException;
 import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
 import com.ruyuan.eshop.order.manager.OrderNoManager;
 import com.ruyuan.eshop.order.mapper.OrderAutoNoMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,6 +20,7 @@ import java.util.Date;
  * @version 1.0
  */
 @Service
+@Slf4j
 public class OrderNoManagerImpl implements OrderNoManager {
 
     @Autowired
@@ -67,9 +70,22 @@ public class OrderNoManagerImpl implements OrderNoManager {
     private String getAutoNoKey() {
 
         OrderAutoNoDO orderAutoNoDO = new OrderAutoNoDO();
+        log.info(LoggerFormat.build()
+                .remark("getAutoNoKey->before insert")
+                .finish());
         orderAutoNoMapper.insert(orderAutoNoDO);
+        log.info(LoggerFormat.build()
+                .remark("getAutoNoKey->after insert")
+                .finish());
         Long autoNo = orderAutoNoDO.getId();
-        return String.valueOf(NumberUtil.genNo(autoNo, 8));
+
+        String orderId = String.valueOf(NumberUtil.genNo(autoNo, 8));
+
+        log.info(LoggerFormat.build()
+                .remark("getAutoNoKey->after genNo")
+                .finish());
+
+        return orderId;
     }
 
     /**

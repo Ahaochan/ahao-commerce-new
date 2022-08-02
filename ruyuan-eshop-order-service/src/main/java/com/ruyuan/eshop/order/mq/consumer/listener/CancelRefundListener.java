@@ -2,6 +2,7 @@ package com.ruyuan.eshop.order.mq.consumer.listener;
 
 import com.alibaba.fastjson.JSONObject;
 import com.ruyuan.eshop.common.core.JsonResult;
+import com.ruyuan.eshop.common.mq.AbstractMessageListenerConcurrently;
 import com.ruyuan.eshop.order.domain.request.CancelOrderAssembleRequest;
 import com.ruyuan.eshop.order.exception.OrderBizException;
 import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
@@ -9,7 +10,6 @@ import com.ruyuan.eshop.order.service.OrderAfterSaleService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
-import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -22,13 +22,13 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class CancelRefundListener implements MessageListenerConcurrently {
+public class CancelRefundListener extends AbstractMessageListenerConcurrently {
 
     @Autowired
     private OrderAfterSaleService orderAfterSaleService;
 
     @Override
-    public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
+    public ConsumeConcurrentlyStatus onMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
         try {
             for (MessageExt messageExt : list) {
                 String message = new String(messageExt.getBody());
@@ -48,4 +48,5 @@ public class CancelRefundListener implements MessageListenerConcurrently {
             return ConsumeConcurrentlyStatus.RECONSUME_LATER;
         }
     }
+
 }

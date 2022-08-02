@@ -9,6 +9,8 @@ import com.ruyuan.eshop.inventory.mapper.ProductStockLogMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * <p>
  * 库存扣减日志表 Mapper 接口
@@ -34,6 +36,31 @@ public class ProductStockLogDAO extends BaseDAO<ProductStockLogMapper, ProductSt
         queryWrapper.eq(ProductStockLogDO::getOrderId, orderId)
                 .eq(ProductStockLogDO::getSkuCode, skuCode)
         ;
+        return baseMapper.selectOne(queryWrapper);
+    }
+
+    public boolean removeLogs(String orderId, String skuCode) {
+        LambdaQueryWrapper<ProductStockLogDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ProductStockLogDO::getOrderId,orderId)
+                .eq(ProductStockLogDO::getSkuCode,skuCode);
+
+        List<ProductStockLogDO> logs = list(queryWrapper);
+        for(ProductStockLogDO log : logs) {
+            baseMapper.deleteById(log.getId());
+        }
+        return true;
+    }
+
+    /**
+     * 查询sku库存最近一笔扣减日志
+     * @param skuCode
+     * @return
+     */
+    public ProductStockLogDO getLatestOne(String skuCode) {
+        LambdaQueryWrapper<ProductStockLogDO> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper
+                .eq(ProductStockLogDO::getSkuCode,skuCode)
+                .orderByDesc(ProductStockLogDO::getId).last("limit 1");
         return baseMapper.selectOne(queryWrapper);
     }
 

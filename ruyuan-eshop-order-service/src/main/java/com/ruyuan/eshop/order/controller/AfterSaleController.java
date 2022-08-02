@@ -75,9 +75,9 @@ public class AfterSaleController {
     /**
      * 缺品请求
      */
-    @PostMapping("/lockItem")
-    public JsonResult<LackDTO> lockItem(@RequestBody LackRequest request) {
-        JsonResult<LackDTO> result = afterSaleApi.lockItem(request);
+    @PostMapping("/lackItem")
+    public JsonResult<LackDTO> lackItem(@RequestBody LackRequest request) {
+        JsonResult<LackDTO> result = afterSaleApi.lackItem(request);
         return result;
     }
 

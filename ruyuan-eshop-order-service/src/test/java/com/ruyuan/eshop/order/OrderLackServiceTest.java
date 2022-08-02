@@ -32,7 +32,7 @@ public class OrderLackServiceTest {
         itemRequests.add(new LackItemRequest("10101010", 1));
         lackRequest.setLackItems(itemRequests);
 
-        JsonResult<LackDTO> jsonResult = api.lockItem(lackRequest);
+        JsonResult<LackDTO> jsonResult = api.lackItem(lackRequest);
         System.out.println("jsonResult=" + JSONObject.toJSONString(jsonResult));
     }
 

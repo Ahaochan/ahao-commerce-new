@@ -10,7 +10,7 @@ import java.util.List;
  * @version 1.0
  */
 @Data
-public class ProductSkuQuery implements Serializable {
+public class ListProductSkuQuery implements Serializable {
 
     private static final long serialVersionUID = 4788741095015777932L;
 

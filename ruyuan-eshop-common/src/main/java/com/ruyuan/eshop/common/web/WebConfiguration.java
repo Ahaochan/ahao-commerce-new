@@ -5,6 +5,7 @@ import com.ruyuan.eshop.common.core.DateProvider;
 import com.ruyuan.eshop.common.core.DateProviderImpl;
 import com.ruyuan.eshop.common.core.ObjectMapperImpl;
 import com.ruyuan.eshop.common.exception.GlobalExceptionHandler;
+import com.ruyuan.eshop.common.exception.CustomBlockExceptionHandler;
 import com.ruyuan.eshop.common.json.JsonExtractor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +19,7 @@ import org.springframework.context.annotation.Import;
  * @version 1.0
  */
 @Configuration
-@Import(value = {GlobalExceptionHandler.class, GlobalResponseBodyAdvice.class})
+@Import(value = {GlobalExceptionHandler.class, GlobalResponseBodyAdvice.class, CustomBlockExceptionHandler.class})
 public class WebConfiguration {
 
     @Bean

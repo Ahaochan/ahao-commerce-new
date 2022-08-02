@@ -29,10 +29,8 @@ public class LockRedisStockTccServiceImpl implements LockRedisStockTccService {
         String xid = actionContext.getXid();
         String skuCode = deductStock.getSkuCode();
         Integer saleQuantity = deductStock.getSaleQuantity();
-        Integer originSaleStock = deductStock.getOriginSaleStock();
-        Integer originSaledStock = deductStock.getOriginSaledStock();
 
-        //标识try阶段开始执行
+        // 标识try阶段开始执行
         TccResultHolder.tagTryStart(getClass(), skuCode, xid);
         log.info(LoggerFormat.build()
                 .remark("一阶段方法：扣减redis销售库存")
@@ -40,8 +38,8 @@ public class LockRedisStockTccServiceImpl implements LockRedisStockTccService {
                 .data("xid", xid)
                 .finish());
 
-        //悬挂问题：rollback接口比try接口先执行，即rollback接口进行了空回滚，try接口才执行，导致try接口预留的资源无法被取消
-        //解决空悬挂的思路：即当rollback接口出现空回滚时，需要打一个标识（在数据库中查一条记录），在try这里判断一下
+        // 悬挂问题：rollback接口比try接口先执行，即rollback接口进行了空回滚，try接口才执行，导致try接口预留的资源无法被取消
+        // 解决空悬挂的思路：即当rollback接口出现空回滚时，需要打一个标识（在数据库中查一条记录），在try这里判断一下
         if (isEmptyRollback()) {
             return false;
         }
@@ -50,7 +48,7 @@ public class LockRedisStockTccServiceImpl implements LockRedisStockTccService {
         String saleStockKey = CacheSupport.SALE_STOCK;
         String productStockKey = CacheSupport.buildProductStockKey(skuCode);
         Long result = redisCache.execute(new DefaultRedisScript<>(luaScript, Long.class),
-                Arrays.asList(productStockKey, saleStockKey), String.valueOf(saleQuantity), String.valueOf(originSaleStock));
+                Arrays.asList(productStockKey, saleStockKey), String.valueOf(saleQuantity));
 
         //标识try阶段执行成功
         if (result > 0) {
@@ -69,8 +67,6 @@ public class LockRedisStockTccServiceImpl implements LockRedisStockTccService {
 
         String skuCode = deductStock.getSkuCode();
         Integer saleQuantity = deductStock.getSaleQuantity();
-        Integer originSaleStock = deductStock.getOriginSaleStock();
-        Integer originSaledStock = deductStock.getOriginSaledStock();
 
         log.info(LoggerFormat.build()
                 .remark("二阶段方法：增加redis已销售库存")
@@ -92,7 +88,7 @@ public class LockRedisStockTccServiceImpl implements LockRedisStockTccService {
         String saledStockKey = CacheSupport.SALED_STOCK;
         String productStockKey = CacheSupport.buildProductStockKey(skuCode);
         redisCache.execute(new DefaultRedisScript<>(luaScript, Long.class),
-                Arrays.asList(productStockKey, saledStockKey), String.valueOf(saleQuantity), String.valueOf(originSaledStock));
+                Arrays.asList(productStockKey, saledStockKey), String.valueOf(saleQuantity));
 
         //移除标识
         TccResultHolder.removeResult(getClass(), skuCode, xid);
@@ -107,8 +103,6 @@ public class LockRedisStockTccServiceImpl implements LockRedisStockTccService {
 
         String skuCode = deductStock.getSkuCode();
         Integer saleQuantity = deductStock.getSaleQuantity();
-        Integer originSaleStock = deductStock.getOriginSaleStock();
-        Integer originSaledStock = deductStock.getOriginSaledStock();
 
         log.info(LoggerFormat.build()
                 .remark("回滚：增加redis销售库存")
@@ -144,7 +138,7 @@ public class LockRedisStockTccServiceImpl implements LockRedisStockTccService {
         String saleStockKey = CacheSupport.SALE_STOCK;
         String productStockKey = CacheSupport.buildProductStockKey(skuCode);
         redisCache.execute(new DefaultRedisScript<>(luaScript, Long.class),
-                Arrays.asList(productStockKey, saleStockKey), String.valueOf(saleQuantity), String.valueOf(originSaleStock - saleQuantity));
+                Arrays.asList(productStockKey, saleStockKey), String.valueOf(saleQuantity));
 
         //移除标识
         TccResultHolder.removeResult(getClass(), skuCode, xid);

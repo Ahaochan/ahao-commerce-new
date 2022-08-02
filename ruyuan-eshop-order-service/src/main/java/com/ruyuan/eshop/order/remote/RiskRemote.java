@@ -1,7 +1,9 @@
 package com.ruyuan.eshop.order.remote;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.order.exception.OrderBizException;
+import com.ruyuan.eshop.order.remote.fallback.RiskRemoteFallback;
 import com.ruyuan.eshop.risk.api.RiskApi;
 import com.ruyuan.eshop.risk.domain.dto.CheckOrderRiskDTO;
 import com.ruyuan.eshop.risk.domain.request.CheckOrderRiskRequest;
@@ -27,6 +29,9 @@ public class RiskRemote {
      * @param checkOrderRiskRequest
      * @return
      */
+    @SentinelResource(value = "RiskRemote:checkOrderRisk",
+            fallbackClass = RiskRemoteFallback.class,
+            fallback = "checkOrderRiskFallback")
     public CheckOrderRiskDTO checkOrderRisk(CheckOrderRiskRequest checkOrderRiskRequest) {
         JsonResult<CheckOrderRiskDTO> jsonResult = riskApi.checkOrderRisk(checkOrderRiskRequest);
         if (!jsonResult.getSuccess()) {

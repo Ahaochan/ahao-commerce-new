@@ -19,7 +19,6 @@ import com.ruyuan.eshop.order.converter.OrderConverter;
 import com.ruyuan.eshop.order.dao.*;
 import com.ruyuan.eshop.order.domain.entity.*;
 import com.ruyuan.eshop.order.domain.request.CreateOrderRequest;
-import com.ruyuan.eshop.order.domain.request.PayCallbackRequest;
 import com.ruyuan.eshop.order.enums.OrderNoTypeEnum;
 import com.ruyuan.eshop.order.enums.PayStatusEnum;
 import com.ruyuan.eshop.order.enums.SnapshotTypeEnum;
@@ -37,9 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -103,102 +100,6 @@ public class OrderManagerImpl implements OrderManager {
     private OrderConverter orderConverter;
 
     /**
-     * 支付回调更新订单状态
-     *
-     * @param payCallbackRequest
-     * @param orderInfoDO
-     * @param orderPaymentDetailDO
-     */
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public void updateOrderStatusPaid(PayCallbackRequest payCallbackRequest, OrderInfoDO orderInfoDO, OrderPaymentDetailDO orderPaymentDetailDO) {
-
-        // 主单信息
-        String orderId = payCallbackRequest.getOrderId();
-        Integer preOrderStatus = orderInfoDO.getOrderStatus();
-        orderInfoDO.setOrderStatus(OrderStatusEnum.PAID.getCode());
-        orderInfoDAO.updateById(orderInfoDO);
-
-        // 主单支付信息
-        orderPaymentDetailDO.setPayStatus(PayStatusEnum.PAID.getCode());
-        orderPaymentDetailDAO.updateById(orderPaymentDetailDO);
-
-        // 新增订单状态变更日志
-        OrderOperateLogDO orderOperateLogDO = new OrderOperateLogDO();
-        orderOperateLogDO.setOrderId(orderId);
-        orderOperateLogDO.setOperateType(OrderOperateTypeEnum.PAID_ORDER.getCode());
-        orderOperateLogDO.setPreStatus(preOrderStatus);
-        orderOperateLogDO.setCurrentStatus(orderInfoDO.getOrderStatus());
-        orderOperateLogDO.setRemark("订单支付回调操作"
-                + orderOperateLogDO.getPreStatus() + "-"
-                + orderOperateLogDO.getCurrentStatus());
-        orderOperateLogDAO.save(orderOperateLogDO);
-
-        // 判断是否存在子订单
-        List<OrderInfoDO> subOrderInfoDOList = orderInfoDAO.listByParentOrderId(orderId);
-        if (subOrderInfoDOList != null && !subOrderInfoDOList.isEmpty()) {
-            // 先将主订单状态设置为无效订单
-            Integer newPreOrderStatus = orderInfoDO.getOrderStatus();
-            orderInfoDO.setOrderStatus(OrderStatusEnum.INVALID.getCode());
-            orderInfoDAO.updateById(orderInfoDO);
-
-            // 新增订单状态变更日志
-            OrderOperateLogDO newOrderOperateLogDO = new OrderOperateLogDO();
-            newOrderOperateLogDO.setOrderId(orderId);
-            newOrderOperateLogDO.setOperateType(OrderOperateTypeEnum.PAID_ORDER.getCode());
-            newOrderOperateLogDO.setPreStatus(newPreOrderStatus);
-            newOrderOperateLogDO.setCurrentStatus(OrderStatusEnum.INVALID.getCode());
-            orderOperateLogDO.setRemark("订单支付回调操作，主订单状态变更"
-                    + newOrderOperateLogDO.getPreStatus() + "-"
-                    + newOrderOperateLogDO.getCurrentStatus());
-            orderOperateLogDAO.save(newOrderOperateLogDO);
-
-            // 再更新子订单的状态
-            List<OrderInfoDO> tempSubOrderInfoDOList = new ArrayList<>();
-            List<String> tempSubOrderIdList = new ArrayList<>();
-            List<OrderOperateLogDO> tempSubOrderOperateLogDOList = new ArrayList<>();
-            for (OrderInfoDO subOrderInfo : subOrderInfoDOList) {
-                Integer subPreOrderStatus = subOrderInfo.getOrderStatus();
-                subOrderInfo.setOrderStatus(OrderStatusEnum.PAID.getCode());
-                tempSubOrderInfoDOList.add(subOrderInfo);
-
-                // 子订单的支付明细
-                String subOrderId = subOrderInfo.getOrderId();
-                tempSubOrderIdList.add(subOrderId);
-
-                // 订单状态变更日志
-                OrderOperateLogDO subOrderOperateLogDO = new OrderOperateLogDO();
-                subOrderOperateLogDO.setOrderId(subOrderId);
-                subOrderOperateLogDO.setOperateType(OrderOperateTypeEnum.PAID_ORDER.getCode());
-                subOrderOperateLogDO.setPreStatus(subPreOrderStatus);
-                subOrderOperateLogDO.setCurrentStatus(OrderStatusEnum.PAID.getCode());
-                orderOperateLogDO.setRemark("订单支付回调操作，子订单状态变更"
-                        + subOrderOperateLogDO.getPreStatus() + "-"
-                        + subOrderOperateLogDO.getCurrentStatus());
-                tempSubOrderOperateLogDOList.add(subOrderOperateLogDO);
-            }
-
-            // 更新子订单
-            if (!tempSubOrderInfoDOList.isEmpty()) {
-                orderInfoDAO.updateBatchById(tempSubOrderInfoDOList);
-            }
-
-            // 更新子订单的支付明细
-            if (!tempSubOrderIdList.isEmpty()) {
-                OrderPaymentDetailDO subOrderPaymentDetailDO = new OrderPaymentDetailDO();
-                subOrderPaymentDetailDO.setPayStatus(PayStatusEnum.PAID.getCode());
-                orderPaymentDetailDAO.updateBatchByOrderIds(subOrderPaymentDetailDO, tempSubOrderIdList);
-            }
-
-            // 新增订单状态变更日志
-            if (!tempSubOrderOperateLogDOList.isEmpty()) {
-                orderOperateLogDAO.saveBatch(tempSubOrderOperateLogDOList);
-            }
-        }
-
-    }
-
-    /**
      * 生成订单
      *
      * @param createOrderRequest
@@ -211,8 +112,15 @@ public class OrderManagerImpl implements OrderManager {
         // 锁定优惠券
         lockUserCoupon(createOrderRequest);
 
+        log.info(LoggerFormat.build()
+                .remark("OrderManager.createOrder-> before deduct stock")
+                .finish());
         // 扣减库存
         deductProductStock(createOrderRequest);
+
+        log.info(LoggerFormat.build()
+                .remark("OrderManager.createOrder-> after deduct stock")
+                .finish());
 
         // 生成订单到数据库
         addNewOrder(createOrderRequest, productSkuList, calculateOrderAmountDTO);
@@ -611,6 +519,9 @@ public class OrderManagerImpl implements OrderManager {
         OrderOperateLogDO subOrderOperateLogDO = orderConverter.copyOrderOperationLogDO(orderOperateLogDO);
         subOrderOperateLogDO.setId(null);
         subOrderOperateLogDO.setOrderId(subOrderId);
+        subOrderOperateLogDO.setCurrentStatus(OrderStatusEnum.INVALID.getCode());
+        String remark = "创建订单操作0-127";
+        subOrderOperateLogDO.setRemark(remark);
         subFullOrderData.setOrderOperateLogDO(subOrderOperateLogDO);
 
         // 订单商品快照信息
@@ -636,6 +547,168 @@ public class OrderManagerImpl implements OrderManager {
     private String getSubOrderItemId(String orderItemId, String subOrderId) {
         String postfix = orderItemId.substring(orderItemId.indexOf("_"));
         return subOrderId + postfix;
+    }
+
+    /**
+     * 支付回调更新订单状态
+     *
+     * @param orderInfoDO
+     */
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateOrderStatusWhenPayCallback(OrderInfoDO orderInfoDO) {
+
+        // 更新主单的状态
+        updateMasterOrderStatus(orderInfoDO);
+
+        // 判断是否存在子订单
+        String orderId = orderInfoDO.getOrderId();
+        List<OrderInfoDO> subOrderInfoDOList = orderInfoDAO.listByParentOrderId(orderId);
+        if (subOrderInfoDOList == null || subOrderInfoDOList.isEmpty()) {
+            return;
+        }
+
+        // 更新子单的状态
+        updateSubOrderStatus(orderInfoDO, subOrderInfoDOList);
+
+    }
+
+    /**
+     * 更新主订单状态
+     * @param orderInfoDO
+     */
+    private void updateMasterOrderStatus(OrderInfoDO orderInfoDO) {
+
+        String orderId = orderInfoDO.getOrderId();
+        // 更新主单订单状态
+        Integer preOrderStatus = orderInfoDO.getOrderStatus();
+        Integer currentStatus = OrderStatusEnum.PAID.getCode();
+        List<String> orderIdList = Collections.singletonList(orderId);
+        updateOrderStatus(orderIdList, currentStatus);
+
+        // 更新主单支付状态
+        updateOrderPayStatus(orderIdList, PayStatusEnum.PAID.getCode());
+
+        // 新增主单订单状态变更日志
+        Integer operateType = OrderOperateTypeEnum.PAID_ORDER.getCode();
+        String remark = "订单支付回调操作" + preOrderStatus + "-" + currentStatus;
+        saveOrderOperateLog(orderId, operateType, preOrderStatus, currentStatus, remark);
+    }
+
+
+
+    /**
+     * 更新子订单状态
+     * @param orderInfoDO
+     * @param subOrderInfoDOList
+     */
+    private void updateSubOrderStatus(OrderInfoDO orderInfoDO, List<OrderInfoDO> subOrderInfoDOList) {
+        String orderId = orderInfoDO.getOrderId();
+        Integer newPreOrderStatus = orderInfoDO.getOrderStatus();
+        Integer currentOrderStatus = OrderStatusEnum.INVALID.getCode();
+
+        // 先将主订单状态设置为无效订单
+        List<String> orderIdList = Collections.singletonList(orderId);
+        updateOrderStatus(orderIdList, currentOrderStatus);
+
+        // 新增订单状态变更日志
+        Integer operateType = OrderOperateTypeEnum.PAID_ORDER.getCode();
+        String remark = "订单支付回调操作，主订单状态变更" + newPreOrderStatus + "-" + currentOrderStatus;
+        saveOrderOperateLog(orderId, operateType, newPreOrderStatus, currentOrderStatus, remark);
+
+        // 再更新子订单的状态
+        Integer subCurrentOrderStatus = OrderStatusEnum.PAID.getCode();
+        List<String> subOrderIdList = subOrderInfoDOList.stream()
+                .map(OrderInfoDO::getOrderId).collect(Collectors.toList());
+
+        // 更新子订单状态
+        updateOrderStatus(subOrderIdList, subCurrentOrderStatus);
+
+        // 更新子订单的支付明细
+        updateOrderPayStatus(subOrderIdList, PayStatusEnum.PAID.getCode());
+
+        // 保存子订单操作日志
+        saveSubOrderOperateLog(subCurrentOrderStatus, subOrderInfoDOList);
+    }
+
+    /**
+     * 更新订单状态
+     * @param orderIdList
+     * @param orderStatus
+     */
+    private void updateOrderStatus(List<String> orderIdList, Integer orderStatus) {
+        OrderInfoDO orderInfoDO = new OrderInfoDO();
+        orderInfoDO.setOrderStatus(orderStatus);
+        if(orderIdList.size() == 1) {
+            orderInfoDAO.updateByOrderId(orderInfoDO, orderIdList.get(0));
+        } else {
+            orderInfoDAO.updateBatchByOrderIds(orderInfoDO, orderIdList);
+        }
+    }
+
+    /**
+     * 更新订单支付状态
+     * @param orderIdList
+     * @param payStatus
+     */
+    private void updateOrderPayStatus(List<String> orderIdList, Integer payStatus) {
+        OrderPaymentDetailDO orderPaymentDetailDO = new OrderPaymentDetailDO();
+        orderPaymentDetailDO.setPayStatus(payStatus);
+        if(orderIdList.size() == 1) {
+            orderPaymentDetailDAO.updateByOrderId(orderPaymentDetailDO, orderIdList.get(0));
+        } else {
+            orderPaymentDetailDAO.updateBatchByOrderIds(orderPaymentDetailDO, orderIdList);
+        }
+    }
+
+    /**
+     * 保存订单操作日志
+     * @param orderId
+     * @param operateType
+     * @param preOrderStatus
+     * @param currentStatus
+     * @param remark
+     */
+    private void saveOrderOperateLog(String orderId,
+                                     Integer operateType,
+                                     Integer preOrderStatus,
+                                     Integer currentStatus,
+                                     String remark) {
+        OrderOperateLogDO orderOperateLogDO = new OrderOperateLogDO();
+        orderOperateLogDO.setOrderId(orderId);
+        orderOperateLogDO.setOperateType(operateType);
+        orderOperateLogDO.setPreStatus(preOrderStatus);
+        orderOperateLogDO.setCurrentStatus(currentStatus);
+        orderOperateLogDO.setRemark(remark);
+        orderOperateLogDAO.save(orderOperateLogDO);
+    }
+
+    /**
+     * 保存子订单操作日志
+     * @param subCurrentOrderStatus
+     * @param subOrderInfoDOList
+     */
+    private void saveSubOrderOperateLog(Integer subCurrentOrderStatus, List<OrderInfoDO> subOrderInfoDOList) {
+        List<OrderOperateLogDO> tempSubOrderOperateLogDOList = new ArrayList<>();
+        for (OrderInfoDO subOrderInfo : subOrderInfoDOList) {
+            String subOrderId = subOrderInfo.getOrderId();
+            Integer subPreOrderStatus = subOrderInfo.getOrderStatus();
+            // 订单状态变更日志
+            OrderOperateLogDO subOrderOperateLogDO = new OrderOperateLogDO();
+            subOrderOperateLogDO.setOrderId(subOrderId);
+            subOrderOperateLogDO.setOperateType(OrderOperateTypeEnum.PAID_ORDER.getCode());
+            subOrderOperateLogDO.setPreStatus(subPreOrderStatus);
+            subOrderOperateLogDO.setCurrentStatus(subCurrentOrderStatus);
+            subOrderOperateLogDO.setRemark("订单支付回调操作，子订单状态变更"
+                    + subOrderOperateLogDO.getPreStatus() + "-"
+                    + subOrderOperateLogDO.getCurrentStatus());
+            tempSubOrderOperateLogDOList.add(subOrderOperateLogDO);
+        }
+
+        // 新增子订单状态变更日志
+        if (!tempSubOrderOperateLogDOList.isEmpty()) {
+            orderOperateLogDAO.saveBatch(tempSubOrderOperateLogDOList);
+        }
     }
 
 

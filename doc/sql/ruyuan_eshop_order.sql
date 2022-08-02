@@ -147,8 +147,9 @@ CREATE TABLE `order_amount` (
   `amount` int(11) NOT NULL COMMENT '收费金额',
   `gmt_create` datetime NOT NULL COMMENT '创建时间',
   `gmt_modified` datetime NOT NULL COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=45 DEFAULT CHARSET=utf8 COMMENT='订单费用表';
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_order_id` (`order_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=169441 DEFAULT CHARSET=utf8 COMMENT='订单费用表'
 
 -- ----------------------------
 -- Records of order_amount
@@ -197,8 +198,9 @@ CREATE TABLE `order_amount_detail` (
   `amount` int(11) NOT NULL COMMENT '收费金额',
   `gmt_create` datetime NOT NULL COMMENT '创建时间',
   `gmt_modified` datetime NOT NULL COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8 COMMENT='订单费用明细表';
+  PRIMARY KEY (`id`) USING BTREE,
+  KEY `idx_order_id` (`order_id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=273907 DEFAULT CHARSET=utf8 COMMENT='订单费用明细表'
 
 -- ----------------------------
 -- Records of order_amount_detail
@@ -406,7 +408,7 @@ COMMIT;
 -- ----------------------------
 DROP TABLE IF EXISTS `order_operate_log`;
 CREATE TABLE `order_operate_log` (
-  `id` bigint(20) NOT NULL COMMENT '主键ID',
+  `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
   `order_id` varchar(50) NOT NULL COMMENT '订单编号',
   `operate_type` tinyint(4) DEFAULT NULL COMMENT '操作类型',
   `pre_status` tinyint(4) DEFAULT NULL COMMENT '前置状态',
@@ -416,7 +418,7 @@ CREATE TABLE `order_operate_log` (
   `gmt_modified` datetime NOT NULL COMMENT '更新时间',
   PRIMARY KEY (`id`) USING BTREE,
   KEY `idx_order_id` (`order_id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='订单操作日志表';
+) ENGINE=InnoDB AUTO_INCREMENT=1469883478325456899 DEFAULT CHARSET=utf8 COMMENT='订单操作日志表'
 
 -- ----------------------------
 -- Records of order_operate_log

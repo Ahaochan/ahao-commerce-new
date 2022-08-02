@@ -33,11 +33,6 @@ public class RedisLockKeyConstants {
     public static final String ADD_PRODUCT_STOCK_KEY = "#ADD_PRODUCT_STOCK_KEY:";
 
     /**
-     * 订单扣减商品库存锁
-     */
-    public static final String ORDER_DEDUCT_PRODUCT_STOCK_KEY = "#ORDER_DEDUCT_PRODUCT_STOCK_KEY:{0}:{1}";
-
-    /**
      * 扣减商品库存锁（保证mysql+redis库存扣减的原子性）
      */
     public static final String DEDUCT_PRODUCT_STOCK_KEY = "#ORDER_DEDUCT_PRODUCT_STOCK_KEY:";

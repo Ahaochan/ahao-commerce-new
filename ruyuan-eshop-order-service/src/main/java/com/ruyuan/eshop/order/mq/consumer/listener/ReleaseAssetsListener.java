@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Strings;
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
 import com.ruyuan.eshop.common.enums.OrderStatusEnum;
+import com.ruyuan.eshop.common.mq.AbstractMessageListenerConcurrently;
 import com.ruyuan.eshop.inventory.domain.request.ReleaseProductStockRequest;
 import com.ruyuan.eshop.market.domain.request.ReleaseUserCouponRequest;
 import com.ruyuan.eshop.order.dao.OrderItemDAO;
@@ -14,7 +15,6 @@ import com.ruyuan.eshop.order.mq.producer.DefaultProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
-import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -30,7 +30,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class ReleaseAssetsListener implements MessageListenerConcurrently {
+public class ReleaseAssetsListener extends AbstractMessageListenerConcurrently {
 
     @Autowired
     private DefaultProducer defaultProducer;
@@ -39,7 +39,7 @@ public class ReleaseAssetsListener implements MessageListenerConcurrently {
     private OrderItemDAO orderItemDAO;
 
     @Override
-    public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
+    public ConsumeConcurrentlyStatus onMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
         try {
             for (MessageExt messageExt : list) {
                 // 1、消费到释放资产message
@@ -47,7 +47,6 @@ public class ReleaseAssetsListener implements MessageListenerConcurrently {
                 log.info("ReleaseAssetsListener message:{}", message);
                 CancelOrderAssembleRequest cancelOrderAssembleRequest = JSONObject.parseObject(message, CancelOrderAssembleRequest.class);
                 OrderInfoDTO orderInfoDTO = cancelOrderAssembleRequest.getOrderInfoDTO();
-
                 // 2、发送取消订单退款请求MQ
                 if (orderInfoDTO.getOrderStatus() > OrderStatusEnum.CREATED.getCode()) {
                     defaultProducer.sendMessage(RocketMqConstant.CANCEL_REFUND_REQUEST_TOPIC,
@@ -110,4 +109,5 @@ public class ReleaseAssetsListener implements MessageListenerConcurrently {
 
         return releaseProductStockRequest;
     }
+
 }

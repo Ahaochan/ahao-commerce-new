@@ -1,20 +1,14 @@
 package com.ruyuan.eshop.order.mq.producer;
 
-import com.alibaba.fastjson.JSON;
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
-import com.ruyuan.eshop.common.message.TraceableMessage;
-import com.ruyuan.eshop.common.utils.MdcUtil;
+import com.ruyuan.eshop.common.mq.MQMessage;
 import com.ruyuan.eshop.order.exception.OrderBizException;
 import com.ruyuan.eshop.order.exception.OrderErrorCodeEnum;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.exception.MQClientException;
-import org.apache.rocketmq.client.producer.SendResult;
-import org.apache.rocketmq.client.producer.SendStatus;
-import org.apache.rocketmq.client.producer.TransactionMQProducer;
-import org.apache.rocketmq.client.producer.TransactionSendResult;
+import org.apache.rocketmq.client.producer.*;
 import org.apache.rocketmq.common.message.Message;
 import org.apache.rocketmq.spring.autoconfigure.RocketMQProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -27,9 +21,8 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class DefaultProducer {
 
-    private final TransactionMQProducer producer;
+    private final DefaultMQProducer producer;
 
-    @Autowired
     public DefaultProducer(RocketMQProperties rocketMQProperties) {
         producer = new TransactionMQProducer(RocketMqConstant.ORDER_DEFAULT_PRODUCER_GROUP);
         producer.setNamesrvAddr(rocketMQProperties.getNameServer());
@@ -39,7 +32,7 @@ public class DefaultProducer {
     /**
      * 对象在使用之前必须要调用一次，只能初始化一次
      */
-    public void start() {
+    private void start() {
         try {
             this.producer.start();
         } catch (MQClientException e) {
@@ -71,7 +64,7 @@ public class DefaultProducer {
      * @param message 消息
      */
     public void sendMessage(String topic, String message, Integer delayTimeLevel, String type, String tags, String keys) {
-        Message msg = new Message(topic, tags, keys, message.getBytes(StandardCharsets.UTF_8));
+        Message msg = new MQMessage(topic, tags, keys, message.getBytes(StandardCharsets.UTF_8));
         try {
             if (delayTimeLevel > 0) {
                 msg.setDelayTimeLevel(delayTimeLevel);
@@ -88,16 +81,7 @@ public class DefaultProducer {
         }
     }
 
-    public TransactionSendResult sendMessageInTransaction(String topic, Object messageContent)
-            throws MQClientException {
-        String traceId = MdcUtil.getTraceId();
-        TraceableMessage m = new TraceableMessage(traceId, messageContent.getClass(), messageContent);
-        byte[] body = JSON.toJSONString(m).getBytes(StandardCharsets.UTF_8);
-        Message message = new Message(topic, body);
-        return producer.sendMessageInTransaction(message, messageContent);
-    }
-
-    public TransactionMQProducer getProducer() {
+    public DefaultMQProducer getProducer() {
         return producer;
     }
 }

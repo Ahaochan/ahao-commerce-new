@@ -17,6 +17,7 @@ import com.ruyuan.eshop.address.domain.query.AddressQuery;
 import com.ruyuan.eshop.address.exception.AddressErrorCodeEnum;
 import com.ruyuan.eshop.common.core.JsonResult;
 import com.ruyuan.eshop.common.exception.BaseBizException;
+import com.ruyuan.eshop.common.utils.LoggerFormat;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.dubbo.config.annotation.DubboService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +48,10 @@ public class AddressApiImpl implements AddressApi {
 
     @Override
     public JsonResult<AddressDTO> queryAddress(AddressQuery query) {
+        log.info(LoggerFormat.build()
+                .remark("queryAddress->request")
+                .data("query",query)
+                .finish());
         //1、参数校验
         checkParam(query);
 
@@ -115,10 +120,17 @@ public class AddressApiImpl implements AddressApi {
         //6、筛选结果
         for (AddressDTO candidate : candidates) {
             if (isMatch(candidate, query)) {
+                log.info(LoggerFormat.build()
+                        .remark("queryAddress->response")
+                        .data("response",candidate)
+                        .finish());
                 //7、组装返参
                 return JsonResult.buildSuccess(candidate);
             }
         }
+        log.info(LoggerFormat.build()
+                .remark("queryAddress->response")
+                .finish());
 
         return JsonResult.buildSuccess();
     }

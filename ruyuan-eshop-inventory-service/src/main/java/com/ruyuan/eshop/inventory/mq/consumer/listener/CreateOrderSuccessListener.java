@@ -1,12 +1,12 @@
 package com.ruyuan.eshop.inventory.mq.consumer.listener;
 
 import com.alibaba.fastjson.JSON;
+import com.ruyuan.eshop.common.mq.AbstractMessageListenerConcurrently;
 import com.ruyuan.eshop.inventory.domain.request.DeductProductStockRequest;
 import com.ruyuan.eshop.inventory.service.InventoryService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
-import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Slf4j
 @Component
-public class CreateOrderSuccessListener implements MessageListenerConcurrently {
+public class CreateOrderSuccessListener extends AbstractMessageListenerConcurrently {
 
     /**
      * 库存服务
@@ -30,7 +30,7 @@ public class CreateOrderSuccessListener implements MessageListenerConcurrently {
     private InventoryService inventoryService;
 
     @Override
-    public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
+    public ConsumeConcurrentlyStatus onMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
         try {
 
             for (MessageExt messageExt : list) {

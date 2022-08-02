@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.MessageFormat;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,6 +70,12 @@ public class InventoryServiceImpl implements InventoryService {
      */
     @Override
     public Boolean deductProductStock(DeductProductStockRequest deductProductStockRequest) {
+
+        log.info(LoggerFormat.build()
+                .remark("deductProductStock->request")
+                .data("request", deductProductStockRequest)
+                .finish());
+
         // 检查入参
         checkLockProductStockRequest(deductProductStockRequest);
         String orderId = deductProductStockRequest.getOrderId();
@@ -76,41 +83,46 @@ public class InventoryServiceImpl implements InventoryService {
                 deductProductStockRequest.getOrderItemRequestList();
         for (DeductProductStockRequest.OrderItemRequest orderItemRequest : orderItemRequestList) {
             String skuCode = orderItemRequest.getSkuCode();
-            //1、查询mysql库存数据
-            ProductStockDO productStockDO = productStockDAO.getBySkuCode(skuCode);
-            log.info(LoggerFormat.build()
-                    .remark("查询mysql库存数据")
-                    .data("productStockDO", productStockDO)
-                    .finish());
-            if (productStockDO == null) {
-                log.error(LoggerFormat.build()
-                        .remark("商品库存记录不存在")
-                        .data("skuCode", skuCode)
-                        .finish());
-                throw new InventoryBizException(InventoryErrorCodeEnum.PRODUCT_SKU_STOCK_NOT_FOUND_ERROR);
-            }
-
-            //2、查询redis库存数据
-            String productStockKey = CacheSupport.buildProductStockKey(skuCode);
-            Map<String, String> productStockValue = redisCache.hGetAll(productStockKey);
-            if (productStockValue.isEmpty()) {
-                // 如果查询不到redis库存数据，将mysql库存数据放入redis，以mysql的数据为准
-                addProductStockProcessor.addStockToRedis(productStockDO);
-            }
-
-            //3、添加redis锁，防同一笔订单重复扣库存
-            String lockKey = MessageFormat.format(RedisLockKeyConstants.ORDER_DEDUCT_PRODUCT_STOCK_KEY, orderId, skuCode);
-            Boolean locked = redisLock.tryLock(lockKey);
-            if (!locked) {
-                log.error(LoggerFormat.build()
-                        .remark("无法获取扣减库存锁")
-                        .data("orderId", orderId)
-                        .data("skuCode", skuCode)
-                        .finish());
-                throw new InventoryBizException(InventoryErrorCodeEnum.DEDUCT_PRODUCT_SKU_STOCK_CANNOT_ACQUIRE);
-            }
+            String lockKey = RedisLockKeyConstants.DEDUCT_PRODUCT_STOCK_KEY + skuCode;
             try {
-                //4、查询库存扣减日志
+                // 1、添加redis锁扣库存锁
+                // (1)防同一笔订单重复扣减
+                // (2)重量级锁，保证mysql+redis扣库存的原子性，同一时间只能有一个订单来扣，
+                // 需要锁查询+扣库存
+                // 获取不到锁，阻塞等待
+                boolean locked = redisLock.tryLock(lockKey, CoreConstant.DEFAULT_WAIT_SECONDS);
+                if (!locked) {
+                    log.error(LoggerFormat.build()
+                            .remark("无法获取扣减库存锁")
+                            .data("orderId", orderId)
+                            .data("skuCode", skuCode)
+                            .finish());
+                    throw new InventoryBizException(InventoryErrorCodeEnum.DEDUCT_PRODUCT_SKU_STOCK_CANNOT_ACQUIRE);
+                }
+                // 2、查询mysql库存数据
+                ProductStockDO productStockDO = productStockDAO.getBySkuCode(skuCode);
+                log.info(LoggerFormat.build()
+                        .remark("查询mysql库存数据")
+                        .data("orderId", orderId)
+                        .data("productStockDO", productStockDO)
+                        .finish());
+                if (productStockDO == null) {
+                    log.error(LoggerFormat.build()
+                            .remark("商品库存记录不存在")
+                            .data("skuCode", skuCode)
+                            .finish());
+                    throw new InventoryBizException(InventoryErrorCodeEnum.PRODUCT_SKU_STOCK_NOT_FOUND_ERROR);
+                }
+
+                // 3、查询redis库存数据
+                String productStockKey = CacheSupport.buildProductStockKey(skuCode);
+                Map<String, String> productStockValue = redisCache.hGetAll(productStockKey);
+                if (productStockValue.isEmpty()) {
+                    // 如果查询不到redis库存数据，将mysql库存数据放入redis，以mysql的数据为准
+                    addProductStockProcessor.addStockToRedis(productStockDO);
+                }
+
+                // 4、查询库存扣减日志
                 ProductStockLogDO productStockLog = productStockLogDAO.getLog(orderId, skuCode);
                 if (null != productStockLog) {
                     log.info("已扣减过，扣减库存日志已存在,orderId={},skuCode={}", orderId, skuCode);
@@ -118,11 +130,9 @@ public class InventoryServiceImpl implements InventoryService {
                 }
 
                 Integer saleQuantity = orderItemRequest.getSaleQuantity();
-                Integer originSaleStock = productStockDO.getSaleStockQuantity().intValue();
-                Integer originSaledStock = productStockDO.getSaledStockQuantity().intValue();
 
-                //5、执行执库存扣减
-                DeductStockDTO deductStock = new DeductStockDTO(orderId, skuCode, saleQuantity, originSaleStock, originSaledStock);
+                // 5、执行执库存扣减
+                DeductStockDTO deductStock = new DeductStockDTO(orderId, skuCode, saleQuantity, productStockDO);
                 deductProductStockProcessor.doDeduct(deductStock);
             } finally {
                 redisLock.unlock(lockKey);
@@ -163,11 +173,11 @@ public class InventoryServiceImpl implements InventoryService {
 
             //1、添加redis释放库存锁，作用
             // (1)防同一笔订单重复释放
-            // (2)重量级锁，保证mysql+redis扣库存的原子性，同一时间只能有一个订单来释放，
+            // (2)重量级锁，保证mysql+redis释放库存的原子性，同一时间只能有一个订单来释放，
             //    需要锁查询+扣库存
             String lockKey = RedisLockKeyConstants.RELEASE_PRODUCT_STOCK_KEY + skuCode;
             // 获取不到锁，等待3s
-            Boolean locked = redisLock.tryLock(lockKey, CoreConstant.DEFAULT_WAIT_SECONDS);
+            boolean locked = redisLock.tryLock(lockKey, CoreConstant.DEFAULT_WAIT_SECONDS);
             if (!locked) {
                 log.error("无法获取释放库存锁,orderId={},skuCode={}", orderId, skuCode);
                 throw new InventoryBizException(InventoryErrorCodeEnum.RELEASE_PRODUCT_SKU_STOCK_LOCK_CANNOT_ACQUIRE);
@@ -219,7 +229,7 @@ public class InventoryServiceImpl implements InventoryService {
 
         //3、添加redis锁，防并发
         String lockKey = RedisLockKeyConstants.ADD_PRODUCT_STOCK_KEY + request.getSkuCode();
-        Boolean locked = redisLock.tryLock(lockKey);
+        boolean locked = redisLock.tryLock(lockKey);
         if (!locked) {
             throw new InventoryBizException(InventoryErrorCodeEnum.ADD_PRODUCT_SKU_STOCK_ERROR);
         }
@@ -278,6 +288,22 @@ public class InventoryServiceImpl implements InventoryService {
         syncStockToCacheProcessor.doSync(request.getSkuCode());
 
         return true;
+    }
+
+    @Override
+    public Map<String, Object> getStockInfo(String skuCode) {
+        ProductStockDO productStock = productStockDAO.getBySkuCode(skuCode);
+        if (null == productStock) {
+            return null;
+        }
+
+        String productStockKey = CacheSupport.buildProductStockKey(skuCode);
+        Map<String, String> productStockValue = redisCache.hGetAll(productStockKey);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("mysql", productStock);
+        result.put("redis", productStockValue);
+        return result;
     }
 
     /**

@@ -25,7 +25,7 @@ public interface AfterSaleApi {
     /**
      * 缺品
      */
-    JsonResult<LackDTO> lockItem(LackRequest request);
+    JsonResult<LackDTO> lackItem(LackRequest request);
 
     /**
      * 取消订单支付退款回调

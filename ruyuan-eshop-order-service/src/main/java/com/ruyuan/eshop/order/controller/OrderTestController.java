@@ -1,5 +1,6 @@
 package com.ruyuan.eshop.order.controller;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.ruyuan.eshop.common.constants.RocketMqConstant;
@@ -66,6 +67,7 @@ public class OrderTestController {
      * @param genOrderIdRequest
      * @return
      */
+    @SentinelResource("OrderTestController:genOrderId")
     @PostMapping("/genOrderId")
     public JsonResult<GenOrderIdDTO> genOrderId(@RequestBody GenOrderIdRequest genOrderIdRequest) {
         JsonResult<GenOrderIdDTO> genOrderIdDTO = orderApi.genOrderId(genOrderIdRequest);
@@ -78,6 +80,7 @@ public class OrderTestController {
      * @param createOrderRequest
      * @return
      */
+    @SentinelResource("OrderTestController:createOrder")
     @PostMapping("/createOrder")
     public JsonResult<CreateOrderDTO> createOrder(@RequestBody CreateOrderRequest createOrderRequest) {
         JsonResult<CreateOrderDTO> createOrderDTO = orderApi.createOrder(createOrderRequest);
@@ -90,6 +93,7 @@ public class OrderTestController {
      * @param prePayOrderRequest
      * @return
      */
+    @SentinelResource("OrderTestController:prePayOrder")
     @PostMapping("/prePayOrder")
     public JsonResult<PrePayOrderDTO> prePayOrder(@RequestBody PrePayOrderRequest prePayOrderRequest) {
         JsonResult<PrePayOrderDTO> prePayOrderDTO = orderApi.prePayOrder(prePayOrderRequest);
@@ -102,6 +106,7 @@ public class OrderTestController {
      * @param payCallbackRequest
      * @return
      */
+    @SentinelResource("OrderTestController:payCallback")
     @PostMapping("/payCallback")
     public JsonResult<Boolean> payCallback(@RequestBody PayCallbackRequest payCallbackRequest) {
         JsonResult<Boolean> result = orderApi.payCallback(payCallbackRequest);

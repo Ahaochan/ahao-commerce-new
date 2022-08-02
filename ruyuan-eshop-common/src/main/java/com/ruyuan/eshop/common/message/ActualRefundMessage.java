@@ -11,10 +11,6 @@ import java.io.Serializable;
 @Data
 public class ActualRefundMessage implements Serializable {
     /**
-     * 售后支付单id
-     */
-    private Long afterSaleRefundId;
-    /**
      * 售后id
      */
     private Long afterSaleId;
