@@ -8,8 +8,6 @@ import com.ruyuan.eshop.inventory.exception.InventoryBizException;
 import com.ruyuan.eshop.inventory.exception.InventoryErrorCodeEnum;
 import com.ruyuan.eshop.inventory.tcc.LockMysqlStockTccService;
 import com.ruyuan.eshop.inventory.tcc.LockRedisStockTccService;
-import io.seata.rm.tcc.api.BusinessActionContext;
-import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -39,13 +37,13 @@ public class DeductProductStockProcessor {
     /**
      * 执行扣减商品库存逻辑
      */
-    @GlobalTransactional(rollbackFor = Exception.class)
+//    @GlobalTransactional(rollbackFor = Exception.class)
     public void doDeduct(DeductStockDTO deductStock) {
-        String traceId = MdcUtil.getOrInitTraceId();
+        String traceId = MdcUtil.getTraceId();
         // 1、执行执行mysql库存扣减
-
-        boolean result = lockMysqlStockTccService.deductStock(null,deductStock,traceId);
-        if(!result) {
+        boolean result = lockMysqlStockTccService
+                .deductStock(null, deductStock, traceId);
+        if (!result) {
             throw new InventoryBizException(InventoryErrorCodeEnum.DEDUCT_PRODUCT_SKU_STOCK_ERROR);
         }
 

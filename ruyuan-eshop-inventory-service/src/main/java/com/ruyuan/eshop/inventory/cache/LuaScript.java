@@ -3,7 +3,6 @@ package com.ruyuan.eshop.inventory.cache;
 /**
  * lua脚本
  *
- *
  * @author zhonghuashishan
  * @version 1.0
  */
@@ -56,6 +55,9 @@ public interface LuaScript {
                     + "if saleStock < saleQuantity then"
                     + "   return -1;"
                     + "end;"
+                    + "if saleStock ~= originSaleStock then"
+                    + "   return -1;"
+                    + "end;"
                     + "redis.call('hset', productStockKey, saleStockKey,   saleStock - saleQuantity);"
                     + "return 1;";
 
@@ -68,6 +70,9 @@ public interface LuaScript {
                     + "local saleQuantity = tonumber(ARGV[1]);"
                     + "local originSaledStock = tonumber(ARGV[2]);"
                     + "local saledStock = tonumber(redis.call('hget', productStockKey, saledStockKey));"
+                    + "if saledStock ~= originSaledStock then"
+                    + "   return -1;"
+                    + "end;"
                     + "redis.call('hset', productStockKey, saledStockKey, saledStock + saleQuantity);"
                     + "return 1;";
 
@@ -80,6 +85,9 @@ public interface LuaScript {
                     + "local saleQuantity = tonumber(ARGV[1]);"
                     + "local originSaleStock = tonumber(ARGV[2]);"
                     + "local saleStock   = tonumber(redis.call('hget', productStockKey, saleStockKey));"
+                    + "if saleStock ~= originSaleStock then"
+                    + "   return -1;"
+                    + "end;"
                     + "redis.call('hset', productStockKey, saleStockKey,   saleStock + saleQuantity);"
                     + "return 1;";
 

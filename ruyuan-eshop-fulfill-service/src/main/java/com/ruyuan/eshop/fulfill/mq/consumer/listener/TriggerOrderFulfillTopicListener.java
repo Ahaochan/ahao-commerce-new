@@ -41,7 +41,7 @@ public class TriggerOrderFulfillTopicListener extends AbstractMessageListenerCon
 
                 log.info("接受订单履约成功，request={}", JSONObject.toJSONString(request));
 
-                fulfillService.receiveOrderFulFill(request);
+                //fulfillService.receiveOrderFulFill(request);
             }
             return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
         } catch (Exception e) {

@@ -2,8 +2,6 @@ package com.ruyuan.eshop.inventory.service;
 
 import com.ruyuan.eshop.inventory.domain.request.*;
 
-import java.util.Map;
-
 /**
  * @author zhonghuashishan
  * @version 1.0
@@ -46,11 +44,4 @@ public interface InventoryService {
      * @return
      */
     Boolean syncStockToCache(SyncStockToCacheRequest request);
-
-    /**
-     * 查询sku库存信息
-     * @param skuCode
-     * @return
-     */
-    Map<String,Object> getStockInfo(String skuCode);
 }

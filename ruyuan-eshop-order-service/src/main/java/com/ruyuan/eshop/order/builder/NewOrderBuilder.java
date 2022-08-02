@@ -295,9 +295,13 @@ public class NewOrderBuilder {
      * @return
      */
     public NewOrderBuilder buildOrderSnapshot() {
+        // 在生单的时候，把订单自己的、优惠券的、费用的、商品的，核心数据生成一个订单快照就可以了
+        // 主要是怕你关联的一些数据后续可能会有变化，做快照，后续可以查看
+
         String orderId = createOrderRequest.getOrderId();
         String couponId = createOrderRequest.getCouponId();
         List<OrderSnapshotDO> orderOperateLogDOList = new ArrayList<>();
+
         if (StringUtils.isNotEmpty(couponId)) {
             // 优惠券信息
             OrderSnapshotDO orderCouponSnapshotDO = new OrderSnapshotDO();

@@ -3,9 +3,6 @@ package com.ruyuan.eshop.inventory;
 import com.alibaba.fastjson.JSONObject;
 import com.ruyuan.eshop.common.redis.RedisCache;
 import com.ruyuan.eshop.inventory.cache.CacheSupport;
-import com.ruyuan.eshop.inventory.dao.ProductStockDAO;
-import com.ruyuan.eshop.inventory.dao.ProductStockLogDAO;
-import com.ruyuan.eshop.inventory.domain.entity.ProductStockLogDO;
 import com.ruyuan.eshop.inventory.domain.request.*;
 import com.ruyuan.eshop.inventory.service.InventoryService;
 import org.junit.Test;
@@ -17,7 +14,6 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
 
 @SpringBootTest(classes = InventoryApplication.class)
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -29,24 +25,11 @@ public class InventoryServiceTest {
     @Autowired
     private RedisCache redisCache;
 
-    @Autowired
-    private ProductStockLogDAO productStockLogDAO;
-
-    private ExecutorService executor = Executors.newFixedThreadPool(20);
-    private CyclicBarrier cyclicBarrier = new CyclicBarrier(20);
-    private CountDownLatch countDownLatch = new CountDownLatch(20);
-
     @Test
     public void deleteProductStock() {
         String skuCode = "test001";
         String productStockKey = CacheSupport.buildProductStockKey(skuCode);
         redisCache.delete(productStockKey);
-    }
-
-    @Test
-    public void getLatestLog() throws Exception {
-        ProductStockLogDO logDO = productStockLogDAO.getLatestOne("10101011");
-        System.out.println(JSONObject.toJSONString(logDO));
     }
 
     @Test
@@ -177,10 +160,10 @@ public class InventoryServiceTest {
     @Test
     public void syncStockToCache() throws Exception {
 
-        String skuCode1 = "10101010";
+        String skuCode1 = "test001";
         String productStockKey1 = CacheSupport.buildProductStockKey(skuCode1);
 
-        String skuCode2 = "10101011";
+        String skuCode2 = "test002";
         String productStockKey2 = CacheSupport.buildProductStockKey(skuCode2);
 
         SyncStockToCacheRequest request = new SyncStockToCacheRequest();
@@ -196,79 +179,6 @@ public class InventoryServiceTest {
 
         System.out.println("after productStockValue1=" + JSONObject.toJSONString(productStockValue1));
         System.out.println("after productStockValue2=" + JSONObject.toJSONString(productStockValue2));
-    }
-
-    /**
-     * 多线程扣库存
-     * @throws Exception
-     */
-    @Test
-    public void deductProductStockMultiThreads() throws Exception {
-
-
-        for(int i=1;i<=20;i++) {
-            String orderId = "orderId-"+i;
-            executor.submit(new Task(orderId,inventoryService,countDownLatch,cyclicBarrier));
-        }
-
-        countDownLatch.await();
-
-
-        System.out.println("完成task");
-
-    }
-
-    private static class Task implements Runnable {
-
-        private String orderId;
-        private InventoryService inventoryService;
-        private CountDownLatch countDownLatch;
-        private CyclicBarrier cyclicBarrier;
-
-        public Task(String orderId, InventoryService inventoryService, CountDownLatch countDownLatch, CyclicBarrier cyclicBarrier) {
-            this.orderId = orderId;
-            this.inventoryService = inventoryService;
-            this.countDownLatch = countDownLatch;
-            this.cyclicBarrier = cyclicBarrier;
-        }
-
-        @Override
-        public void run() {
-            try {
-                DeductProductStockRequest request = buildRequest();
-                request.setOrderId(orderId);
-                cyclicBarrier.await();
-                inventoryService.deductProductStock(request);
-                countDownLatch.countDown();
-            }catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public static DeductProductStockRequest buildRequest() {
-        String skuCode1 = "skuCode001";
-        Integer saleQuantity1 = 10;
-
-        String skuCode2 = "skuCode002";
-        Integer saleQuantity2 = 1;
-
-        DeductProductStockRequest request = new DeductProductStockRequest();
-        request.setBusinessIdentifier(1);
-        List<DeductProductStockRequest.OrderItemRequest> orderItemRequests= new ArrayList<>();
-        request.setOrderItemRequestList(orderItemRequests);
-
-        DeductProductStockRequest.OrderItemRequest itemRequest1 = new DeductProductStockRequest.OrderItemRequest();
-        itemRequest1.setSkuCode(skuCode1);
-        itemRequest1.setSaleQuantity(saleQuantity1);
-        orderItemRequests.add(itemRequest1);
-
-        DeductProductStockRequest.OrderItemRequest itemRequest2 = new DeductProductStockRequest.OrderItemRequest();
-        itemRequest2.setSkuCode(skuCode2);
-        itemRequest2.setSaleQuantity(saleQuantity2);
-        orderItemRequests.add(itemRequest2);
-
-        return request;
     }
 
 

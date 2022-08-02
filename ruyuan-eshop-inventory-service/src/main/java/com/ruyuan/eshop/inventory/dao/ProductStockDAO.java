@@ -63,10 +63,12 @@ public class ProductStockDAO extends BaseDAO<ProductStockMapper, ProductStockDO>
      *
      * @param skuCode
      * @param saleQuantity
+     * @param originSaleStock
      * @return
      */
-    public int deductSaleStock(String skuCode, Integer saleQuantity) {
-        return productStockMapper.deductSaleStock(skuCode, saleQuantity);
+    public int deductSaleStock(String skuCode, Integer saleQuantity
+            , Integer originSaleStock) {
+        return productStockMapper.deductSaleStock(skuCode, saleQuantity, originSaleStock);
     }
 
     /**
@@ -74,10 +76,12 @@ public class ProductStockDAO extends BaseDAO<ProductStockMapper, ProductStockDO>
      *
      * @param skuCode
      * @param saleQuantity
+     * @param originSaledStock
      * @return
      */
-    public int increaseSaledStock(String skuCode, Integer saleQuantity) {
-        return productStockMapper.increaseSaledStock(skuCode, saleQuantity);
+    public int increaseSaledStock(String skuCode, Integer saleQuantity
+            , Integer originSaledStock) {
+        return productStockMapper.increaseSaledStock(skuCode, saleQuantity, originSaledStock);
     }
 
     /**
@@ -85,10 +89,12 @@ public class ProductStockDAO extends BaseDAO<ProductStockMapper, ProductStockDO>
      *
      * @param skuCode
      * @param saleQuantity
+     * @param originSaleStock
      * @return
      */
-    public int restoreSaleStock(String skuCode, Integer saleQuantity) {
-        return productStockMapper.restoreSaleStock(skuCode, saleQuantity);
+    public int restoreSaleStock(String skuCode, Integer saleQuantity,
+                                Integer originSaleStock) {
+        return productStockMapper.restoreSaleStock(skuCode, saleQuantity, originSaleStock);
     }
 
     /**

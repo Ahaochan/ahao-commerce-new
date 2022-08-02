@@ -43,17 +43,6 @@ public class RedisLock {
      *
      * @param key
      */
-    public void lock(String key) {
-        RLock rLock = redissonClient.getLock(key);
-        rLock.lock();
-    }
-
-
-    /**
-     * 互斥锁，自动续期
-     *
-     * @param key
-     */
     public boolean tryLock(String key) {
         RLock rLock = redissonClient.getLock(key);
         boolean locked = rLock.tryLock();

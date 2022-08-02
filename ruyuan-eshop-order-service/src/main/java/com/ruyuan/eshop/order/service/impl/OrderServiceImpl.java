@@ -1,5 +1,6 @@
 package com.ruyuan.eshop.order.service.impl;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.ruyuan.eshop.common.constants.RedisLockKeyConstants;
@@ -153,18 +154,22 @@ public class OrderServiceImpl implements OrderService {
                 .finish());
 
         // 1、入参检查
+        // 主要是做了大量的订单核心信息非空的校验，枚举值范围的校验
         checkCreateOrderRequestParam(createOrderRequest);
 
         // 2、风控检查
+        // 去检查你的设备是否频繁的下单和刷单，机器人发送请求来下单，黄牛乱买东西
         checkRisk(createOrderRequest);
 
         // 3、获取商品信息
         List<ProductSkuDTO> productSkuList = listProductSkus(createOrderRequest);
 
         // 4、计算订单价格
+        // 原价、优惠抵扣价、实付金额（运费）、每个商品条目的优惠分摊
         CalculateOrderAmountDTO calculateOrderAmountDTO = calculateOrderAmount(createOrderRequest, productSkuList);
 
-        // 5、验证订单实付金额
+        // 5、验证订单实付金额，前端和后端的价格计算规则和算法其实是一样的，可能会做一些优惠分摊而已
+        // 这个应该是一样，后端和前端算出来的金额不同，验价失败了
         checkRealPayAmount(createOrderRequest, calculateOrderAmountDTO);
 
         // 6、生成订单（包含锁定优惠券、扣减库存等逻辑）
@@ -196,12 +201,12 @@ public class OrderServiceImpl implements OrderService {
      * 检查创建订单请求参数
      */
     private void checkCreateOrderRequestParam(CreateOrderRequest createOrderRequest) {
-        ParamCheckUtil.checkObjectNonNull(createOrderRequest);
+        ParamCheckUtil.checkObjectNonNull(createOrderRequest); // 不能为空
 
         // 订单ID
         String orderId = createOrderRequest.getOrderId();
         ParamCheckUtil.checkStringNonEmpty(orderId, OrderErrorCodeEnum.ORDER_ID_IS_NULL);
-        OrderInfoDO order = orderInfoDAO.getByOrderId(orderId);
+        OrderInfoDO order = orderInfoDAO.getByOrderId(orderId); // 查询这个订单是不能存在的，避免一个订单号进行重复生单
         ParamCheckUtil.checkObjectNull(order, OrderErrorCodeEnum.ORDER_EXISTED);
 
         // 业务线标识
@@ -218,7 +223,8 @@ public class OrderServiceImpl implements OrderService {
         // 订单类型
         Integer orderType = createOrderRequest.getOrderType();
         ParamCheckUtil.checkObjectNonNull(businessIdentifier, OrderErrorCodeEnum.ORDER_TYPE_IS_NULL);
-        if (OrderTypeEnum.getByCode(orderType) == null) {
+        if (OrderTypeEnum.getByCode(orderType) == null) { // 有枚举值的，都要去枚举类里判断一下，这个值是否对应枚举类型
+            // 如果说枚举类型拿不到的话，此时的话，就是要看应该如何来进行处理，报错了，枚举值是不存在的
             throw new OrderBizException(OrderErrorCodeEnum.ORDER_TYPE_ERROR);
         }
 
@@ -283,7 +289,6 @@ public class OrderServiceImpl implements OrderService {
         for (CreateOrderRequest.OrderAmountRequest orderAmountRequest : orderAmountRequestList) {
             Integer amountType = orderAmountRequest.getAmountType();
             ParamCheckUtil.checkObjectNonNull(amountType, OrderErrorCodeEnum.ORDER_AMOUNT_TYPE_IS_NULL);
-
             if (AmountTypeEnum.getByCode(amountType) == null) {
                 throw new OrderBizException(OrderErrorCodeEnum.ORDER_AMOUNT_TYPE_PARAM_ERROR);
             }
@@ -350,11 +355,13 @@ public class OrderServiceImpl implements OrderService {
             String skuCode = orderItemRequest.getSkuCode();
             skuCodeList.add(skuCode);
         }
+
         List<ProductSkuDTO> productSkuList = productRemote.listProductSku(skuCodeList, createOrderRequest.getSellerId());
         log.info(LoggerFormat.build()
                 .remark("listProductSkus->return")
                 .data("productSkus", productSkuList)
                 .finish());
+
         return productSkuList;
     }
 
@@ -383,6 +390,7 @@ public class OrderServiceImpl implements OrderService {
         if (calculateOrderAmountDTO == null) {
             throw new OrderBizException(OrderErrorCodeEnum.CALCULATE_ORDER_AMOUNT_ERROR);
         }
+
         // 订单费用信息
         List<OrderAmountDTO> orderAmountList = orderConverter.convertOrderAmountDTO(calculateOrderAmountDTO.getOrderAmountList());
         if (orderAmountList == null || orderAmountList.isEmpty()) {
@@ -474,7 +482,7 @@ public class OrderServiceImpl implements OrderService {
             PayOrderRequest payOrderRequest = orderConverter.convertPayOrderRequest(prePayOrderRequest);
             PayOrderDTO payOrderDTO = payRemote.payOrder(payOrderRequest);
 
-            // 更新订单表与支付信息表
+            // 更新订单表与支付信息表，支付类型、支付时间、第三方系统返回的支付流水号
             updateOrderPaymentInfo(payOrderDTO);
 
             // 返回结果
@@ -567,9 +575,11 @@ public class OrderServiceImpl implements OrderService {
         String outTradeNo = payOrderDTO.getOutTradeNo();
         Date payTime = new Date();
 
+        // 如果说有拆单，主单和子单，支付的时候，到底是针对主单来支付，还是针对子单来支付
+        // 预支付这里，是对主单和子单都需要去做一个更新
+
         // 更新主订单支付信息
         updateMasterOrderPaymentInfo(orderId, payType, payTime, outTradeNo);
-
         // 更新子订单支付信息
         updateSubOrderPaymentInfo(orderId, payType, payTime, outTradeNo);
     }
@@ -624,7 +634,8 @@ public class OrderServiceImpl implements OrderService {
         OrderPaymentDetailDO orderPaymentDetailDO = new OrderPaymentDetailDO();
         orderPaymentDetailDO.setPayTime(payTime);
         orderPaymentDetailDO.setPayType(payType);
-        orderPaymentDetailDO.setOutTradeNo(outTradeNo);
+        orderPaymentDetailDO.setOutTradeNo(outTradeNo); // 流水号，是从第三方支付系统那里拿到的
+        // 预支付之后，第三方支付平台就会返回给你支付流水号
         if(orderIds.size() == 1) {
             orderPaymentDetailDAO.updateByOrderId(orderPaymentDetailDO, orderIds.get(0));
         } else {
@@ -648,7 +659,6 @@ public class OrderServiceImpl implements OrderService {
 
         // 更新子订单支付信息
         updateOrderInfo(subOrderIds, payType, payTime);
-
         // 更新子订单支付明细信息
         updateOrderPaymentDetail(subOrderIds, payType, payTime, outTradeNo);
     }

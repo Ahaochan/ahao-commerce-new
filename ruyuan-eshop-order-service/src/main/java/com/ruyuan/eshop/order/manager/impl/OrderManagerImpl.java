@@ -110,17 +110,9 @@ public class OrderManagerImpl implements OrderManager {
     @GlobalTransactional(rollbackFor = Exception.class)
     public void createOrder(CreateOrderRequest createOrderRequest, List<ProductSkuDTO> productSkuList, CalculateOrderAmountDTO calculateOrderAmountDTO) {
         // 锁定优惠券
-        lockUserCoupon(createOrderRequest);
-
-        log.info(LoggerFormat.build()
-                .remark("OrderManager.createOrder-> before deduct stock")
-                .finish());
+        lockUserCoupon(createOrderRequest); // 这个简单，主要就是把优惠券的used字段更新为1
         // 扣减库存
-        deductProductStock(createOrderRequest);
-
-        log.info(LoggerFormat.build()
-                .remark("OrderManager.createOrder-> after deduct stock")
-                .finish());
+        deductProductStock(createOrderRequest); // 这个简单，做一个库存扣减就可以了
 
         // 生成订单到数据库
         addNewOrder(createOrderRequest, productSkuList, calculateOrderAmountDTO);
@@ -171,12 +163,14 @@ public class OrderManagerImpl implements OrderManager {
 
 
         // 如果存在多种商品类型，需要按商品类型进行拆单
+        // 商品条目，把不同的商品类型对应的商品数据，拆分到一个map<商品类型，list<商品条目>>
         Map<Integer, List<ProductSkuDTO>> productTypeMap = productSkuList.stream().collect(Collectors.groupingBy(ProductSkuDTO::getProductType));
         if (productTypeMap.keySet().size() > 1) {
+            // 每个商品类型做一个订单拆分，不同商品类型不能放在一个订单里的
+            // 普通商品，服务商品，虚拟商品，预售商品，不同类型的商品要做一个拆单
             for (Integer productType : productTypeMap.keySet()) {
                 // 生成子订单
                 FullOrderData fullSubOrderData = addNewSubOrder(fullMasterOrderData, productType);
-
                 // 封装子订单数据到NewOrderData对象中
                 newOrderDataHolder.appendOrderData(fullSubOrderData);
             }
@@ -190,7 +184,7 @@ public class OrderManagerImpl implements OrderManager {
                     .remark("保存订单信息")
                     .data("orderId", orderId)
                     .finish());
-            orderInfoDAO.saveBatch(orderInfoDOList);
+            orderInfoDAO.saveBatch(orderInfoDOList); // 主单和子单多个订单
         }
 
         // 订单条目
@@ -272,13 +266,13 @@ public class OrderManagerImpl implements OrderManager {
         NewOrderBuilder newOrderBuilder = new NewOrderBuilder(createOrderRequest, productSkuList,
                 calculateOrderAmountDTO, orderProperties, orderConverter);
         FullOrderData fullOrderData = newOrderBuilder.buildOrder()
-                .buildOrderItems()
+                .buildOrderItems() // 根据商品数据，把订单条目数据做一个补全
                 .buildOrderDeliveryDetail()
                 .buildOrderPaymentDetail()
                 .buildOrderAmount()
                 .buildOrderAmountDetail()
                 .buildOperateLog()
-                .buildOrderSnapshot()
+                .buildOrderSnapshot() // 把核心数据做一个订单快照出来
                 .build();
 
         // 订单信息
@@ -297,7 +291,7 @@ public class OrderManagerImpl implements OrderManager {
 
         // 补全订单状态变更日志
         OrderOperateLogDO orderOperateLogDO = fullOrderData.getOrderOperateLogDO();
-        String remark = "创建订单操作0-10";
+        String remark = "创建订单操作0-10"; // 创建订单操作
         orderOperateLogDO.setRemark(remark);
 
         // 补全订单商品快照信息
@@ -385,7 +379,7 @@ public class OrderManagerImpl implements OrderManager {
         List<OrderPaymentDetailDO> orderPaymentDetailDOList = fullOrderData.getOrderPaymentDetailDOList();
         // 主订单费用信息
         List<OrderAmountDO> orderAmountDOList = fullOrderData.getOrderAmountDOList();
-        // 主订单费用明细
+        // 主订单费用明细，就是根据之前优惠分摊来的，每个商品条目具体的收费信息
         List<OrderAmountDetailDO> orderAmountDetailDOList = fullOrderData.getOrderAmountDetailDOList();
         // 主订单状态变更日志信息
         OrderOperateLogDO orderOperateLogDO = fullOrderData.getOrderOperateLogDO();
@@ -538,6 +532,9 @@ public class OrderManagerImpl implements OrderManager {
             subOrderSnapshotDOList.add(subOrderSnapshotDO);
         }
         subFullOrderData.setOrderSnapshotDOList(subOrderSnapshotDOList);
+
+        // 生成子单的过程，就跟主单，子单包含的商品条目少了，包含了部分商品条目而已
+
         return subFullOrderData;
     }
 
@@ -603,20 +600,24 @@ public class OrderManagerImpl implements OrderManager {
      * @param subOrderInfoDOList
      */
     private void updateSubOrderStatus(OrderInfoDO orderInfoDO, List<OrderInfoDO> subOrderInfoDOList) {
+        // 如果出现了拆单的话，完成支付之后，主单会被废弃掉，子单，每个子单后续自己去走履约流程就可以了
+        // 业务上的设计，针对主单信息去做一个后续的操作
+
         String orderId = orderInfoDO.getOrderId();
         Integer newPreOrderStatus = orderInfoDO.getOrderStatus();
         Integer currentOrderStatus = OrderStatusEnum.INVALID.getCode();
 
-        // 先将主订单状态设置为无效订单
+        // 先将主订单状态设置为无效订单，主单直接设置为invalid，废掉主单
         List<String> orderIdList = Collections.singletonList(orderId);
         updateOrderStatus(orderIdList, currentOrderStatus);
 
         // 新增订单状态变更日志
         Integer operateType = OrderOperateTypeEnum.PAID_ORDER.getCode();
+        // 把主单的状态从PAYED更新为INVALID
         String remark = "订单支付回调操作，主订单状态变更" + newPreOrderStatus + "-" + currentOrderStatus;
         saveOrderOperateLog(orderId, operateType, newPreOrderStatus, currentOrderStatus, remark);
 
-        // 再更新子订单的状态
+        // 再更新子订单的状态，子单会更新为PAID
         Integer subCurrentOrderStatus = OrderStatusEnum.PAID.getCode();
         List<String> subOrderIdList = subOrderInfoDOList.stream()
                 .map(OrderInfoDO::getOrderId).collect(Collectors.toList());
@@ -697,7 +698,7 @@ public class OrderManagerImpl implements OrderManager {
             OrderOperateLogDO subOrderOperateLogDO = new OrderOperateLogDO();
             subOrderOperateLogDO.setOrderId(subOrderId);
             subOrderOperateLogDO.setOperateType(OrderOperateTypeEnum.PAID_ORDER.getCode());
-            subOrderOperateLogDO.setPreStatus(subPreOrderStatus);
+            subOrderOperateLogDO.setPreStatus(subPreOrderStatus); // CREATED -> PAID
             subOrderOperateLogDO.setCurrentStatus(subCurrentOrderStatus);
             subOrderOperateLogDO.setRemark("订单支付回调操作，子订单状态变更"
                     + subOrderOperateLogDO.getPreStatus() + "-"

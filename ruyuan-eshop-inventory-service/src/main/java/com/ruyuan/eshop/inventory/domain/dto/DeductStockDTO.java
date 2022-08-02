@@ -1,6 +1,5 @@
 package com.ruyuan.eshop.inventory.domain.dto;
 
-import com.ruyuan.eshop.inventory.domain.entity.ProductStockDO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,12 +11,10 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DeductStockDTO {
-
     /**
      * 订单ID
      */
     private String orderId;
-
     /**
      * 商品skuCode
      */
@@ -29,7 +26,12 @@ public class DeductStockDTO {
     private Integer saleQuantity;
 
     /**
-     * sku库存数据
+     * 原始销售库存
      */
-    private ProductStockDO productStockDO;
+    private Integer originSaleStock;
+
+    /**
+     * 原始已销售库存
+     */
+    private Integer originSaledStock;
 }

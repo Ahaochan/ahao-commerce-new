@@ -157,6 +157,7 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
     private void sendReleaseAssets(CancelOrderAssembleRequest cancelOrderAssembleRequest) {
         TransactionMQProducer transactionMQProducer = cancelOrderSendReleaseAssetsProducer.getProducer();
         setSendReleaseAssetsListener(transactionMQProducer);
+        // 释放优惠券、释放库存，发起退款流程
         sendReleaseSuccessMessage(transactionMQProducer, cancelOrderAssembleRequest);
     }
 
@@ -256,13 +257,12 @@ public class OrderAfterSaleServiceImpl implements OrderAfterSaleService {
                                                      Integer afterSaleStatus, Integer refundStatus, String refundStatusMsg) {
         Long afterSaleId = Long.valueOf(payRefundCallbackRequest.getAfterSaleId());
         //  更新 订单售后表
-        afterSaleInfoDAO.updateStatus(afterSaleId, AfterSaleStatusEnum.REFUNDING.getCode(), afterSaleStatus);
+        afterSaleInfoDAO.updateStatus(afterSaleId, AfterSaleStatusEnum.REFUNDED.getCode(), afterSaleStatus);
 
         //  新增 售后单变更表
         AfterSaleInfoDO afterSaleInfoDO = afterSaleInfoDAO.getOneByAfterSaleId(afterSaleId);
         AfterSaleLogDO afterSaleLogDO = afterSaleOperateLogFactory.get(afterSaleInfoDO,
-                AfterSaleStatusChangeEnum.getBy(AfterSaleStatusEnum.REFUNDING.getCode(), afterSaleStatus));
-
+                AfterSaleStatusChangeEnum.getBy(AfterSaleStatusEnum.REFUNDED.getCode(), afterSaleStatus));
         afterSaleLogDAO.save(afterSaleLogDO);
 
         //  更新 售后退款单表

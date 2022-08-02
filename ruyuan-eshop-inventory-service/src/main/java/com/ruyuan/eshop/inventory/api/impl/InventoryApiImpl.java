@@ -20,7 +20,7 @@ import java.util.List;
  * @author zhonghuashishan
  * @version 1.0
  */
-@DubboService(version = "1.0.0", interfaceClass = InventoryApi.class, retries = 0 , timeout = 3500)
+@DubboService(version = "1.0.0", interfaceClass = InventoryApi.class, retries = 0)
 @Slf4j
 public class InventoryApiImpl implements InventoryApi {
 

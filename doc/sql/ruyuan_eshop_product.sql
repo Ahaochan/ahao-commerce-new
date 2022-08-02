@@ -20,9 +20,8 @@ CREATE TABLE `product_sku` (
   `purchase_price` int(10) NOT NULL COMMENT '商品采购价格',
   `gmt_create` datetime NOT NULL COMMENT '创建时间',
   `gmt_modified` datetime NOT NULL COMMENT '更新时间',
-  PRIMARY KEY (`id`) USING BTREE,
-  KEY `idx_sku_code` (`sku_code`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='商品sku记录表'
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='商品sku记录表';
 
 -- ----------------------------
 -- Records of product_sku
